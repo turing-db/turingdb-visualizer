@@ -33,9 +33,13 @@ export default defineConfig({
     exclude: ['turingcanvas']
   },
   plugins: [turingcanvasBuilder(), react(), tailwindcss()],
+  define: {
+    // Prevent TypeScript from checking turingcanvas dist files
+    __TURINGCANVAS_DIST_SKIP__: true
+  },
   build: {
     rollupOptions: {
-      external: ['turingcanvas/dist/**']
+      external: []
     }
   }
 })
