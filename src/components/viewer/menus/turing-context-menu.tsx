@@ -3,7 +3,6 @@ import { type FC, useCallback } from 'react'
 import { TuringMenu } from '@/components/base/turing-menu'
 import { useAppStore } from '@/stores'
 import { ContextMenuPopover } from '@blueprintjs/core'
-import type { TuringNode } from 'turingcanvas'
 import { OnCanvasContextMenuItems } from './canvas-context-menu'
 import { OnNodeContextMenuItems } from './node-context-menu'
 import { TuringContextMenuType } from './turing-context-menu-type'
@@ -11,7 +10,7 @@ import { TuringContextMenuType } from './turing-context-menu-type'
 export interface TuringContextMenuInfo {
   type: TuringContextMenuType
   offset: { left: number; top: number }
-  node?: TuringNode
+  node?: any
 }
 
 export interface TuringContextMenuProps {

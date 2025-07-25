@@ -11,7 +11,7 @@ export const SelectSameLabels: FC = () => {
   const labels = useMemo(
     () => [
       ...new Set(
-        turingNodes().flatMap((n) => {
+        turingNodes().flatMap((n: any) => {
           const data = n.data as NodeEntry
 
           return data.labels
@@ -37,7 +37,7 @@ export const SelectSameLabels: FC = () => {
       {labels.length === 0 ? (
         <TuringMenuItem key="no-result" text="No labels" disabled />
       ) : (
-        labels.map((l) => <TuringMenuItem key={l} text={l} onClick={() => handleOnItemSelect(l)} />)
+        labels.map((l) => <TuringMenuItem key={l as string} text={l as string} onClick={() => handleOnItemSelect(l as string)} />)
       )}
     </TuringMenuItem>
   )

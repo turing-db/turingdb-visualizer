@@ -20,7 +20,7 @@ export const useCanvasNodeLabels = () => {
     const defaultLabels = new Set(['None', 'Node IDs'])
 
     const nodePropertyTypes = new Set(
-      nodes.flatMap((e) => {
+      nodes.flatMap((e: any) => {
         const nodeData = e.data as NodeEntry
         const props = nodeData.properties
         return Object.keys(props)

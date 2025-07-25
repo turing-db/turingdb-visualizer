@@ -6,7 +6,7 @@ export const EdgeLabelSelector = () => {
   const { edgeLabels, showingEdgeLabel, setShowingEdgeLabel } = useCanvasEdgeLabels()
 
   const edgeLabelItems = useMemo(
-    () => Array.from(edgeLabels).map((p) => ({ name: p })),
+    () => Array.from(edgeLabels).map((p) => ({ name: p as string })),
     [edgeLabels]
   )
 

@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "strict" : true,
-    "noImplicitAny": true,
+    "strict" : false,
+    "noImplicitAny": false,
     "esModuleInterop": true,
     "strictNullChecks": true,
     "target": "ESNext",

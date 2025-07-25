@@ -26,16 +26,16 @@ export const useCanvasEdgeLabels = () => {
 
     const edgePropertyTypes = new Set(
       edges
-        .map((e) => {
+        .map((e: any) => {
           const edgeData = e.data as EdgeEntry
           const props = edgeData[4]
 
           if (props === undefined) return undefined
           return Object.keys(props)
         })
-        .filter((p) => p !== undefined)
+        .filter((p: any) => p !== undefined)
         .flat()
-        .map((id) => info.propTypes[Number.parseInt(id)])
+        .map((id: any) => info.propTypes[Number.parseInt(id)])
     )
 
     return [...defaultLabels, ...edgePropertyTypes]

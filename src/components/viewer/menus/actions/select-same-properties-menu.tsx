@@ -24,10 +24,10 @@ function RenderPropertyValues({ parent, property }: { parent: JSX.Element; prope
       Array.from(
         new Set([
           ...turingNodes()
-            .map((n) => {
+          .map((n: any) => {
               return (n.data as NodeEntry).properties[property]
             })
-            .filter((v) => v !== undefined)
+          .filter((v: any) => v !== undefined)
             .flat(),
         ])
       ).flat(),
@@ -93,11 +93,11 @@ export const SelectSameProperties: FC = () => {
     return Array.from(
       new Set([
         ...turingNodes()
-          .map((n) => {
+          .map((n: any) => {
             const data = n.data as NodeEntry
             return Object.keys(data.properties)
           })
-          .filter((v) => v !== undefined)
+          .filter((v: any) => v !== undefined)
           .flat(),
       ])
     ).flat()

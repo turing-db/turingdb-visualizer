@@ -6,7 +6,7 @@ export const NodeLabelSelector = () => {
   const { nodeLabels, showingNodeLabel, setShowingNodeLabel } = useCanvasNodeLabels()
 
   const nodeLabelItems = useMemo(
-    () => Array.from(nodeLabels).map((p) => ({ name: p })),
+    () => Array.from(nodeLabels).map((p) => ({ name: p as string })),
     [nodeLabels]
   )
 
