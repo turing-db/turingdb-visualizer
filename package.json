@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:dev": "vite build --mode development"
   },
   "dependencies": {
     "@blueprintjs/core": "^5.0.0",
