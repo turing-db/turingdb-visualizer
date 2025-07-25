@@ -136,12 +136,35 @@ export function TuringCanvas({ id, className = '', events }) {
 export function useCanvasStore(selector) {
   console.log('🔍 useCanvasStore called')
   const mockState = {
-    resetStates: (...args) => console.log('resetStates:', args),
-    init: (instance) => console.log('store init:', instance),
-    actions: {},
-    nodes: [],
-    edges: [],
-    centerForce: false
+    instance: { current: null },
+    init: (instance) => {
+      console.log('🔍 store init:', instance)
+      mockState.instance.current = instance
+    },
+    resetStates: (...args) => {
+      console.log('🔍 resetStates:', args)
+      return Promise.resolve()
+    },
+    actions: {
+      addNodes: (nodes) => console.log('🔍 store.addNodes:', nodes),
+      addEdges: (edges) => console.log('🔍 store.addEdges:', edges),
+      delNode: (id) => console.log('🔍 store.delNode:', id),
+      reset: () => console.log('🔍 store.reset'),
+      selectNode: (id) => console.log('🔍 store.selectNode:', id),
+      unselectNode: (id) => console.log('🔍 store.unselectNode:', id),
+      toggleSelectNode: (id) => console.log('🔍 store.toggleSelectNode:', id),
+      unselectAll: () => console.log('🔍 store.unselectAll'),
+      makePrimary: (node) => console.log('🔍 store.makePrimary:', node),
+      setNodeLabel: (id, label) => console.log('🔍 store.setNodeLabel:', id, label),
+      setEdgeLabel: (id, label) => console.log('🔍 store.setEdgeLabel:', id, label),
+      activateCenterForce: (active) => console.log('🔍 store.activateCenterForce:', active)
+    },
+    nodes: () => [],
+    edges: () => [],
+    selectedNodes: () => new Map(),
+    nodeMap: () => new Map(),
+    edgeMap: () => new Map(),
+    centerForce: () => false
   }
   
   return selector ? selector(mockState) : mockState
@@ -154,16 +177,96 @@ export class TuringInstance {
     this.edges = []
     this.nodeMap = new Map()
     this.edgeMap = new Map()
+    this.selectedNodes = new Map()
+    this.simulation = { centerForce: false }
   }
   
-  addNodes(nodes) { console.log('TuringInstance.addNodes:', nodes) }
-  addEdges(edges) { console.log('TuringInstance.addEdges:', edges) }
-  delNode(id) { console.log('TuringInstance.delNode:', id) }
-  delEdge(id) { console.log('TuringInstance.delEdge:', id) }
-  makePrimary(node) { console.log('TuringInstance.makePrimary:', node) }
-  makeSecondary(node) { console.log('TuringInstance.makeSecondary:', node) }
-  init(canvas, events) { console.log('TuringInstance.init:', canvas, events) }
-  disconnect() { console.log('TuringInstance.disconnect') }
+  addNodes(nodes) { 
+    console.log('🔍 TuringInstance.addNodes:', nodes)
+    return Promise.resolve()
+  }
+  addEdges(edges) { 
+    console.log('🔍 TuringInstance.addEdges:', edges)
+    return Promise.resolve()
+  }
+  delNode(id) { 
+    console.log('🔍 TuringInstance.delNode:', id)
+    return Promise.resolve()
+  }
+  delEdge(id) { 
+    console.log('🔍 TuringInstance.delEdge:', id)
+    return Promise.resolve()
+  }
+  makePrimary(node) { 
+    console.log('🔍 TuringInstance.makePrimary:', node)
+    return Promise.resolve()
+  }
+  makeSecondary(node) { 
+    console.log('🔍 TuringInstance.makeSecondary:', node)
+    return Promise.resolve()
+  }
+  selectNode(id) {
+    console.log('🔍 TuringInstance.selectNode:', id)
+    return Promise.resolve()
+  }
+  unselectNode(id) {
+    console.log('🔍 TuringInstance.unselectNode:', id)
+    return Promise.resolve()
+  }
+  toggleSelectNode(id) {
+    console.log('🔍 TuringInstance.toggleSelectNode:', id)
+    return Promise.resolve()
+  }
+  unselectAll() {
+    console.log('🔍 TuringInstance.unselectAll')
+    return Promise.resolve()
+  }
+  setNodeLabel(id, label) {
+    console.log('🔍 TuringInstance.setNodeLabel:', id, label)
+    return Promise.resolve()
+  }
+  setEdgeLabel(id, label) {
+    console.log('🔍 TuringInstance.setEdgeLabel:', id, label)
+    return Promise.resolve()
+  }
+  activateCenterForce(active) {
+    console.log('🔍 TuringInstance.activateCenterForce:', active)
+    return Promise.resolve()
+  }
+  reset() {
+    console.log('🔍 TuringInstance.reset')
+    this.nodes = []
+    this.edges = []
+    this.nodeMap.clear()
+    this.edgeMap.clear()
+    this.selectedNodes.clear()
+    return Promise.resolve()
+  }
+  init(canvas, events) { 
+    try {
+      console.log('🔍 TuringInstance.init:', canvas, events)
+      if (canvas && canvas.getContext) {
+        canvas.style.backgroundColor = '#2a2a2a'
+        canvas.style.border = '2px solid #00ff00'
+        const ctx = canvas.getContext('2d')
+        if (ctx) {
+          ctx.fillStyle = '#00ff00'
+          ctx.fillRect(50, 50, 300, 100)
+          ctx.fillStyle = 'white'
+          ctx.font = '20px Arial'
+          ctx.fillText('CANVAS INITIALIZED!', 60, 110)
+        }
+      }
+      return Promise.resolve()
+    } catch (error) {
+      console.error('❌ Error in TuringInstance.init:', error)
+      return Promise.reject(error)
+    }
+  }
+  disconnect() { 
+    console.log('🔍 TuringInstance.disconnect')
+    return Promise.resolve()
+  }
 }
 
 console.log('✅ FIXED turingcanvas module loaded successfully!')
