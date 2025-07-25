@@ -1,9 +1,20 @@
 #!/bin/bash
 
-echo "Building turingcanvas..."
+set -e
+
+echo "🔧 Building turingcanvas and main application..."
+
+# Build turingcanvas first
+echo "📦 Building turingcanvas..."
 cd turingcanvas
-bun install
+bun install --frozen-lockfile
 bun run build
 cd ..
-echo "turingcanvas built successfully!"
-echo "Now run: bun install && bun run dev"
+
+# Install main app dependencies 
+echo "📦 Installing main app dependencies..."
+bun install --frozen-lockfile
+
+echo "✅ Build complete! You can now run:"
+echo "  bun run dev     # Start development server"
+echo "  bun run build   # Build for production"

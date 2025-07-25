@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
+import { turingcanvasBuilder } from './vite-plugins/turingcanvas-builder'
 
 const port = process.env.TURING_API_PORT || 6666
 console.log('- API Proxy listening on port:', port)
@@ -27,5 +28,5 @@ export default defineConfig({
       },
     },
   },
-  plugins: [react(), tailwindcss()],
+  plugins: [turingcanvasBuilder(), react(), tailwindcss()],
 })
