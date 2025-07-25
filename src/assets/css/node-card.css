@@ -1,0 +1,33 @@
+.bp5-dark .app-node-card-list {
+  @apply m-0 flex flex-col gap-y-4 bg-transparent p-0 shadow-none;
+}
+
+.bp5-dark .app-node-card-list .app-node-card {
+  @apply bg-grey-700 min-h-[initial] rounded-[8px] transition-colors;
+
+  box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.76), 0px 1px 2px 0px rgba(43, 49, 60, 0.24);
+}
+
+.bp5-dark .app-node-card-title {
+  @apply p-1 pb-2 pl-3 leading-[1.16] font-medium tracking-[0.06em];
+}
+
+.bp5-dark .app-node-card-content {
+  @apply bg-grey-900 rounded-b-[8px] p-3;
+}
+
+.bp5-dark .app-dialog-card-list {
+  @apply mt-3.5 grid gap-y-2 overflow-auto px-5;
+}
+
+.bp5-dark .app-dialog-card-list.app-node-card-list--scrollbar-visible {
+  padding-right: calc(1.25rem - 0.25rem);
+}
+
+.bp5-dark .app-node-card.icon-only-on-hover .app-node-card-header-icon {
+  @apply opacity-0 transition-opacity;
+}
+
+.bp5-dark .app-node-card.icon-only-on-hover:hover .app-node-card-header-icon {
+  @apply opacity-100;
+}

@@ -1,0 +1,11 @@
+.app-tooltip.bp5-popover {
+  @apply bg-grey-800! m-2!;
+
+  box-shadow: none !important;
+
+  box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.96) !important;
+}
+
+.app-tooltip.bp5-popover .bp5-popover-content {
+  @apply bg-grey-600 rounded-[0.25rem] text-xs font-medium text-white;
+}
