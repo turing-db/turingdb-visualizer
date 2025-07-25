@@ -36,15 +36,15 @@ export function turingcanvasBuilder(): Plugin {
     name: 'turingcanvas-builder',
     enforce: 'pre',
     
-    buildStart() {
-      // Build turingcanvas before Vite starts building
+    configResolved() {
+      // Build turingcanvas before Vite resolves config and TypeScript checks
       if (!checkIfBuilt()) {
         buildTuringCanvas()
       }
     },
     
-    configureServer() {
-      // Build turingcanvas when dev server starts
+    buildStart() {
+      // Build turingcanvas before Vite starts building
       if (!checkIfBuilt()) {
         buildTuringCanvas()
       }

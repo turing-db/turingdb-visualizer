@@ -4,18 +4,13 @@
 // It ensures turingcanvas is built and ready to use
 
 import { execSync } from 'child_process'
-import { existsSync } from 'fs'
 
 console.log('📦 Running postinstall setup...')
 
 try {
-  // Check if turingcanvas is already built
-  if (!existsSync('turingcanvas/dist/index.js')) {
-    console.log('🔧 Building turingcanvas...')
-    execSync('node scripts/build-turingcanvas.js', { stdio: 'inherit' })
-  } else {
-    console.log('✅ turingcanvas already built')
-  }
+  // Run the full setup script to ensure everything is built
+  console.log('🚀 Running setup script...')
+  execSync('node scripts/setup.js', { stdio: 'inherit' })
 } catch (error) {
   console.warn('⚠️  Postinstall warning:', error.message)
   console.log('You can manually run: node scripts/setup.js')

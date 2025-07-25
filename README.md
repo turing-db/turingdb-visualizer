@@ -1,15 +1,53 @@
-# `create-preact`
+# Turing Graph Visualizer
 
-<hu align="center">
-  <img height="256" width="256" src="./src/assets/preact.svg">
-</h2>
+## Setup
 
-<h3 align="center">Get started using Preact and Vite!</h3>
+The project automatically builds `turingcanvas` when you install dependencies or start development.
 
-## Getting Started
+### Quick Start
 
-- `npm run dev` - Starts a dev server at http://localhost:5173/
+```bash
+bun install    # Automatically runs setup
+bun run dev    # Starts development server
+```
 
-- `npm run build` - Builds for production, emitting to `dist/`
+### Manual Setup (if needed)
 
-- `npm run preview` - Starts a server at http://localhost:4173/ to test production build locally
+If automatic setup fails:
+
+```bash
+node scripts/setup.js
+```
+
+## Development
+
+Start the development server:
+
+```bash
+bun run dev
+```
+
+The app automatically ensures `turingcanvas` is built before starting.
+
+## Building
+
+Build for production:
+
+```bash
+bun run build
+```
+
+## Scripts
+
+- `node scripts/setup.js` - Complete project setup (builds turingcanvas + installs dependencies)
+- `node scripts/build-turingcanvas-now.js` - Quick build of turingcanvas package
+- `node scripts/build-turingcanvas.js` - Build turingcanvas with options  
+- `node scripts/clean.js` - Clean all build artifacts and dependencies
+
+## Troubleshooting
+
+If you encounter TypeScript errors about missing `turingcanvas` module:
+
+1. Quick fix: `node scripts/build-turingcanvas-now.js`
+2. Or clean setup: `node scripts/clean.js && bun install`
+3. Then start: `bun run dev`
