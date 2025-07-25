@@ -23,31 +23,48 @@ const TuringContext = React.createContext({
 
 export function TuringContextProvider({ children }) {
   console.log('🔍 TuringContextProvider active')
+  try {
   const [turing] = useState({
     instance: {
       nodes: [],
       edges: [],
       nodeMap: new Map(),
       edgeMap: new Map(),
-      addNodes: (nodes) => console.log('addNodes:', nodes),
-      addEdges: (edges) => console.log('addEdges:', edges),
-      delNode: (id) => console.log('delNode:', id),
-      delEdge: (id) => console.log('delEdge:', id),
+      addNodes: (nodes) => {
+        console.log('addNodes:', nodes)
+        return Promise.resolve()
+      },
+      addEdges: (edges) => {
+        console.log('addEdges:', edges)
+        return Promise.resolve()
+      },
+      delNode: (id) => {
+        console.log('delNode:', id)
+        return Promise.resolve()
+      },
+      delEdge: (id) => {
+        console.log('delEdge:', id)
+        return Promise.resolve()
+      },
       makePrimary: (node) => console.log('makePrimary:', node),
       makeSecondary: (node) => console.log('makeSecondary:', node),
       init: (canvas, events) => {
-        console.log('🔍 TuringCanvas init called')
-        if (canvas && canvas.getContext) {
-          canvas.style.backgroundColor = '#2a2a2a'
-          canvas.style.border = '2px solid #00ff00'
-          const ctx = canvas.getContext('2d')
-          if (ctx) {
-            ctx.fillStyle = '#00ff00'
-            ctx.fillRect(50, 50, 300, 100)
-            ctx.fillStyle = 'white'
-            ctx.font = '20px Arial'
-            ctx.fillText('GRAPH CANVAS WORKING!', 60, 110)
+        try {
+          console.log('🔍 TuringCanvas init called')
+          if (canvas && canvas.getContext) {
+            canvas.style.backgroundColor = '#2a2a2a'
+            canvas.style.border = '2px solid #00ff00'
+            const ctx = canvas.getContext('2d')
+            if (ctx) {
+              ctx.fillStyle = '#00ff00'
+              ctx.fillRect(50, 50, 300, 100)
+              ctx.fillStyle = 'white'
+              ctx.font = '20px Arial'
+              ctx.fillText('GRAPH CANVAS WORKING!', 60, 110)
+            }
           }
+        } catch (error) {
+          console.error('❌ Error in TuringCanvas init:', error)
         }
       },
       disconnect: () => console.log('disconnect called')
@@ -55,11 +72,20 @@ export function TuringContextProvider({ children }) {
   })
 
   return React.createElement(TuringContext.Provider, { value: turing }, children)
+  } catch (error) {
+    console.error('❌ Error in TuringContextProvider:', error)
+    return React.createElement('div', { style: { color: 'red' } }, 'Error loading TuringCanvas')
+  }
 }
 
 export function useTuringContext() {
-  console.log('🔍 useTuringContext called')
-  return useContext(TuringContext)
+  try {
+    console.log('🔍 useTuringContext called')
+    return useContext(TuringContext)
+  } catch (error) {
+    console.error('❌ Error in useTuringContext:', error)
+    return { instance: { init: () => {}, disconnect: () => {} } }
+  }
 }
 
 export function TuringCanvas({ id, className = '', events }) {
