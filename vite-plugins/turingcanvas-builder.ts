@@ -47,8 +47,15 @@ export function turingcanvasBuilder(): Plugin {
     name: 'turingcanvas-builder',
     enforce: 'pre',
     
+    configResolved() {
+      // Build at config resolution to ensure it's ready before any imports
+      if (!isBuilt && !checkIfBuilt()) {
+        buildTuringCanvas()
+      }
+    },
+    
     buildStart() {
-      // Only build if not already built
+      // Also ensure it's built at build start as a backup
       if (!isBuilt && !checkIfBuilt()) {
         buildTuringCanvas()
       }
