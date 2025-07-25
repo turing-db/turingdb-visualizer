@@ -54,7 +54,7 @@ export function TuringContextProvider({ children }) {
     }
   })
 
-  return <TuringContext.Provider value={turing}>{children}</TuringContext.Provider>
+  return React.createElement(TuringContext.Provider, { value: turing }, children)
 }
 
 export function useTuringContext() {
@@ -94,17 +94,16 @@ export function TuringCanvas({ id, className = '', events }) {
 
   const canvasStyle = {}
 
-  return (
-    <div 
-      className={`flex-1 p-0 m-0 h-full w-full relative ${className}`}
-      style={containerStyle}
-    >
-      <canvas 
-        id={id} 
-        className="absolute left-0 top-0 w-full h-full"
-        style={canvasStyle}
-      />
-    </div>
+  return React.createElement('div', 
+    { 
+      className: `flex-1 p-0 m-0 h-full w-full relative ${className}`,
+      style: containerStyle
+    },
+    React.createElement('canvas', { 
+      id: id, 
+      className: 'absolute left-0 top-0 w-full h-full',
+      style: canvasStyle
+    })
   )
 }
 
