@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import path from 'path'
 import { turingcanvasBuilder } from './vite-plugins/turingcanvas-builder'
 import { componentTagger } from "lovable-tagger"
+import glsl from 'vite-plugin-glsl'
 
 const port = process.env.TURING_API_PORT || 6666
 console.log('- API Proxy listening on port:', port)
@@ -35,6 +36,7 @@ export default defineConfig(({ mode }) => ({
     exclude: ['turingcanvas']
   },
   plugins: [
+    glsl(),
     turingcanvasBuilder(), 
     react(),
     mode === 'development' && componentTagger(),
