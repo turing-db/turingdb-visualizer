@@ -9,7 +9,6 @@ import type {
   NodeMap,
   SelectNodeArgs,
   SetEdgeLabelArgs,
-  SetNodeColorArgs,
   SetNodeLabelArgs,
   ToggleSelectNodeArgs,
   TuringEdge,
@@ -134,9 +133,6 @@ export const useCanvasStore = create<CanvasStore>((set, get) => {
         instanceRef.current?.setEdgeLabel(...args)
       },
 
-      setNodeColor: (...args: SetNodeColorArgs) => {
-        instanceRef.current?.setNodeColor(...args)
-      },
 
       activateCenterForce: (...args: ActivateCenterForceArgs) => {
         instanceRef.current?.activateCenterForce(...args)

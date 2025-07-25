@@ -219,5 +219,4 @@ export type ToggleSelectNodeArgs = Parameters<TuringInstance['toggleSelectNode']
 export type MakePrimaryArgs = Parameters<TuringInstance['makePrimary']>
 export type SetNodeLabelArgs = Parameters<TuringInstance['setNodeLabel']>
 export type SetEdgeLabelArgs = Parameters<TuringInstance['setEdgeLabel']>
-export type SetNodeColorArgs = Parameters<TuringInstance['setNodeColor']>
 export type ActiveCenterForceArgs = Parameters<TuringInstance['activateCenterForce']>
