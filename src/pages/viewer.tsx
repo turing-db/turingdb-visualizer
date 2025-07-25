@@ -4,7 +4,7 @@ import { TuringNodeInspector } from '@/components/viewer/node-inspector'
 import { useCanvasStore, useVisStore } from '@/stores'
 import { type FC, useCallback, useEffect, useRef, useState } from 'react'
 import { TuringCanvas, useTuringContext } from 'turingcanvas'
-import { TestCanvasData } from '@/components/viewer/test-canvas-data'
+// import { TestCanvasData } from '@/components/viewer/test-canvas-data'
 
 console.log('🔍 DEBUG: TuringCanvas import successful:', !!TuringCanvas)
 console.log('🔍 DEBUG: useTuringContext import successful:', !!useTuringContext)
@@ -23,62 +23,71 @@ import {
 import useGraphEntities from '@/hooks/use-graph-entities'
 
 const GraphCanvasData: FC = () => {
+  console.log('🔍 GraphCanvasData component starting...')
   const turing = useTuringContext()
+  console.log('🔍 TuringContext:', turing)
 
   const { data } = useGraphEntities()
+  console.log('🔍 Graph entities data:', data)
 
   const neighbourhood = useVisStore((state) => state.neighbourhood)
   const turingResetStates = useCanvasStore((state: any) => state.resetStates)
+  console.log('🔍 Neighbourhood and reset states loaded')
 
   useEffect(() => {
-    if (!data) return
+    try {
+      console.log('🔍 GraphCanvasData useEffect starting...')
+      if (!data) return
 
-    const newCanvasNodes = [...data.graphNodes.values()]
-      .filter((n: any) => !turing.instance.nodeMap.has(n.id))
-      .map((n: any) => ({
-        id: n.id,
-        primary: neighbourhood.has(n.id),
-        data: n as NodeData,
-      }))
+      const newCanvasNodes = [...data.graphNodes.values()]
+        .filter((n: any) => !turing.instance.nodeMap.has(n.id))
+        .map((n: any) => ({
+          id: n.id,
+          primary: neighbourhood.has(n.id),
+          data: n as NodeData,
+        }))
 
-    const newCanvasEdges = [...data.graphEdges.values()]
-      .filter((e: any) => !turing.instance.edgeMap.has(e[0]))
-      .map((e: any) => ({
-        id: e[0],
-        src: e[1],
-        tgt: e[2],
-        data: e as NodeData,
-      }))
+      const newCanvasEdges = [...data.graphEdges.values()]
+        .filter((e: any) => !turing.instance.edgeMap.has(e[0]))
+        .map((e: any) => ({
+          id: e[0],
+          src: e[1],
+          tgt: e[2],
+          data: e as NodeData,
+        }))
 
-    const deletedNodes = turing.instance.nodes.filter((n: any) => !data.graphNodes.has(n.id))
-    const deletedEdges = turing.instance.edges.filter((e: any) => !data.graphEdges.has(e.id))
+      const deletedNodes = turing.instance.nodes.filter((n: any) => !data.graphNodes.has(n.id))
+      const deletedEdges = turing.instance.edges.filter((e: any) => !data.graphEdges.has(e.id))
 
-    turing.instance.addNodes(newCanvasNodes)
-    turing.instance.addEdges(newCanvasEdges)
+      turing.instance.addNodes(newCanvasNodes)
+      turing.instance.addEdges(newCanvasEdges)
 
-    for (const node of deletedNodes) {
-      turing.instance.delNode(node.id)
-    }
-
-    for (const edge of deletedEdges) {
-      turing.instance.delEdge(edge.id)
-    }
-
-    for (const node of turing.instance.nodes) {
-      if (neighbourhood.has(node.id)) {
-        turing.instance.makePrimary(node)
-      } else {
-        turing.instance.makeSecondary(node)
+      for (const node of deletedNodes) {
+        turing.instance.delNode(node.id)
       }
-    }
 
-    if (
-      newCanvasNodes.length !== 0 ||
-      newCanvasEdges.length !== 0 ||
-      deletedNodes.length !== 0 ||
-      deletedEdges.length !== 0
-    ) {
-      turingResetStates('nodeMap', 'nodes', 'selectedNodes', 'edges', 'edgeMap')
+      for (const edge of deletedEdges) {
+        turing.instance.delEdge(edge.id)
+      }
+
+      for (const node of turing.instance.nodes) {
+        if (neighbourhood.has(node.id)) {
+          turing.instance.makePrimary(node)
+        } else {
+          turing.instance.makeSecondary(node)
+        }
+      }
+
+      if (
+        newCanvasNodes.length !== 0 ||
+        newCanvasEdges.length !== 0 ||
+        deletedNodes.length !== 0 ||
+        deletedEdges.length !== 0
+      ) {
+        turingResetStates('nodeMap', 'nodes', 'selectedNodes', 'edges', 'edgeMap')
+      }
+    } catch (error) {
+      console.error('❌ Error in GraphCanvasData useEffect:', error)
     }
   }, [turingResetStates, turing, data, neighbourhood])
 
@@ -153,7 +162,7 @@ const GraphCanvas: FC<GraphCanvasProps> = (props) => {
   return (
     <>
       <GraphCanvasData />
-      <TestCanvasData />
+      {/* <TestCanvasData /> */}
       <TuringCanvas
         id="turing-canvas-1"
         className="bg-visualizer-pattern relative"
