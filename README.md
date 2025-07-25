@@ -1,15 +1,43 @@
-# `create-preact`
+# Turing Graph Visualizer
 
-<hu align="center">
-  <img height="256" width="256" src="./src/assets/preact.svg">
-</h2>
+A React-based graph visualization application built with Vite, TypeScript, and a custom canvas library.
 
-<h3 align="center">Get started using Preact and Vite!</h3>
+## 🚀 Quick Start
 
-## Getting Started
+**First time setup:**
+```bash
+# Build turingcanvas (required first step)
+node build-turingcanvas-now.js
 
-- `npm run dev` - Starts a dev server at http://localhost:5173/
+# Install main app dependencies
+bun install
 
-- `npm run build` - Builds for production, emitting to `dist/`
+# Start development server
+bun run dev
+```
 
-- `npm run preview` - Starts a server at http://localhost:4173/ to test production build locally
+**Development workflow:**
+```bash
+bun run dev     # Start development server
+bun run build   # Build for production
+```
+
+## 📁 Project Structure
+
+- `/src` - Main application source code
+- `/turingcanvas` - Custom canvas visualization library
+- `/scripts` - Build and utility scripts
+- `/vite-plugins` - Custom Vite plugins
+
+## 🔧 Troubleshooting
+
+If you see `Cannot find module 'turingcanvas'` errors:
+```bash
+node build-turingcanvas-now.js
+```
+
+This builds the turingcanvas package which the main app depends on.
+
+## 🏗️ Build Process
+
+The turingcanvas library must be built before the main application can use it. The emergency build script handles this automatically.
