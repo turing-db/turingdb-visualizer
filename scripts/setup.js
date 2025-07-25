@@ -9,10 +9,6 @@ try {
   console.log('📦 Building turingcanvas...')
   execSync('node scripts/build-turingcanvas.js --force', { stdio: 'inherit' })
   
-  // Install main dependencies
-  console.log('📦 Installing main app dependencies...')
-  execSync('bun install --frozen-lockfile', { stdio: 'inherit' })
-  
   console.log('✅ Setup complete!')
   console.log('')
   console.log('Available commands:')
