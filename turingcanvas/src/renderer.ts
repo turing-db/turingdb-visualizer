@@ -70,14 +70,23 @@ export class TuringRenderer {
   }
 
   init(animate: () => void) {
-    this.renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      alpha: true,
-      canvas: this.instance.canvas,
-    })
+    console.log('🔍 TuringRenderer.init starting...')
+    try {
+      this.renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true,
+        canvas: this.instance.canvas,
+      })
+      console.log('🔍 WebGLRenderer created successfully')
 
-    this.onResize()
-    this.renderer.setAnimationLoop(animate)
+      this.onResize()
+      console.log('🔍 Renderer resized')
+      
+      this.renderer.setAnimationLoop(animate)
+      console.log('🔍 Animation loop set')
+    } catch (error) {
+      console.error('❌ Error in TuringRenderer.init:', error)
+    }
   }
 
   reset() {

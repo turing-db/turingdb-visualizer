@@ -1,6 +1,5 @@
 import * as THREE from 'three'
 
-import type { NodeData } from 'three/webgpu'
 import type { Events } from './canvas'
 
 import { BASE_NODE_COLOR } from './colors'
@@ -43,7 +42,7 @@ export class TuringInstance {
   }
 
   init(canvas: HTMLCanvasElement, events: Events) {
-    console.log('Initializing')
+    console.log('🔍 TuringInstance.init starting...')
     this.canvas = canvas
 
     THREE.ColorManagement.enabled = false
@@ -51,6 +50,7 @@ export class TuringInstance {
     this.providedEvents = events
 
     if (!this.initialized) {
+      console.log('🔍 Creating controls and raycaster...')
       // Controls
       this.events.createControls()
 
@@ -58,11 +58,15 @@ export class TuringInstance {
       this.raycaster = new THREE.Raycaster()
     }
 
+    console.log('🔍 Initializing events...')
     this.events.init(events)
+    
+    console.log('🔍 Initializing renderer...')
     this.renderer.init(this.update.bind(this))
 
     this.initialized = true
     this.initCount++
+    console.log('🔍 TuringInstance.init completed!')
   }
 
   hoverNode(n: TuringNode) {
