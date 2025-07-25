@@ -12,46 +12,33 @@ export function turingcanvasBuilder(): Plugin {
   }
   
   const buildTuringCanvas = () => {
-    console.log('🔧 RUNNING EMERGENCY TYPESCRIPT FIX...')
+    if (isBuilt) return
+    
+    console.log('🔧 Building turingcanvas...')
     
     try {
-      // Step 1: Force remove ALL problematic files
-      const pathsToDelete = [
-        'turingcanvas/dist',
-        'dist', 
-        'node_modules/.vite'
-      ]
-      
-      for (const path of pathsToDelete) {
-        if (existsSync(path)) {
-          console.log(`🗑️  Force removing ${path}...`)
-          rmSync(path, { recursive: true, force: true })
-        }
+      // Only remove turingcanvas dist, not everything
+      const distPath = 'turingcanvas/dist'
+      if (existsSync(distPath)) {
+        console.log(`🗑️  Cleaning ${distPath}...`)
+        rmSync(distPath, { recursive: true, force: true })
       }
 
-      // Step 2: Build turingcanvas with ZERO TypeScript checking
-      console.log('🏗️  Building turingcanvas with no TypeScript...')
+      // Build turingcanvas
+      console.log('🏗️  Building turingcanvas package...')
       const originalCwd = process.cwd()
       try {
         process.chdir('turingcanvas')
-        
-        // Use bun build without any type checking at all
-        execSync('bun run build', { 
-          stdio: 'inherit',
-          env: { 
-            ...process.env, 
-            NODE_ENV: 'production',
-            SKIP_TYPE_CHECK: 'true'
-          } 
-        })
+        execSync('bun run build', { stdio: 'inherit' })
       } finally {
         process.chdir(originalCwd)
       }
       
-      console.log('✅ EMERGENCY TypeScript fix complete!')
+      isBuilt = true
+      console.log('✅ turingcanvas built successfully!')
       
     } catch (error) {
-      console.error('❌ Emergency fix failed:', error)
+      console.error('❌ turingcanvas build failed:', error)
       throw error
     }
   }
@@ -60,14 +47,11 @@ export function turingcanvasBuilder(): Plugin {
     name: 'turingcanvas-builder',
     enforce: 'pre',
     
-    configResolved() {
-      // Always run the emergency fix on config resolution
-      buildTuringCanvas()
-    },
-    
     buildStart() {
-      // Always run the emergency fix on build start
-      buildTuringCanvas()
+      // Only build if not already built
+      if (!isBuilt && !checkIfBuilt()) {
+        buildTuringCanvas()
+      }
     }
   }
 }
