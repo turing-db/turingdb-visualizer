@@ -1,0 +1,33 @@
+{
+  "name": "turingcanvas",
+  "description": "Turing graph visualizion library",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup --dts",
+    "dev": "tsup --watch --dts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@types/d3": "^7.4.3",
+    "@types/three": "^0.170.0",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.2",
+    "typescript-eslint": "^8.24.0"
+  },
+  "dependencies": {
+    "@types/react": "^18.3.12",
+    "d3": "^7.9.0",
+    "react": "^18.3.1",
+    "three": "^0.170.0",
+    "three-instanced-uniforms-mesh": "^0.52.0",
+    "troika-three-text": "^0.52.2",
+    "zustand": "^5.0.3"
+  }
+}

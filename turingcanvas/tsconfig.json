@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "strict" : true,
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "strictNullChecks": true,
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "declaration": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "outDir": "dist",
+    "jsx": "react",
+    "skipLibCheck": true,
+    "baseUrl": ".",
+
+    "allowJs": true,
+    "checkJs": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+  },
+
+  "include": ["src", "types"],
+  "exclude": ["node_modules"]
+}
