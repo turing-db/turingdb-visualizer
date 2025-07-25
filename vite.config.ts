@@ -34,8 +34,7 @@ export default defineConfig({
   },
   plugins: [turingcanvasBuilder(), react(), tailwindcss()],
   define: {
-    // Prevent TypeScript from checking turingcanvas dist files
-    __TURINGCANVAS_DIST_SKIP__: true
+    __DISABLE_TS_CHECKS__: true
   },
   build: {
     rollupOptions: {
