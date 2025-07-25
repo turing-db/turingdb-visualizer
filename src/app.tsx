@@ -17,19 +17,26 @@ FocusStyleManager.onlyShowFocusOnTabs()
 
 export function App() {
   console.log('🔍 DEBUG: App component rendering...')
-  const theme = useAppStore((state) => state.theme)
+  
+  try {
+    const theme = useAppStore((state) => state.theme)
+    console.log('🔍 DEBUG: Theme loaded successfully:', theme)
 
-  return (
-    <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <TuringLayout>
-          <TuringContextProvider>
-            <BlueprintProvider portalClassName={theme === 'dark' ? 'bp5-dark' : 'bp5-light'}>
-              <TuringFrame />
-            </BlueprintProvider>
-          </TuringContextProvider>
-        </TuringLayout>
-      </QueryClientProvider>
-    </ErrorBoundary>
-  )
+    return (
+      <ErrorBoundary>
+        <QueryClientProvider client={queryClient}>
+          <TuringLayout>
+            <TuringContextProvider>
+              <BlueprintProvider portalClassName={theme === 'dark' ? 'bp5-dark' : 'bp5-light'}>
+                <TuringFrame />
+              </BlueprintProvider>
+            </TuringContextProvider>
+          </TuringLayout>
+        </QueryClientProvider>
+      </ErrorBoundary>
+    )
+  } catch (error) {
+    console.error('❌ Error in App component:', error)
+    throw error
+  }
 }

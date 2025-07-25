@@ -12,6 +12,7 @@ import {
   type Edges,
   type NodeMap,
   type Nodes,
+  type NodeData,
   type TuringEdge,
   TuringNode,
 } from './types'
@@ -37,8 +38,18 @@ export class TuringInstance {
   simulation = new TuringForceEngine()
 
   constructor() {
-    this.renderer = new TuringRenderer(this)
-    this.events = new TuringEvents(this)
+    try {
+      console.log('🔍 TuringInstance constructor starting...')
+      this.renderer = new TuringRenderer(this)
+      console.log('🔍 TuringRenderer created successfully')
+      
+      this.events = new TuringEvents(this)  
+      console.log('🔍 TuringEvents created successfully')
+      console.log('🔍 TuringInstance constructor completed')
+    } catch (error) {
+      console.error('❌ Error in TuringInstance constructor:', error)
+      throw error
+    }
   }
 
   init(canvas: HTMLCanvasElement, events: Events) {

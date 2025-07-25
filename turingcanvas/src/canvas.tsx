@@ -16,11 +16,18 @@ export const TuringContext = React.createContext<TuringContextType>({
 })
 
 export const TuringContextProvider: React.FC<TuringContextProviderProps> = (props) => {
-  const [turing] = React.useState<TuringContextType>({
-    instance: new TuringInstance(),
-  })
+  try {
+    console.log('🔍 DEBUG: TuringContextProvider rendering...')
+    const [turing] = React.useState<TuringContextType>({
+      instance: new TuringInstance(),
+    })
+    console.log('🔍 DEBUG: TuringInstance created successfully:', turing.instance)
 
-  return <TuringContext.Provider value={turing}>{props.children}</TuringContext.Provider>
+    return <TuringContext.Provider value={turing}>{props.children}</TuringContext.Provider>
+  } catch (error) {
+    console.error('❌ Error in TuringContextProvider:', error)
+    throw error
+  }
 }
 
 export const useTuringContext = () => {
