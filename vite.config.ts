@@ -1,5 +1,4 @@
 import { defineConfig } from 'vite'
-import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 import { turingcanvasBuilder } from './vite-plugins/turingcanvas-builder'
@@ -32,9 +31,12 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['turingcanvas']
   },
-  plugins: [turingcanvasBuilder(), react(), tailwindcss()],
-  define: {
-    __DISABLE_TS_CHECKS__: true
+  plugins: [
+    turingcanvasBuilder(), 
+    react()
+  ],
+  esbuild: {
+    target: 'es2020'
   },
   build: {
     rollupOptions: {
