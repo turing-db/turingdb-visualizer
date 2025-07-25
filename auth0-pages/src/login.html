@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+  {{> _head pageTitle=title}}
+  <link rel="stylesheet" href="./css/login.css" />
+  <body>
+    <div class="dots-background"></div>
+    <div class="turing-logo-container">{{> _turing-logo }}</div>
+    <div class="auth-container">
+      <div id="global-message-area" class="message-area"></div>
+      {{> login/_login-view }} {{> login/_signup-view }} {{>
+      login/_forgot-password-view }} {{> login/_email-sent-view }}
+    </div>
+    <!-- Auth0.js and polyfills -->
+    <!--[if IE 8]>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/ie8/0.2.5/ie8.js"></script>
+    <![endif]-->
+    <!--[if lte IE 9]>
+      <script src="https://cdn.auth0.com/js/polyfills/1.0/base64.min.js"></script>
+      <script src="https://cdn.auth0.com/js/polyfills/1.0/es5-shim.min.js"></script>
+    <![endif]-->
+    <script src="https://cdn.auth0.com/js/auth0/9.28/auth0.min.js"></script>
+    <script src="https://cdn.auth0.com/js/polyfills/1.0/object-assign.min.js"></script>
+    <script type="module" src="./js/login/index.js"></script>
+  </body>
+</html>

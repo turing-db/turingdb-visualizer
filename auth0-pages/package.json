@@ -1,0 +1,24 @@
+{
+  "name": "auth0-pages",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev:login": "vite -- --PAGE=login",
+    "dev:password-reset": "vite -- --PAGE=password-reset",
+    "dev": "vite -- --PAGE=login",
+    "build:login": "vite build -- --PAGE=login",
+    "build:password-reset": "vite build -- --PAGE=password-reset",
+    "build": "npm run build:login && npm run build:password-reset",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "handlebars": "^4.7.8",
+    "vite": "^6.3.5",
+    "vite-plugin-handlebars": "^2.0.0",
+    "vite-plugin-singlefile": "^2.2.0"
+  },
+  "dependencies": {
+    "fs-extra": "^11.3.0"
+  }
+}
