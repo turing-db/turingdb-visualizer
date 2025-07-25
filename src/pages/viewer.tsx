@@ -5,6 +5,9 @@ import { useCanvasStore, useVisStore } from '@/stores'
 import { type FC, useCallback, useEffect, useRef, useState } from 'react'
 import { TuringCanvas, useTuringContext } from 'turingcanvas'
 
+console.log('🔍 DEBUG: TuringCanvas import successful:', !!TuringCanvas)
+console.log('🔍 DEBUG: useTuringContext import successful:', !!useTuringContext)
+
 // Use any for now to bypass type issues during development
 type NodeData = any
 type TuringUserEvents = any
@@ -149,6 +152,12 @@ const GraphCanvas: FC<GraphCanvasProps> = (props) => {
   return (
     <>
       <GraphCanvasData />
+      {(() => {
+        console.log('🔍 DEBUG: About to render TuringCanvas')
+        console.log('🔍 DEBUG: TuringCanvas component:', TuringCanvas)
+        console.log('🔍 DEBUG: events object:', events.current)
+        return null
+      })()}
       <TuringCanvas
         id="turing-canvas-1"
         className="bg-visualizer-pattern relative"

@@ -35,6 +35,18 @@ export default defineConfig(({ mode }) => ({
     exclude: ['turingcanvas']
   },
   plugins: [
+    {
+      name: 'emergency-turingcanvas-check',
+      buildStart() {
+        console.log('🔍 Checking turingcanvas build status...')
+        const fs = require('fs')
+        const distExists = fs.existsSync('turingcanvas/dist/index.js')
+        console.log('📁 turingcanvas/dist/index.js exists:', distExists)
+        if (!distExists) {
+          console.error('❌ CRITICAL: turingcanvas not built!')
+        }
+      }
+    },
     turingcanvasBuilder(), 
     react(),
     mode === 'development' && componentTagger(),
