@@ -4,28 +4,20 @@ import path from 'path'
 import type { Plugin } from 'vite'
 
 export function turingcanvasBuilder(): Plugin {
-  let isBuilt = false
+  // Build immediately when the plugin is loaded
+  const distPath = path.resolve('turingcanvas/dist')
+  const indexPath = path.join(distPath, 'index.js')
   
-  const checkIfBuilt = () => {
-    const distPath = path.resolve('turingcanvas/dist')
-    return existsSync(distPath) && existsSync(path.join(distPath, 'index.js'))
-  }
-  
-  const buildTuringCanvas = () => {
-    if (isBuilt) return
-    
-    console.log('🔧 Building turingcanvas...')
+  if (!existsSync(indexPath)) {
+    console.log('🔧 Building turingcanvas (plugin initialization)...')
     
     try {
-      // Only remove turingcanvas dist, not everything
-      const distPath = 'turingcanvas/dist'
+      // Clean dist
       if (existsSync(distPath)) {
-        console.log(`🗑️  Cleaning ${distPath}...`)
         rmSync(distPath, { recursive: true, force: true })
       }
 
-      // Build turingcanvas
-      console.log('🏗️  Building turingcanvas package...')
+      // Build synchronously
       const originalCwd = process.cwd()
       try {
         process.chdir('turingcanvas')
@@ -34,31 +26,18 @@ export function turingcanvasBuilder(): Plugin {
         process.chdir(originalCwd)
       }
       
-      isBuilt = true
       console.log('✅ turingcanvas built successfully!')
       
     } catch (error) {
       console.error('❌ turingcanvas build failed:', error)
       throw error
     }
+  } else {
+    console.log('✅ turingcanvas already built')
   }
   
   return {
     name: 'turingcanvas-builder',
-    enforce: 'pre',
-    
-    configResolved() {
-      // Build at config resolution to ensure it's ready before any imports
-      if (!isBuilt && !checkIfBuilt()) {
-        buildTuringCanvas()
-      }
-    },
-    
-    buildStart() {
-      // Also ensure it's built at build start as a backup
-      if (!isBuilt && !checkIfBuilt()) {
-        buildTuringCanvas()
-      }
-    }
+    enforce: 'pre'
   }
 }
