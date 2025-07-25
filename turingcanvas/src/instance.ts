@@ -75,9 +75,15 @@ export class TuringInstance {
     console.log('🔍 Initializing renderer...')
     this.renderer.init(this.update.bind(this))
 
+    console.log('🔍 Setting up simulation tick handler...')
+    this.simulation.setOnTick(() => {
+      this.updatePositions()
+    })
+
     this.initialized = true
     this.initCount++
-    console.log('🔍 TuringInstance.init completed!')
+    console.log('🔍 TuringInstance.init completed successfully!')
+    console.log('🔍 Instance state - nodes:', this.nodes.length, 'edges:', this.edges.length)
   }
 
   hoverNode(n: TuringNode) {

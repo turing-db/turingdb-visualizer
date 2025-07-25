@@ -48,24 +48,60 @@ export const TuringCanvas: React.FC<TuringCanvasProps> = (props) => {
 
   useEffect(() => {
     console.log('🔍 TuringCanvas useEffect starting...')
+    console.log('🔍 Looking for canvas with ID:', props.id)
+    
     const canvas = document.getElementById(props.id)
+    console.log('🔍 Found canvas element:', canvas)
 
     if (!(canvas instanceof HTMLCanvasElement)) {
-      throw new Error(`Could not initialize turing canvas: could not find canvas of id ${props.id}`)
+      const errorMsg = `Could not initialize turing canvas: could not find canvas of id ${props.id}`
+      console.error('❌', errorMsg)
+      throw new Error(errorMsg)
     }
 
-    console.log('🔍 Found canvas element, initializing instance...')
-    turing.instance.init(canvas as HTMLCanvasElement, props.events)
+    console.log('🔍 Canvas is valid HTMLCanvasElement')
+    console.log('🔍 Canvas dimensions:', canvas.width, 'x', canvas.height)
+    console.log('🔍 Turing instance:', turing.instance)
+    console.log('🔍 Events object:', props.events)
     
-    console.log('🔍 Connecting instance to store...')
-    canvasStore.init(turing.instance)
+    try {
+      console.log('🔍 Calling turing.instance.init...')
+      turing.instance.init(canvas as HTMLCanvasElement, props.events)
+      console.log('✅ TuringInstance initialized successfully')
+      
+      console.log('🔍 Connecting instance to store...')
+      canvasStore.init(turing.instance)
+      console.log('✅ CanvasStore connected successfully')
+      
+      // Test if canvas is working by adding a test node immediately
+      setTimeout(() => {
+        console.log('🔍 Testing canvas with immediate test node...')
+        try {
+          turing.instance.addNodes([{ id: 999, primary: true, data: { label: 'Test Node' } }])
+          console.log('✅ Test node added successfully')
+        } catch (testError) {
+          console.error('❌ Error adding test node:', testError)
+        }
+      }, 100)
+      
+    } catch (initError) {
+      console.error('❌ Error during canvas initialization:', initError)
+      throw initError
+    }
     
-    return () => turing.instance.disconnect()
+    return () => {
+      console.log('🔍 TuringCanvas cleanup - disconnecting...')
+      turing.instance.disconnect()
+    }
   }, [turing, props.id, props.events, canvasStore])
 
   return (
     <div className={`flex-1 p-0 m-0 h-full w-full relative ${props.className}`}>
-      <canvas id={props.id} className="absolute left-0 top-0 w-full h-full" />
+      <canvas 
+        id={props.id} 
+        className="absolute left-0 top-0 w-full h-full"
+        style={{ background: 'linear-gradient(135deg, #1a1a2e, #16213e)' }}
+      />
     </div>
   )
 }
