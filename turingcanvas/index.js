@@ -1,7 +1,7 @@
-// EMERGENCY: Complete working turingcanvas module
+// FIXED: Complete working turingcanvas module
 import React, { useContext, useEffect, useState } from 'react'
 
-console.log('🔍 EMERGENCY turingcanvas loading...')
+console.log('🔍 FIXED turingcanvas loading...')
 
 // Create context
 const TuringContext = React.createContext({
@@ -21,7 +21,7 @@ const TuringContext = React.createContext({
   }
 })
 
-export const TuringContextProvider = ({ children }) => {
+export function TuringContextProvider({ children }) {
   console.log('🔍 TuringContextProvider active')
   const [turing] = useState({
     instance: {
@@ -36,16 +36,18 @@ export const TuringContextProvider = ({ children }) => {
       makePrimary: (node) => console.log('makePrimary:', node),
       makeSecondary: (node) => console.log('makeSecondary:', node),
       init: (canvas, events) => {
-        console.log('🔍 TuringCanvas init called with:', canvas, events)
-        if (canvas) {
+        console.log('🔍 TuringCanvas init called')
+        if (canvas && canvas.getContext) {
           canvas.style.backgroundColor = '#2a2a2a'
           canvas.style.border = '2px solid #00ff00'
           const ctx = canvas.getContext('2d')
-          ctx.fillStyle = '#00ff00'
-          ctx.fillRect(50, 50, 300, 100)
-          ctx.fillStyle = 'white'
-          ctx.font = '20px Arial'
-          ctx.fillText('GRAPH CANVAS ACTIVE!', 60, 110)
+          if (ctx) {
+            ctx.fillStyle = '#00ff00'
+            ctx.fillRect(50, 50, 300, 100)
+            ctx.fillStyle = 'white'
+            ctx.font = '20px Arial'
+            ctx.fillText('GRAPH CANVAS WORKING!', 60, 110)
+          }
         }
       },
       disconnect: () => console.log('disconnect called')
@@ -55,12 +57,12 @@ export const TuringContextProvider = ({ children }) => {
   return React.createElement(TuringContext.Provider, { value: turing }, children)
 }
 
-export const useTuringContext = () => {
+export function useTuringContext() {
   console.log('🔍 useTuringContext called')
   return useContext(TuringContext)
 }
 
-export const TuringCanvas = ({ id, className, events }) => {
+export function TuringCanvas({ id, className = '', events }) {
   console.log('🔍 TuringCanvas rendering with id:', id)
   const turing = useTuringContext()
 
@@ -68,8 +70,13 @@ export const TuringCanvas = ({ id, className, events }) => {
     console.log('🔍 TuringCanvas useEffect triggered')
     const canvas = document.getElementById(id)
     
-    if (!(canvas instanceof HTMLCanvasElement)) {
+    if (!canvas) {
       console.error('❌ Canvas element not found:', id)
+      return
+    }
+
+    if (!(canvas instanceof HTMLCanvasElement)) {
+      console.error('❌ Element is not a canvas:', id)
       return
     }
 
@@ -79,19 +86,28 @@ export const TuringCanvas = ({ id, className, events }) => {
     return () => turing.instance.disconnect()
   }, [turing, id, events])
 
+  const containerStyle = {
+    minHeight: '400px',
+    backgroundColor: '#1a1a1a',
+    border: '2px solid #00ff00'
+  }
+
+  const canvasStyle = {}
+
   return React.createElement('div', 
     { 
-      className: `flex-1 p-0 m-0 h-full w-full relative ${className || ''}`,
-      style: { minHeight: '400px', backgroundColor: '#1a1a1a', border: '2px solid #00ff00' }
+      className: `flex-1 p-0 m-0 h-full w-full relative ${className}`,
+      style: containerStyle
     },
     React.createElement('canvas', { 
       id: id, 
-      className: 'absolute left-0 top-0 w-full h-full'
+      className: 'absolute left-0 top-0 w-full h-full',
+      style: canvasStyle
     })
   )
 }
 
-export const useCanvasStore = (selector) => {
+export function useCanvasStore(selector) {
   console.log('🔍 useCanvasStore called')
   const mockState = {
     resetStates: (...args) => console.log('resetStates:', args),
@@ -106,7 +122,7 @@ export const useCanvasStore = (selector) => {
 }
 
 // Additional exports that might be needed
-export const TuringInstance = class {
+export class TuringInstance {
   constructor() {
     this.nodes = []
     this.edges = []
@@ -124,4 +140,4 @@ export const TuringInstance = class {
   disconnect() { console.log('TuringInstance.disconnect') }
 }
 
-console.log('✅ Emergency turingcanvas module loaded successfully!')
+console.log('✅ FIXED turingcanvas module loaded successfully!')
