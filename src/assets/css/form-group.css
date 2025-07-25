@@ -1,0 +1,3 @@
+.bp5-dark .app-form-group .bp5-label {
+  @apply text-content-primary text-base;
+}

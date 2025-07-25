@@ -1,0 +1,30 @@
+.bp5-popover {
+  box-shadow: none !important;
+}
+
+.bp5-dark .bp5-menu,
+.bp5-dark .app-popover-menu.bp5-submenu {
+  @apply bg-grey-800;
+
+  box-shadow: 0px 0px 0px 2px rgba(0, 0, 0, 0.96), 0px 1px 2px 0px rgba(43, 49, 60, 0.24) !important;
+}
+
+.bp5-dark .app-popover-menu.bp5-menu .app-popover-menu-item {
+  @apply bg-grey-800 max-h-[30vh] border-0;
+}
+
+.bp5-dark .app-popover-menu-item {
+  @apply hover:bg-grey-600! px-2 py-1.5 text-sm font-medium transition-colors;
+}
+
+.bp5-dark .app-popover-menu-item > * {
+  @apply mr-2;
+}
+
+.bp5-dark .app-popover-menu-item > :last-child {
+  @apply mr-0;
+}
+
+.bp5-dark .app-menu-divider {
+  @apply border-grey-700;
+}

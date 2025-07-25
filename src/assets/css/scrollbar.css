@@ -1,0 +1,8 @@
+/* Global scrollbar styles */
+::-webkit-scrollbar-thumb {
+  @apply bg-grey-600 rounded-[1.5625rem];
+}
+
+::-webkit-scrollbar {
+  @apply h-1 w-1;
+}
