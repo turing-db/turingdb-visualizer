@@ -12,7 +12,7 @@ export const TuringLayout = (props: TuringLayoutProps) => {
 
   return (
     <div
-      className={`bp5-${theme} app-scrollbar box-border grid h-screen w-full grid-cols-2 grid-cols-[max-content_1fr] grid-rows-[max-content_1fr] bg-white`}
+      className={`bp5-${theme} app-scrollbar box-border grid h-screen w-full grid-cols-[max-content_1fr] grid-rows-[max-content_1fr] bg-grey-900 text-content-primary`}
     >
       <div className="row-span-2">
         <TuringSideBar />

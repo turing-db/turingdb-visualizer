@@ -1,0 +1,157 @@
+@import "tailwindcss";
+
+@import "@blueprintjs/core/lib/css/blueprint.css";
+@import "@blueprintjs/icons/lib/css/blueprint-icons.css";
+@import "@blueprintjs/select/lib/css/blueprint-select.css";
+
+@import "@/assets/css/scrollbar.css";
+@import "@/assets/css/node-card.css";
+@import "@/assets/css/fonts.css";
+@import "@/assets/css/buttons.css";
+@import "@/assets/css/tooltip.css";
+@import "@/assets/css/blueprint-overrides.css";
+@import "@/assets/css/dialog.css";
+@import "@/assets/css/context-menu.css";
+@import "@/assets/css/popover-menu.css";
+@import "@/assets/css/form-input.css";
+@import "@/assets/css/inputs.css";
+@import "@/assets/css/card.css";
+@import "@/assets/css/spinner.css";
+@import "@/assets/css/select.css";
+@import "@/assets/css/slider.css";
+@import "@/assets/css/form-group.css";
+@import "@/assets/css/checkbox.css";
+
+@config "../tailwind.config.ts";
+
+/* Theme variables for consistent styling */
+:root {
+  --color-background: 14 16 20; /* grey-900 */
+  --color-foreground: 201 207 222; /* content-primary */
+  --color-primary: 103 156 255; /* primary-600 */
+  --color-secondary: 44 50 62; /* grey-600 */
+  --color-accent: 162 166 175; /* content-secondary */
+  --color-muted: 31 35 43; /* grey-700 */
+  --color-border: 44 50 62; /* grey-600 */
+}
+
+body {
+  font-size: 100%;
+  font-family: Satoshi, sans-serif;
+  background-color: hsl(var(--color-background));
+  color: hsl(var(--color-foreground));
+}
+
+@theme {
+  --font-sans: "Satoshi";
+  --font-serif: "Satoshi";
+  --font-mono: "Satoshi";
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+.bp5-dark a {
+  @apply text-content-primary;
+}
+
+.transaction-scroll::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+p {
+  @apply m-0;
+}
+
+.debred {
+  @apply border-2 border-red-600;
+}
+
+.debgreen {
+  @apply border-2 border-green-600;
+}
+
+.deborange {
+  @apply border-2 border-orange-600;
+}
+
+.debblue {
+  @apply border-2 border-blue-600;
+}
+
+@utility utilities {
+  .shadow-sidebar {
+    box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.76), 0px 1px 2px 0px rgba(43, 49, 60, 0.24);
+  }
+
+  .sidebar-item-border {
+    @apply border-grey-600 border;
+    position: relative;
+  }
+
+  .sidebar-item-border::after {
+    @apply absolute rounded-[4px] border;
+
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
+    border: 1px solid;
+    border-image-source: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.06) 0%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  }
+
+  .sidebar-item-bg-gradient {
+    background-image: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.06) 0%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  }
+
+  .shadow-dark {
+    box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.76), 0px 1px 2px 0px rgba(43, 49, 60, 0.24);
+  }
+
+  .shadow-badge {
+    box-shadow: 0px 0px 0px 1px #13151d, 0px 0px 0px 2px #272a3a;
+  }
+
+  .icon-button-shadow {
+    box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.76), 0px 1px 2px 0px rgba(43, 49, 60, 0.24);
+  }
+
+  .icon-button-bg-gradient {
+    background-image: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.02) 0%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  }
+
+  .icon-button-border {
+    border: 1px solid #1f232b;
+  }
+
+  .icon-button-border::after {
+    @apply absolute rounded-[0.125rem] border;
+
+    content: "";
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
+    border: 1px solid;
+    border-image-source: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.04) 0%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  }
+}
