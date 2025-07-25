@@ -12,7 +12,8 @@
     "predev": "node scripts/build-turingcanvas.js",
     "prebuild": "node scripts/build-turingcanvas.js",
     "setup": "node scripts/setup.js",
-    "clean": "node scripts/clean.js"
+    "clean": "node scripts/clean.js",
+    "fix-typescript": "node scripts/complete-fix.js"
   },
   "dependencies": {
     "@blueprintjs/core": "^5.0.0",
