@@ -2,12 +2,13 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 import { turingcanvasBuilder } from './vite-plugins/turingcanvas-builder'
+import { componentTagger } from "lovable-tagger"
 
 const port = process.env.TURING_API_PORT || 6666
 console.log('- API Proxy listening on port:', port)
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -17,6 +18,7 @@ export default defineConfig({
     },
   },
   server: {
+    host: "::",
     port: 8080,
     watch: {
       usePolling: true,
@@ -34,8 +36,9 @@ export default defineConfig({
   },
   plugins: [
     turingcanvasBuilder(), 
-    react()
-  ],
+    react(),
+    mode === 'development' && componentTagger(),
+  ].filter(Boolean),
   esbuild: {
     target: 'es2020'
   },
@@ -44,4 +47,4 @@ export default defineConfig({
       external: []
     }
   }
-})
+}))
