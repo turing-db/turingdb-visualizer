@@ -1,4 +1,6 @@
-@import "tailwindcss";
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
 @import "@blueprintjs/core/lib/css/blueprint.css";
 @import "@blueprintjs/icons/lib/css/blueprint-icons.css";
@@ -22,18 +24,11 @@
 @import "@/assets/css/form-group.css";
 @import "@/assets/css/checkbox.css";
 
-@config "../tailwind.config.js";
-
 body {
   font-size: 100%;
   font-family: Satoshi, sans-serif;
 }
 
-@theme {
-  --font-sans: "Satoshi";
-  --font-serif: "Satoshi";
-  --font-mono: "Satoshi";
-}
 
 a:hover {
   text-decoration: none;
@@ -67,7 +62,7 @@ p {
   @apply border-2 border-blue-600;
 }
 
-@utility utilities {
+@layer utilities {
   .shadow-sidebar {
     box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.76), 0px 1px 2px 0px rgba(43, 49, 60, 0.24);
   }

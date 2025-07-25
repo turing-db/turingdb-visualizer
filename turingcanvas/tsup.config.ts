@@ -3,7 +3,7 @@ import { defineConfig } from 'tsup'
 export default defineConfig({
   format: ['esm'],
   entry: ['./src/index.ts'],
-  dts: false,
+  dts: true,
   shims: true,
   skipNodeModulesBundle: true,
   clean: true,
@@ -16,8 +16,6 @@ export default defineConfig({
       ...options.loader,
       '.glsl': 'text',
     }
-    // Force JavaScript output, no TypeScript checking
-    options.logLevel = 'silent'
     options.target = 'es2020'
     options.format = 'esm'
   },

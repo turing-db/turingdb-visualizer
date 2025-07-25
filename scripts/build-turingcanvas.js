@@ -17,12 +17,22 @@ function buildTuringCanvas() {
     // Install dependencies if needed
     if (!existsSync('node_modules')) {
       console.log('📦 Installing turingcanvas dependencies...')
-      execSync('bun install --frozen-lockfile', { stdio: 'inherit' })
+      try {
+        execSync('bun install --frozen-lockfile', { stdio: 'inherit' })
+      } catch (error) {
+        console.log('Bun not available, trying npm...')
+        execSync('npm install', { stdio: 'inherit' })
+      }
     }
     
     // Build the package
     console.log('🏗️  Building turingcanvas package...')
-    execSync('bun run build', { stdio: 'inherit' })
+    try {
+      execSync('bun run build', { stdio: 'inherit' })
+    } catch (error) {
+      console.log('Bun not available, trying npm...')
+      execSync('npm run build', { stdio: 'inherit' })
+    }
     
     // Go back to root
     process.chdir('..')
