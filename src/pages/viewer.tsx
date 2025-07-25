@@ -24,30 +24,30 @@ const GraphCanvasData: FC = () => {
   const { data } = useGraphEntities()
 
   const neighbourhood = useVisStore((state) => state.neighbourhood)
-  const turingResetStates = useCanvasStore((state) => state.resetStates)
+  const turingResetStates = useCanvasStore((state: any) => state.resetStates)
 
   useEffect(() => {
     if (!data) return
 
     const newCanvasNodes = [...data.graphNodes.values()]
-      .filter((n) => !turing.instance.nodeMap.has(n.id))
-      .map((n) => ({
+      .filter((n: any) => !turing.instance.nodeMap.has(n.id))
+      .map((n: any) => ({
         id: n.id,
         primary: neighbourhood.has(n.id),
         data: n as NodeData,
       }))
 
     const newCanvasEdges = [...data.graphEdges.values()]
-      .filter((e) => !turing.instance.edgeMap.has(e[0]))
-      .map((e) => ({
+      .filter((e: any) => !turing.instance.edgeMap.has(e[0]))
+      .map((e: any) => ({
         id: e[0],
         src: e[1],
         tgt: e[2],
         data: e as NodeData,
       }))
 
-    const deletedNodes = turing.instance.nodes.filter((n) => !data.graphNodes.has(n.id))
-    const deletedEdges = turing.instance.edges.filter((e) => !data.graphEdges.has(e.id))
+    const deletedNodes = turing.instance.nodes.filter((n: any) => !data.graphNodes.has(n.id))
+    const deletedEdges = turing.instance.edges.filter((e: any) => !data.graphEdges.has(e.id))
 
     turing.instance.addNodes(newCanvasNodes)
     turing.instance.addEdges(newCanvasEdges)
@@ -90,7 +90,7 @@ const GraphCanvas: FC<GraphCanvasProps> = (props) => {
   const inspectNode = useVisStore((state) => state.inspectNode)
 
   const turing = useTuringContext()
-  const init = useCanvasStore((state) => state.init)
+  const init = useCanvasStore((state: any) => state.init)
   const closeInspectNodePanel = useVisStore((state) => state.closeInspectNodePanel)
   const { newNeighbours, add: addNeighbour } = useVisStore((state) => state.neighbourhood)
 

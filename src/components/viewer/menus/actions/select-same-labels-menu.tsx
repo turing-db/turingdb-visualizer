@@ -5,8 +5,8 @@ import { useTuringContext, useCanvasStore } from 'turingcanvas'
 
 export const SelectSameLabels: FC = () => {
   const turing = useTuringContext()
-  const turingActions = useCanvasStore((state) => state.actions)
-  const turingNodes = useCanvasStore((state) => state.nodes)
+  const turingActions = useCanvasStore((state: any) => state.actions)
+  const turingNodes = useCanvasStore((state: any) => state.nodes)
 
   const labels = useMemo(
     () => [

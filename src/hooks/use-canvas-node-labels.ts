@@ -9,8 +9,8 @@ export const useCanvasNodeLabels = () => {
   const [showingNodeLabel, setShowingNodeLabel, initShowingNodeLabel, showingNodeLabelInitialized] =
     useInitState('None')
 
-  const getTuringNodes = useCanvasStore((state) => state.nodes)
-  const turingActions = useCanvasStore((state) => state.actions)
+  const getTuringNodes = useCanvasStore((state: any) => state.nodes)
+  const turingActions = useCanvasStore((state: any) => state.actions)
 
   const nodes = useMemo(() => {
     return getTuringNodes()

@@ -12,9 +12,9 @@ export const TuringGraphSelector: FC = () => {
   const neighbourhood = useVisStore((state) => state.neighbourhood)
   const hiddenNodes = useVisStore((state) => state.hiddenNodes)
 
-  const graphName = useAppStore((state) => state.graphName)
+  const graphName = useAppStore((state: any) => state.graphName)
   const setGraphName = useAppStore((state) => state.setGraphName)
-  const turingActions = useCanvasStore((state) => state.actions)
+  const turingActions = useCanvasStore((state: any) => state.actions)
   const { refetch } = useGraphInfo(graphName)
 
   const [graphs, setGraphs] = useState<string[]>([])

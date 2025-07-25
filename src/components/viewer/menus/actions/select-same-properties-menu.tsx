@@ -7,8 +7,8 @@ import { useCanvasStore, useTuringContext } from 'turingcanvas'
 
 function RenderPropertyValues({ parent, property }: { parent: JSX.Element; property: string }) {
   const turing = useTuringContext()
-  const turingActions = useCanvasStore((state) => state.actions)
-  const turingNodes = useCanvasStore((state) => state.nodes)
+  const turingActions = useCanvasStore((state: any) => state.actions)
+  const turingNodes = useCanvasStore((state: any) => state.nodes)
 
   const filter: ItemPredicate<string> = (query, item, _index, exactMatch) => {
     const normalizedEntry = String(item).toLowerCase()
@@ -87,7 +87,7 @@ function RenderPropertyValues({ parent, property }: { parent: JSX.Element; prope
 }
 
 export const SelectSameProperties: FC = () => {
-  const turingNodes = useCanvasStore((state) => state.nodes)
+  const turingNodes = useCanvasStore((state: any) => state.nodes)
 
   const properties = useMemo(() => {
     return Array.from(

@@ -20,6 +20,7 @@ export default defineConfig({
     port: 8080,
     watch: {
       usePolling: true,
+      ignored: ['**/turingcanvas/dist/**']
     },
     proxy: {
       '/api': {
@@ -28,5 +29,13 @@ export default defineConfig({
       },
     },
   },
+  optimizeDeps: {
+    exclude: ['turingcanvas']
+  },
   plugins: [turingcanvasBuilder(), react(), tailwindcss()],
+  build: {
+    rollupOptions: {
+      external: ['turingcanvas/dist/**']
+    }
+  }
 })

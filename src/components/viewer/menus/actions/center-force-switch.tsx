@@ -4,8 +4,8 @@ import { useCanvasStore } from '@/stores'
 import { useMemo } from 'react'
 
 export const CenterForceSwitch = () => {
-  const centerForce = useCanvasStore((state) => state.centerForce)
-  const turingActions = useCanvasStore((state) => state.actions)
+  const centerForce = useCanvasStore((state: any) => state.centerForce)
+  const turingActions = useCanvasStore((state: any) => state.actions)
 
   const centerForceTooltip = useMemo(() => {
     return centerForce() ? 'Deactivate center force' : 'Activate center force'

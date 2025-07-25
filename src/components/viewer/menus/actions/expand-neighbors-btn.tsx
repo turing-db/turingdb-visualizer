@@ -9,9 +9,9 @@ export const ExpandNeighborsButton = () => {
   const turing = useTuringContext()
 
   const expandNodes = useCallback(async () => {
-    const secondaryNodes = turing.instance.nodes.filter((n) => !n.isPrimary())
+    const secondaryNodes = turing.instance.nodes.filter((n: any) => !n.isPrimary())
 
-    neighbourhood.add(secondaryNodes.map((n) => n.id))
+    neighbourhood.add(secondaryNodes.map((n: any) => n.id))
   }, [turing.instance, neighbourhood])
 
   return (

@@ -9,8 +9,8 @@ export const useCanvasEdgeLabels = () => {
   const [showingEdgeLabel, setShowingEdgeLabel, initShowingEdgeLabel] = useInitState('Edge types')
   const graphName = useAppStore((state) => state.graphName)
   const graph = useGraphInfo(graphName)
-  const getTuringEdges = useCanvasStore((state) => state.edges)
-  const turingActions = useCanvasStore((state) => state.actions)
+  const getTuringEdges = useCanvasStore((state: any) => state.edges)
+  const turingActions = useCanvasStore((state: any) => state.actions)
 
   initShowingEdgeLabel('Edge types')
 

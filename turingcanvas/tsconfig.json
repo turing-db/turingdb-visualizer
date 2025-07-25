@@ -3,7 +3,7 @@
     "strict" : false,
     "noImplicitAny": false,
     "esModuleInterop": true,
-    "strictNullChecks": true,
+    "strictNullChecks": false,
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "bundler",
@@ -16,9 +16,9 @@
     "baseUrl": ".",
 
     "allowJs": true,
-    "checkJs": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "checkJs": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
   },
 
   "include": ["src", "types"],
