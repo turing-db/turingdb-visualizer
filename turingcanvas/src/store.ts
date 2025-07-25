@@ -60,6 +60,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => {
 
     init: (instance: TuringInstance) => {
       instanceRef.current = instance
+      console.log('🔍 CanvasStore initialized with instance:', instance)
     },
 
     nodes: () => instanceRef.current?.nodes || [],

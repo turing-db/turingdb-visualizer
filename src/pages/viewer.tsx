@@ -4,6 +4,7 @@ import { TuringNodeInspector } from '@/components/viewer/node-inspector'
 import { useCanvasStore, useVisStore } from '@/stores'
 import { type FC, useCallback, useEffect, useRef, useState } from 'react'
 import { TuringCanvas, useTuringContext } from 'turingcanvas'
+import { TestCanvasData } from '@/components/viewer/test-canvas-data'
 
 console.log('🔍 DEBUG: TuringCanvas import successful:', !!TuringCanvas)
 console.log('🔍 DEBUG: useTuringContext import successful:', !!useTuringContext)
@@ -152,12 +153,7 @@ const GraphCanvas: FC<GraphCanvasProps> = (props) => {
   return (
     <>
       <GraphCanvasData />
-      {(() => {
-        console.log('🔍 DEBUG: About to render TuringCanvas')
-        console.log('🔍 DEBUG: TuringCanvas component:', TuringCanvas)
-        console.log('🔍 DEBUG: events object:', events.current)
-        return null
-      })()}
+      <TestCanvasData />
       <TuringCanvas
         id="turing-canvas-1"
         className="bg-visualizer-pattern relative"

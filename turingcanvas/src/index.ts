@@ -7,4 +7,4 @@ export { TuringInstance } from './instance'
 export { useCanvasStore } from './store'
 
 // Export additional types that are needed in the main app
-export type { NodeData, TuringUserEvents } from './types'
+export type { NodeData, TuringUserEvents, PartialTuringUserEvents, TuringNode, TuringEdge } from './types'

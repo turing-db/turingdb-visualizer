@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from 'react'
 import { TuringInstance } from './instance'
 import type { PartialTuringUserEvents } from './types'
+import { useCanvasStore } from './store'
 
 export type TuringContextProviderProps = {
   children: React.ReactNode
@@ -36,17 +37,24 @@ export type Events = TuringCanvasProps['events']
 
 export const TuringCanvas: React.FC<TuringCanvasProps> = (props) => {
   const turing = useContext(TuringContext)
+  const canvasStore = useCanvasStore((state: any) => state)
 
   useEffect(() => {
+    console.log('🔍 TuringCanvas useEffect starting...')
     const canvas = document.getElementById(props.id)
 
     if (!(canvas instanceof HTMLCanvasElement)) {
       throw new Error(`Could not initialize turing canvas: could not find canvas of id ${props.id}`)
     }
 
+    console.log('🔍 Found canvas element, initializing instance...')
     turing.instance.init(canvas as HTMLCanvasElement, props.events)
+    
+    console.log('🔍 Connecting instance to store...')
+    canvasStore.init(turing.instance)
+    
     return () => turing.instance.disconnect()
-  }, [turing, props.id, props.events])
+  }, [turing, props.id, props.events, canvasStore])
 
   return (
     <div className={`flex-1 p-0 m-0 h-full w-full relative ${props.className}`}>
