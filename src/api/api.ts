@@ -1,4 +1,5 @@
 import { ExploreEdgeDir } from './args'
+import * as mockResponses from './mock-responses'
 
 import type {
   ExploreNodeEdgesArgs,
@@ -32,7 +33,12 @@ import type {
   ListPropertyTypesResponse,
 } from './responses'
 
+const isDemoMode = window.location.hostname === 'localhost' || window.location.hostname.includes('lovable.app')
+
 export async function getGraphStatus(args: GetGraphStatusArgs): Promise<GetGraphStatusResponse> {
+  if (isDemoMode) {
+    return mockResponses.mockGraphStatus
+  }
   return await fetch(`/api/get_graph_status?graph=${args.graph}`, {
     method: 'POST',
     signal: args.controller?.signal,
@@ -42,6 +48,9 @@ export async function getGraphStatus(args: GetGraphStatusArgs): Promise<GetGraph
 export async function listAvailableGraphs(
   args: ListAvailableGraphsArgs
 ): Promise<ListAvailableGraphsResponse> {
+  if (isDemoMode) {
+    return mockResponses.mockAvailableGraphs
+  }
   return await fetch('/api/list_avail_graphs', {
     method: 'POST',
     signal: args.controller?.signal,
@@ -53,6 +62,9 @@ export async function listAvailableGraphs(
 }
 
 export async function listLabels(args: ListLabelsArgs): Promise<ListLabelsResponse> {
+  if (isDemoMode) {
+    return mockResponses.mockLabels
+  }
   return await fetch(`/api/list_labels?graph=${args.graph}`, {
     method: 'POST',
     signal: args.controller?.signal,
@@ -69,6 +81,9 @@ export async function listLabels(args: ListLabelsArgs): Promise<ListLabelsRespon
 export async function listPropertyTypes(
   args: ListPropertyTypesArgs
 ): Promise<ListPropertyTypesResponse> {
+  if (isDemoMode) {
+    return mockResponses.mockPropertyTypes
+  }
   return await fetch(`/api/list_property_types?graph=${args.graph}`, {
     method: 'POST',
     signal: args.controller?.signal,
@@ -83,6 +98,9 @@ export async function listPropertyTypes(
 }
 
 export async function listEdgeTypes(args: ListEdgeTypesArgs): Promise<ListEdgeTypesResponse> {
+  if (isDemoMode) {
+    return mockResponses.mockEdgeTypes
+  }
   return await fetch(`/api/list_edge_types?graph=${args.graph}`, {
     method: 'POST',
     signal: args.controller?.signal,
@@ -97,6 +115,9 @@ export async function listEdgeTypes(args: ListEdgeTypesArgs): Promise<ListEdgeTy
 }
 
 export async function listNodes(args: ListNodesArgs): Promise<ListNodesResponse> {
+  if (isDemoMode) {
+    return mockResponses.mockNodes
+  }
   return await fetch(`/api/list_nodes?graph=${args.graph}`, {
     method: 'POST',
     signal: args.signal,
@@ -145,6 +166,9 @@ export async function getNodes(args: GetNodesArgs): Promise<GetNodesResponse> {
 export async function getNodeProperties(
   args: GetNodePropertiesArgs
 ): Promise<GetNodePropertiesResponse> {
+  if (isDemoMode) {
+    return mockResponses.mockNodeProperties
+  }
   return await fetch(`/api/get_node_properties?graph=${args.graph}`, {
     method: 'POST',
     signal: args.controller?.signal,
@@ -160,6 +184,9 @@ export async function getNodeProperties(
 }
 
 export async function getNodeEdges(args: GetNodeEdgesArgs): Promise<GetNodeEdgesResponse> {
+  if (isDemoMode) {
+    return mockResponses.mockNodeEdges
+  }
   return await fetch(`/api/get_node_edges?graph=${args.graph}`, {
     method: 'POST',
     signal: args.controller?.signal,

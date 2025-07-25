@@ -6,6 +6,7 @@ import { FocusStyleManager } from '@blueprintjs/core'
 import { TuringContextProvider } from 'turingcanvas'
 import { TuringFrame } from '@/components/turing-frame'
 import { TuringLayout } from '@/components/turing-layout'
+import { ErrorBoundary } from '@/components/error-boundary'
 import { useAppStore } from '@/stores/app.store'
 import queryClient from '@/query-client'
 
@@ -15,14 +16,16 @@ export function App() {
   const theme = useAppStore((state) => state.theme)
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <TuringLayout>
-        <TuringContextProvider>
-          <BlueprintProvider portalClassName={theme === 'dark' ? 'bp5-dark' : 'bp5-light'}>
-            <TuringFrame />
-          </BlueprintProvider>
-        </TuringContextProvider>
-      </TuringLayout>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <TuringLayout>
+          <TuringContextProvider>
+            <BlueprintProvider portalClassName={theme === 'dark' ? 'bp5-dark' : 'bp5-light'}>
+              <TuringFrame />
+            </BlueprintProvider>
+          </TuringContextProvider>
+        </TuringLayout>
+      </QueryClientProvider>
+    </ErrorBoundary>
   )
 }

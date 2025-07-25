@@ -21,7 +21,7 @@ export const useAppStore = create<AppStore>((set) => ({
   page: 'viewer' as PageType,
   setPage: (v: PageType) => set({ page: v }),
 
-  graphName: undefined,
+  graphName: 'demo-graph',
   setGraphName: (v: string | undefined) => set({ graphName: v }),
 }))
 
