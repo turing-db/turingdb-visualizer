@@ -11,6 +11,12 @@ function buildTuringCanvas() {
   console.log('🔧 Building turingcanvas...')
   
   try {
+    // Check if turingcanvas directory exists
+    if (!existsSync(TURINGCANVAS_DIR)) {
+      console.error('❌ turingcanvas directory not found!')
+      process.exit(1)
+    }
+    
     // Change to turingcanvas directory and build
     process.chdir(TURINGCANVAS_DIR)
     
@@ -46,7 +52,11 @@ function buildTuringCanvas() {
 }
 
 function checkIfBuilt() {
-  return existsSync(DIST_DIR) && existsSync(path.join(DIST_DIR, 'index.js'))
+  const distExists = existsSync(DIST_DIR)
+  const indexExists = existsSync(path.join(DIST_DIR, 'index.js'))
+  console.log(`📁 Dist directory exists: ${distExists}`)
+  console.log(`📄 Index.js exists: ${indexExists}`)
+  return distExists && indexExists
 }
 
 // Build if not already built or if forced
