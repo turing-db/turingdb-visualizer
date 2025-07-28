@@ -35,7 +35,7 @@ export class TuringEvents {
   dragOccured = false
   downT0 = 0
   upT0 = 0
-  clickCallback = 0
+  clickCallback?: NodeJS.Timeout
   doubleClick = false
   userEvents: PartialTuringUserEvents = {}
   controls: OrbitControls

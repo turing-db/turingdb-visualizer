@@ -1,48 +1,16 @@
 {
-  "name": "turing-graph-visualizer",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "name": "app",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "build:dev": "vite build --mode development",
-    "postinstall": "node postinstall.js",
-    "predev": "node scripts/build-turingcanvas.js",
-    "prebuild": "node scripts/build-turingcanvas.js",
-    "setup": "node scripts/setup.js",
-    "clean": "node scripts/clean.js",
-    "fix-typescript": "node scripts/complete-fix.js"
+    "dev": "run-s build:turingcanvas dev:parallel",
+    "dev:parallel": "run-p dev:turingcanvas dev:frontend",
+    "dev:turingcanvas": "npm run dev --workspace=turingcanvas",
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "build": "run-s build:turingcanvas build:frontend",
+    "build:turingcanvas": "npm run build --workspace=turingcanvas",
+    "build:frontend": "npm run build --workspace=frontend"
   },
-  "dependencies": {
-    "@blueprintjs/core": "^5.0.0",
-    "@blueprintjs/select": "^5.0.0",
-    "@tanstack/react-query": "^5.0.0",
-    "@types/d3": "^7.4.3",
-    "@types/lodash": "^4.17.20",
-    "@types/three": "^0.170.0",
-    "autoprefixer": "^10.4.21",
-    "clsx": "^2.0.0",
-    "d3": "^7.9.0",
-    "lodash": "^4.17.21",
-    "lovable-tagger": "^1.1.8",
-    "postcss": "^8.5.6",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "tailwindcss": "^3.4.17",
-    "three": "^0.170.0",
-    "three-instanced-uniforms-mesh": "^0.52.4",
-    "troika-three-text": "^0.52.4",
-    "turingcanvas": "./turingcanvas",
-    "vite-plugin-glsl": "^1.5.1",
-    "zustand": "^5.0.6"
-  },
+  "workspaces": ["frontend", "turingcanvas"],
   "devDependencies": {
-    "@types/react": "^18.2.43",
-    "@types/react-dom": "^18.2.17",
-    "@vitejs/plugin-react": "^4.2.1",
-    "typescript": "^5.2.2",
-    "vite": "^5.0.8"
+    "npm-run-all": "^4.1.5"
   }
 }

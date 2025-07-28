@@ -1,0 +1,9 @@
+{
+  "name": "server",
+  "module": "index.ts",
+  "type": "module",
+  "dependencies": {
+    "express": "^4.21.2",
+    "express-http-proxy": "^2.1.1"
+  }
+}
