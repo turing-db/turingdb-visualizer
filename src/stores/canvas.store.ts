@@ -1,2 +1,2 @@
 // Import and export the store
-export { useCanvasStore } from 'turingcanvas'
+export { useCanvasStore } from '@turingcanvas'

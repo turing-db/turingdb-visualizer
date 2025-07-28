@@ -3,7 +3,7 @@ import { TuringTopToolBar } from '@/components/viewer/menus/top-toolbar'
 import { TuringNodeInspector } from '@/components/viewer/node-inspector'
 import { useCanvasStore, useVisStore } from '@/stores'
 import { type FC, useCallback, useEffect, useRef, useState } from 'react'
-import { type NodeData, TuringCanvas, type TuringUserEvents, useTuringContext } from 'turingcanvas'
+import { type NodeData, TuringCanvas, type TuringUserEvents, useTuringContext } from '@turingcanvas'
 
 import { TuringContextMenuType } from '@/components/viewer/menus/turing-context-menu-type'
 

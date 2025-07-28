@@ -3,7 +3,7 @@ import { TuringMenuItem } from '@/components/base/turing-menu-item'
 import { MenuItem } from '@blueprintjs/core'
 import { type ItemPredicate, Select } from '@blueprintjs/select'
 import { type FC, useCallback, useMemo } from 'react'
-import { useCanvasStore, useTuringContext } from 'turingcanvas'
+import { useCanvasStore, useTuringContext } from '@turingcanvas'
 
 function RenderPropertyValues({ parent, property }: { parent: JSX.Element; property: string }) {
   const turing = useTuringContext()
