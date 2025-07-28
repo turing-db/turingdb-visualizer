@@ -11,7 +11,7 @@ const reqOpts = {
 }
 
 const fetchLoadGraph = async (graph: string) => {
-  return fetch(`http://localhost:6666/api/load_graph?graph=${graph}`, reqOpts)
+  return fetch(`http://localhost:6666/load_graph?graph=${graph}`, reqOpts)
 }
 
 export const TSelectDatabasePage: React.FC = () => {
