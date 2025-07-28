@@ -15,6 +15,7 @@
   },
   "scripts": {
     "build": "tsup --dts",
+    "build:dev": "tsup --dts",
     "dev": "tsup --watch --dts"
   },
   "keywords": [],

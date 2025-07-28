@@ -6,8 +6,11 @@
     "dev:turingcanvas": "npm run dev --workspace=turingcanvas",
     "dev:frontend": "npm run dev --workspace=frontend",
     "build": "run-s build:turingcanvas build:frontend",
+    "build:dev": "run-s build:turingcanvas-dev build:frontend-dev",
     "build:turingcanvas": "npm run build --workspace=turingcanvas",
-    "build:frontend": "npm run build --workspace=frontend"
+    "build:turingcanvas-dev": "npm run build:dev --workspace=turingcanvas",
+    "build:frontend": "npm run build --workspace=frontend",
+    "build:frontend-dev": "npm run build:dev --workspace=frontend"
   },
   "workspaces": ["frontend", "turingcanvas"],
   "devDependencies": {
