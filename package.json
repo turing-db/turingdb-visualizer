@@ -1,18 +1,19 @@
 {
-	"name": "app",
-	"scripts": {
-		"dev": "bun run build:turingcanvas && bun run dev:parallel",
-		"dev:parallel": "bun run dev:turingcanvas & bun run dev:frontend & wait",
-		"dev:turingcanvas": "cd turingcanvas && bun run dev",
-		"dev:frontend": "cd frontend && bun run dev",
-
-		"build": "bun run build:turingcanvas && bun run build:frontend",
-		"build:turingcanvas": "cd turingcanvas && bun run build",
-		"build:frontend": "cd frontend && bun run build",
-
-		"build:dev": "bun run build:turingcanvas-dev && bun run build:frontend-dev",
-		"build:turingcanvas-dev": "cd turingcanvas && bun run build:dev",
-		"build:frontend-dev": "cd frontend && bun run build:dev"
-	},
-	"workspaces": ["frontend", "turingcanvas"]
+  "name": "app",
+  "scripts": {
+    "dev": "run-s build:turingcanvas dev:parallel",
+    "dev:parallel": "run-p dev:turingcanvas dev:frontend",
+    "dev:turingcanvas": "npm run dev --workspace=turingcanvas",
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "build": "run-s build:turingcanvas build:frontend",
+    "build:dev": "run-s build:turingcanvas-dev build:frontend-dev",
+    "build:turingcanvas": "npm run build --workspace=turingcanvas",
+    "build:turingcanvas-dev": "npm run build:dev --workspace=turingcanvas",
+    "build:frontend": "npm run build --workspace=frontend",
+    "build:frontend-dev": "npm run build:dev --workspace=frontend"
+  },
+  "workspaces": ["frontend", "turingcanvas"],
+  "dependencies": {
+    "npm-run-all": "^4.1.5"
+  }
 }
