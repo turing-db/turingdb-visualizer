@@ -33,7 +33,7 @@ import type {
 } from './responses'
 
 export async function getGraphStatus(args: GetGraphStatusArgs): Promise<GetGraphStatusResponse> {
-  return await fetch(`http://localhost:6666/get_graph_status?graph=${args.graph}`, {
+  return await fetch(`/api/get_graph_status?graph=${args.graph}`, {
     method: 'POST',
     signal: args.controller?.signal,
   }).then((res) => res.json().then((json) => json.data))
@@ -42,7 +42,7 @@ export async function getGraphStatus(args: GetGraphStatusArgs): Promise<GetGraph
 export async function listAvailableGraphs(
   args: ListAvailableGraphsArgs
 ): Promise<ListAvailableGraphsResponse> {
-  return await fetch('http://localhost:6666/list_avail_graphs', {
+  return await fetch('/api/list_avail_graphs', {
     method: 'POST',
     signal: args.controller?.signal,
   }).then((res) =>
@@ -53,7 +53,7 @@ export async function listAvailableGraphs(
 }
 
 export async function listLabels(args: ListLabelsArgs): Promise<ListLabelsResponse> {
-  return await fetch(`http://localhost:6666/list_labels?graph=${args.graph}`, {
+  return await fetch(`/api/list_labels?graph=${args.graph}`, {
     method: 'POST',
     signal: args.controller?.signal,
     body: JSON.stringify({
@@ -69,7 +69,7 @@ export async function listLabels(args: ListLabelsArgs): Promise<ListLabelsRespon
 export async function listPropertyTypes(
   args: ListPropertyTypesArgs
 ): Promise<ListPropertyTypesResponse> {
-  return await fetch(`http://localhost:6666/list_property_types?graph=${args.graph}`, {
+  return await fetch(`/api/list_property_types?graph=${args.graph}`, {
     method: 'POST',
     signal: args.controller?.signal,
     body: JSON.stringify({
@@ -83,7 +83,7 @@ export async function listPropertyTypes(
 }
 
 export async function listEdgeTypes(args: ListEdgeTypesArgs): Promise<ListEdgeTypesResponse> {
-  return await fetch(`http://localhost:6666/list_edge_types?graph=${args.graph}`, {
+  return await fetch(`/api/list_edge_types?graph=${args.graph}`, {
     method: 'POST',
     signal: args.controller?.signal,
     body: JSON.stringify({
@@ -97,7 +97,7 @@ export async function listEdgeTypes(args: ListEdgeTypesArgs): Promise<ListEdgeTy
 }
 
 export async function listNodes(args: ListNodesArgs): Promise<ListNodesResponse> {
-  return await fetch(`http://localhost:6666/list_nodes?graph=${args.graph}`, {
+  return await fetch(`/api/list_nodes?graph=${args.graph}`, {
     method: 'POST',
     signal: args.signal,
     body: JSON.stringify({
@@ -114,7 +114,7 @@ export async function listNodes(args: ListNodesArgs): Promise<ListNodesResponse>
 }
 
 export async function getNeighbors(args: GetNeighborsArgs): Promise<GetNeighborsResponse> {
-  return await fetch(`http://localhost:6666/get_neighbors?graph=${args.graph}`, {
+  return await fetch(`/api/get_neighbors?graph=${args.graph}`, {
     method: 'POST',
     signal: args.controller?.signal,
     body: JSON.stringify({
@@ -129,7 +129,7 @@ export async function getNeighbors(args: GetNeighborsArgs): Promise<GetNeighbors
 }
 
 export async function getNodes(args: GetNodesArgs): Promise<GetNodesResponse> {
-  return await fetch(`http://localhost:6666/get_nodes?graph=${args.graph}`, {
+  return await fetch(`/api/get_nodes?graph=${args.graph}`, {
     method: 'POST',
     signal: args.controller?.signal,
     body: JSON.stringify({
@@ -145,7 +145,7 @@ export async function getNodes(args: GetNodesArgs): Promise<GetNodesResponse> {
 export async function getNodeProperties(
   args: GetNodePropertiesArgs
 ): Promise<GetNodePropertiesResponse> {
-  return await fetch(`http://localhost:6666/get_node_properties?graph=${args.graph}`, {
+  return await fetch(`/api/get_node_properties?graph=${args.graph}`, {
     method: 'POST',
     signal: args.controller?.signal,
     body: JSON.stringify({
@@ -160,7 +160,7 @@ export async function getNodeProperties(
 }
 
 export async function getNodeEdges(args: GetNodeEdgesArgs): Promise<GetNodeEdgesResponse> {
-  return await fetch(`http://localhost:6666/get_node_edges?graph=${args.graph}`, {
+  return await fetch(`/api/get_node_edges?graph=${args.graph}`, {
     method: 'POST',
     signal: args.controller?.signal,
     body: JSON.stringify({
@@ -179,7 +179,7 @@ export async function getNodeEdges(args: GetNodeEdgesArgs): Promise<GetNodeEdges
 }
 
 export async function getNodeEdgeIDs(args: GetNodeEdgesArgs): Promise<GetNodeEdgeIDsResponse> {
-  return await fetch(`http://localhost:6666/get_node_edges?graph=${args.graph}`, {
+  return await fetch(`/api/get_node_edges?graph=${args.graph}`, {
     method: 'POST',
     signal: args.controller?.signal,
     body: JSON.stringify({
@@ -216,7 +216,7 @@ export async function getNodeEdgeIDs(args: GetNodeEdgesArgs): Promise<GetNodeEdg
 export async function exploreNodeEdges(
   args: ExploreNodeEdgesArgs
 ): Promise<ExploreNodeEdgesResponse> {
-  return await fetch(`http://localhost:6666/explore_node_edges?graph=${args.graph}`, {
+  return await fetch(`/api/explore_node_edges?graph=${args.graph}`, {
     method: 'POST',
     signal: args.controller?.signal,
     body: JSON.stringify({
@@ -239,7 +239,7 @@ export async function exploreNodeEdges(
 }
 
 export async function getEdges(args: GetEdgesArgs): Promise<GetEdgesResponse> {
-  return await fetch(`http://localhost:6666/get_edges?graph=${args.graph}`, {
+  return await fetch(`/api/get_edges?graph=${args.graph}`, {
     method: 'POST',
     signal: args.controller?.signal,
     body: JSON.stringify({
