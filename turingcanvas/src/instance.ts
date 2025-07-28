@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 
+import type { NodeData } from 'three/webgpu'
 import type { Events } from './canvas'
 
 import { BASE_NODE_COLOR } from './colors'
@@ -12,7 +13,6 @@ import {
   type Edges,
   type NodeMap,
   type Nodes,
-  type NodeData,
   type TuringEdge,
   TuringNode,
 } from './types'
@@ -38,22 +38,12 @@ export class TuringInstance {
   simulation = new TuringForceEngine()
 
   constructor() {
-    try {
-      console.log('🔍 TuringInstance constructor starting...')
-      this.renderer = new TuringRenderer(this)
-      console.log('🔍 TuringRenderer created successfully')
-      
-      this.events = new TuringEvents(this)  
-      console.log('🔍 TuringEvents created successfully')
-      console.log('🔍 TuringInstance constructor completed')
-    } catch (error) {
-      console.error('❌ Error in TuringInstance constructor:', error)
-      throw error
-    }
+    this.renderer = new TuringRenderer(this)
+    this.events = new TuringEvents(this)
   }
 
   init(canvas: HTMLCanvasElement, events: Events) {
-    console.log('🔍 TuringInstance.init starting...')
+    console.log('Initializing')
     this.canvas = canvas
 
     THREE.ColorManagement.enabled = false
@@ -61,7 +51,6 @@ export class TuringInstance {
     this.providedEvents = events
 
     if (!this.initialized) {
-      console.log('🔍 Creating controls and raycaster...')
       // Controls
       this.events.createControls()
 
@@ -69,21 +58,11 @@ export class TuringInstance {
       this.raycaster = new THREE.Raycaster()
     }
 
-    console.log('🔍 Initializing events...')
     this.events.init(events)
-    
-    console.log('🔍 Initializing renderer...')
     this.renderer.init(this.update.bind(this))
-
-    console.log('🔍 Setting up simulation tick handler...')
-    this.simulation.setOnTick(() => {
-      this.updatePositions()
-    })
 
     this.initialized = true
     this.initCount++
-    console.log('🔍 TuringInstance.init completed successfully!')
-    console.log('🔍 Instance state - nodes:', this.nodes.length, 'edges:', this.edges.length)
   }
 
   hoverNode(n: TuringNode) {
