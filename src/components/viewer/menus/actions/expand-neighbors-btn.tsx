@@ -2,7 +2,7 @@ import TuringButton from '@/components/base/turing-button'
 import TuringTooltip from '@/components/base/turing-tooltip'
 import { useVisStore } from '@/stores'
 import { useCallback } from 'react'
-import { useTuringContext } from 'turingcanvas'
+import { useTuringContext } from '@turingcanvas'
 
 export const ExpandNeighborsButton = () => {
   const neighbourhood = useVisStore((state) => state.neighbourhood)

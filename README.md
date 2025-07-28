@@ -1,17 +1,15 @@
-# Turing UI
+# `create-preact`
 
-The app is composed of two packages:
-- frontend: React app
-- turingcanvas: OpenGL graph visualizer
+<hu align="center">
+  <img height="256" width="256" src="./src/assets/preact.svg">
+</h2>
 
-## Dev
-```bash
-npm i
-npm run dev
-```
+<h3 align="center">Get started using Preact and Vite!</h3>
 
-## Build
-```bash
-npm i
-npm run build
-```
+## Getting Started
+
+- `npm run dev` - Starts a dev server at http://localhost:5173/
+
+- `npm run build` - Builds for production, emitting to `dist/`
+
+- `npm run preview` - Starts a server at http://localhost:4173/ to test production build locally

@@ -5,7 +5,7 @@ import { TuringMenuItem } from '@/components/base/turing-menu-item'
 import { TuringMenuDivider } from '@/components/base/turing-menu-divider'
 import { PRESET_COLORS } from './colors'
 
-import { useTuringContext } from 'turingcanvas'
+import { useTuringContext } from '@turingcanvas'
 
 export const NodeColorMenuItems: FC = () => {
   const turing = useTuringContext()

@@ -1,7 +1,7 @@
 import { TuringMenuItem } from '@/components/base/turing-menu-item'
 import { useVisStore } from '@/stores'
 import type { FC } from 'react'
-import { useTuringContext } from 'turingcanvas'
+import { useTuringContext } from '@turingcanvas'
 
 export const NodeHideItem: FC = () => {
   const turing = useTuringContext()
@@ -9,7 +9,7 @@ export const NodeHideItem: FC = () => {
   const hiddenNodes = useVisStore((state) => state.hiddenNodes)
 
   return (
-    <TuringMenuItem
+  <TuringMenuItem
       text="Hide"
       icon="remove"
       intent="danger"

@@ -1,5 +1,5 @@
 import { type FC, useMemo } from 'react'
-import type { TuringNode } from 'turingcanvas'
+import type { TuringNode } from '@turingcanvas'
 import type { NodeEntry } from '@/api/models/nodeEntry.model'
 
 import { TuringMenuItem } from '@/components/base/turing-menu-item'
