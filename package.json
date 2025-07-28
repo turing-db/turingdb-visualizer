@@ -2,10 +2,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --port 8080 --host 0.0.0.0",
-    "build": "vite build",
-    "build:dev": "vite build --mode development",
-    "build-and-start": "vite build && vite preview --port 8080 --host 0.0.0.0",
+    "dev": "npm run build:turingcanvas && vite --port 8080 --host 0.0.0.0",
+    "build": "npm run build:turingcanvas && vite build",
+    "build:dev": "npm run build:turingcanvas && vite build --mode development",
+    "build-and-start": "npm run build:turingcanvas && vite build && vite preview --port 8080 --host 0.0.0.0",
+    "build:turingcanvas": "cd src/turingcanvas && npm run build",
     "start": "vite preview --port 8080 --host 0.0.0.0"
   },
   "name": "turingapp",

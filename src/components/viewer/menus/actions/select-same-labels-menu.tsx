@@ -1,7 +1,7 @@
 import type { NodeEntry } from '@/api/models/nodeEntry.model'
 import { TuringMenuItem } from '@/components/base/turing-menu-item'
 import { type FC, useMemo } from 'react'
-import { useTuringContext, useCanvasStore } from '@turingcanvas'
+import { useTuringContext, useCanvasStore } from 'turingcanvas'
 
 export const SelectSameLabels: FC = () => {
   const turing = useTuringContext()

@@ -1,6 +1,6 @@
 import { type FC, useMemo } from 'react'
 import { TuringMenuItem } from '@/components/base/turing-menu-item'
-import { useCanvasStore } from '@turingcanvas'
+import { useCanvasStore } from 'turingcanvas'
 import type { NodeEntry } from '@/api/models/nodeEntry.model'
 
 import { SelectSameLabels } from './actions/select-same-labels-menu'

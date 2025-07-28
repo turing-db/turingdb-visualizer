@@ -11,7 +11,7 @@ import {
   TuringCanvas,
   TuringContextProvider,
   useTuringContext,
-} from "@turingcanvas";
+} from "turingcanvas";
 
 const ViewerPage = () => {
   const turing = useTuringContext();
