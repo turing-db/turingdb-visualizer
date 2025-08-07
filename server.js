@@ -3,8 +3,8 @@ import express from 'express'
 import proxy from 'express-http-proxy'
 import { fileURLToPath } from 'node:url'
 
-const port = 8080
-const api_port = process.env.TURING_API_PORT || 6666
+const frontendPort = Number(process.env.TURING_FRONTEND_PORT || 8080)
+const apiPort = Number(process.env.TURING_API_PORT || 6666)
 const dir = path.dirname(fileURLToPath(import.meta.url))
 
 const STATIC_PATH = path.join(dir, 'dist')
@@ -16,11 +16,11 @@ const app = express()
 app.use(express.static(STATIC_PATH))
 
 // Set up the proxy
-app.use('/api', proxy(`http://localhost:${api_port}`, {}))
+app.use('/api', proxy(`http://localhost:${apiPort}`, {}))
 
 // Start the server
-app.listen(port, '0.0.0.0', () => {
+app.listen(frontendPort, '0.0.0.0', () => {
   console.log('- Turing App started')
-  console.log('- Web application is available on port', port)
-  console.log('- REST server is listening on port', api_port)
+  console.log('- Web application is available on port', frontendPort)
+  console.log('- REST server is listening on port', apiPort)
 })

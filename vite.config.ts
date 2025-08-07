@@ -4,8 +4,9 @@ import react from '@vitejs/plugin-react'
 import path from 'path'
 import glsl from 'vite-plugin-glsl'
 
-const port = process.env.TURING_API_PORT || 6666
-console.log('- API Proxy listening on port:', port)
+const apiPort = Number(process.env.TURING_API_PORT || 6666)
+const frontendPort = Number(process.env.TURING_FRONTEND_PORT || 8080)
+console.log('- API Proxy listening on port:', apiPort)
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -19,13 +20,13 @@ export default defineConfig({
   },
   server: {
     allowedHosts: true,
-    port: 8080,
+    port: frontendPort,
     watch: {
       usePolling: true,
     },
     proxy: {
       '/api': {
-        target: ` http://localhost:${port}`,
+        target: ` http://localhost:${apiPort}`,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },

@@ -6,6 +6,9 @@
 ```bash
 npm i
 npm run dev
+
+# or
+# TURING_FRONTEND_PORT=1234 TURING_API_PORT=6666 npm run dev
 ```
 
 - Run the production server:
@@ -13,4 +16,5 @@ npm run dev
 git checkout prod
 npm i
 npm run prod
+# TURING_FRONTEND_PORT=1234 TURING_API_PORT=6666 npm run prod
 ```
