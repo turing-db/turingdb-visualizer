@@ -10,6 +10,7 @@ npm run dev
 
 - Run the production server:
 ```bash
+git checkout prod
 npm i
 npm run prod
 ```
