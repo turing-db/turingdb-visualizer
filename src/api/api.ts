@@ -42,7 +42,7 @@ export async function getGraphStatus(args: GetGraphStatusArgs): Promise<GetGraph
 export async function listAvailableGraphs(
   args: ListAvailableGraphsArgs
 ): Promise<ListAvailableGraphsResponse> {
-  return await fetch('/api/list_avail_graphs', {
+  const avail_graphs = await fetch('/api/list_avail_graphs', {
     method: 'POST',
     signal: args.controller?.signal,
   }).then((res) =>
@@ -50,6 +50,17 @@ export async function listAvailableGraphs(
       return json.data.flat()
     })
   )
+
+  const loaded_graphs = await fetch('/api/list_loaded_graphs', {
+    method: 'POST',
+    signal: args.controller?.signal,
+  }).then((res) =>
+    res.json().then((json) => {
+      return json.data.flat().flat()
+    })
+  )
+
+  return [...new Set([...avail_graphs, ...loaded_graphs])]
 }
 
 export async function listLabels(args: ListLabelsArgs): Promise<ListLabelsResponse> {
