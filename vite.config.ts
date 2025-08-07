@@ -18,6 +18,7 @@ export default defineConfig({
     },
   },
   server: {
+    allowedHosts: true,
     port: 8080,
     watch: {
       usePolling: true,
