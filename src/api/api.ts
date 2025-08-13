@@ -35,6 +35,7 @@ import type {
 export async function getGraphStatus(args: GetGraphStatusArgs): Promise<GetGraphStatusResponse> {
   return await fetch(`/api/get_graph_status?graph=${args.graph}`, {
     method: 'POST',
+    body: JSON.stringify({}),
     signal: args.controller?.signal,
   }).then((res) => res.json().then((json) => json.data))
 }
@@ -44,6 +45,7 @@ export async function listAvailableGraphs(
 ): Promise<ListAvailableGraphsResponse> {
   const avail_graphs = await fetch('/api/list_avail_graphs', {
     method: 'POST',
+    body: JSON.stringify({}),
     signal: args.controller?.signal,
   }).then((res) =>
     res.json().then((json) => {
@@ -53,6 +55,7 @@ export async function listAvailableGraphs(
 
   const loaded_graphs = await fetch('/api/list_loaded_graphs', {
     method: 'POST',
+    body: JSON.stringify({}),
     signal: args.controller?.signal,
   }).then((res) =>
     res.json().then((json) => {
