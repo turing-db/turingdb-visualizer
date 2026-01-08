@@ -16,22 +16,23 @@ import type {
   ListPropertyTypesArgs,
 } from './args'
 
-import type {
-  CypherQueryResponse,
-  ExploreNodeEdgesResponse,
-  GetGraphStatusResponse,
-  GetNeighborsResponse,
-  GetNodeEdgesResponse,
-  GetNodeEdgeIDsResponse,
-  GetNodeEdgeIDsRawResponse,
-  GetNodePropertiesResponse,
-  GetNodesResponse,
-  GetEdgesResponse,
-  ListAvailableGraphsResponse,
-  ListEdgeTypesResponse,
-  ListLabelsResponse,
-  ListNodesResponse,
-  ListPropertyTypesResponse,
+import {
+  CypherQueryError,
+  type CypherQueryResponse,
+  type ExploreNodeEdgesResponse,
+  type GetGraphStatusResponse,
+  type GetNeighborsResponse,
+  type GetNodeEdgesResponse,
+  type GetNodeEdgeIDsResponse,
+  type GetNodeEdgeIDsRawResponse,
+  type GetNodePropertiesResponse,
+  type GetNodesResponse,
+  type GetEdgesResponse,
+  type ListAvailableGraphsResponse,
+  type ListEdgeTypesResponse,
+  type ListLabelsResponse,
+  type ListNodesResponse,
+  type ListPropertyTypesResponse,
 } from './responses'
 
 export async function getGraphStatus(args: GetGraphStatusArgs): Promise<GetGraphStatusResponse> {
@@ -278,7 +279,11 @@ export async function executeCypherQuery(args: CypherQueryArgs): Promise<CypherQ
     body: args.query,
   }).then((res) =>
     res.text().then((text) => {
-      return JSON.parse(text).data
+      const json = JSON.parse(text)
+      if (json.error) {
+        throw new CypherQueryError(json.error, json.error_details || '')
+      }
+      return json.data
     })
   )
 }
