@@ -19,7 +19,7 @@ import { useVisStore } from '@/stores'
 import { CypherQueryError } from '@/api/responses'
 
 export const TuringTopToolBar = () => {
-  const [query, setQuery] = useState('')
+  const [query, setQuery] = useState('MATCH (n) RETURN n LIMIT 100')
   const { mutate, isPending, error, reset } = useCypherQuery()
   const neighbourhood = useVisStore((state) => state.neighbourhood)
   const inspectNodeInfo = useVisStore((state) => state.inspectNodeInfo)
