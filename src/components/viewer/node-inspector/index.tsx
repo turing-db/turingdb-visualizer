@@ -2,7 +2,7 @@ import TuringButton from '@/components/base/turing-button'
 import { TuringTag } from '@/components/base/turing-tag'
 import { getNodeName } from '@/utils/nodes'
 import clsx from 'clsx'
-import { useMemo, useState } from 'react'
+import { useMemo, useCallback } from 'react'
 import { TuringNodeInspectorCollapsed } from './turing-node-inspector.collapsed'
 import { TuringNodeInspectorExtended } from './turing-node-inspector.extended'
 
@@ -12,9 +12,14 @@ import nodeBlueSmall from '../../../assets/imgs/node-blue-small.svg'
 
 export const TuringNodeInspector = () => {
   const entityCache = useVisStore((state) => state.entityCache)
-  const [isExtended, setIsExtended] = useState(false)
+  const isExtended = useVisStore((state) => state.isNodeInspectorExtended)
+  const setNodeInspectorExtended = useVisStore((state) => state.setNodeInspectorExtended)
   const inspectNodeInfo = useVisStore((state) => state.inspectNodeInfo)
   const graphName = useAppStore((state) => state.graphName)
+
+  const toggleExtended = useCallback(() => {
+    setNodeInspectorExtended(!isExtended)
+  }, [isExtended, setNodeInspectorExtended])
 
   const node = useMemo(() => {
     if (!inspectNodeInfo) return undefined
@@ -76,14 +81,14 @@ export const TuringNodeInspector = () => {
         {isExtended ? (
           <TuringButton
             className="flex-shrink-0"
-            onClick={() => setIsExtended((v) => !v)}
+            onClick={toggleExtended}
             rightIcon="cross"
           />
         ) : (
           <button
             className="text-primary-default flex flex-shrink-0 items-center gap-1 text-xs tracking-[0.06em] whitespace-nowrap"
             type="button"
-            onClick={() => setIsExtended((v) => !v)}
+            onClick={toggleExtended}
           >
             <span>Details</span>
             <Icon className="{}" icon="chevron-right" />

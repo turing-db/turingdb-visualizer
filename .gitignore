@@ -27,3 +27,5 @@ node_modules
 dist
 .env.local
 vite.config.ts.timestamp*
+
+turingdb.out
