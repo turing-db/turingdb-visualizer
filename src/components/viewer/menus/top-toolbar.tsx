@@ -1,5 +1,5 @@
 import { useState, useCallback, type KeyboardEvent } from 'react'
-import { InputGroup, Spinner, Callout } from '@blueprintjs/core'
+import { InputGroup, Spinner, Card, Icon } from '@blueprintjs/core'
 import TuringButton from '@/components/base/turing-button'
 import { TuringButtonGroup } from '@/components/base/turing-button-group'
 import TuringMenuPopover from '@/components/base/turing-menu-popover'
@@ -16,6 +16,7 @@ import { ColorNodesButton } from './actions/color-nodes-btn'
 import { CenterForceSwitch } from './actions/center-force-switch'
 import { useCypherQuery } from '@/hooks/use-cypher-query'
 import { useVisStore } from '@/stores'
+import { CypherQueryError } from '@/api/responses'
 
 export const TuringTopToolBar = () => {
   const [query, setQuery] = useState('')
@@ -54,11 +55,6 @@ export const TuringTopToolBar = () => {
           : 'left-0'
       )}
     >
-      {error && (
-        <Callout intent="danger" icon="error" className="text-sm mb-2">
-          {error instanceof Error ? error.message : 'Query execution failed'}
-        </Callout>
-      )}
       <div className="flex items-center gap-2">
         <InputGroup
           className={clsx(
@@ -150,6 +146,37 @@ export const TuringTopToolBar = () => {
         </TuringButton>
         */}
       </div>
+
+      {error && (
+        <Card className="mt-2 p-0 overflow-hidden border border-red-700 max-w-[600px]">
+          <div className="bg-red-900/50 px-3 py-2 flex items-center justify-between">
+            <div className="flex items-center gap-2 text-red-300">
+              <Icon icon="error" />
+              <span className="font-medium">
+                {error instanceof CypherQueryError ? error.errorType : 'Query Error'}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={reset}
+              className="text-red-300 hover:text-red-100 p-1"
+              aria-label="Dismiss error"
+            >
+              <Icon icon="cross" />
+            </button>
+          </div>
+          {error instanceof CypherQueryError && error.errorDetails && (
+            <div className="p-3 bg-gray-900 overflow-auto max-h-[200px]">
+              <pre
+                className="text-xs text-red-200 whitespace-pre m-0"
+                style={{ fontFamily: 'monospace' }}
+              >
+                {error.errorDetails}
+              </pre>
+            </div>
+          )}
+        </Card>
+      )}
     </div>
   )
 }
