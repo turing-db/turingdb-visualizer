@@ -2,6 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable", "ESNext.Iterator"],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "noEmit": true,
@@ -17,8 +18,16 @@
     "paths": {
       "@/*": ["./src/*"],
       "@components/*": ["./src/components/*"],
-      "@assets/*": ["./src/assets/*"]
+      "@assets/*": ["./src/assets/*"],
+      "@turingcanvas": ["./src/turingcanvas/src/index.ts"]
     }
   },
-  "include": ["node_modules/vite/client.d.ts", "src", "src/shaders.d.ts", "vite.config.ts"]
+  "include": [
+    "node_modules/vite/client.d.ts",
+    "src",
+    "src/turingcanvas/src/types",
+    "src/turingcanvas/src/troika-three-text.d.ts",
+    "vite.config.ts"
+  ],
+  "exclude": ["src/turingcanvas/tsup.config.ts"]
 }

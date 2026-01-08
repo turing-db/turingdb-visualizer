@@ -114,7 +114,7 @@ export class TuringEvents {
     canvas.addEventListener('canvascontextmenu', this.boundOnCanvasContextMenu)
 
     this.controls.domElement = canvas as unknown as HTMLElement
-    this.controls.connect()
+    this.controls.connect(this.controls.domElement)
 
     const setEvent = <K extends keyof PartialTuringUserEvents>(evName: K) => {
       if (this.userEvents[evName]) {

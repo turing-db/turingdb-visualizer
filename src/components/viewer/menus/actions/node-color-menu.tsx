@@ -26,20 +26,18 @@ export const NodeColorMenuItems: FC = () => {
       />
 
       <TuringMenuItem key="node-color-preset" text="Preset" icon="edit">
-        {[
-          ...PRESET_COLORS.entries().map(([colorName, colorValue]) => (
-            <TuringMenuItem
-              key={colorName}
-              text={colorName}
-              icon={<Icon icon="symbol-square" color={colorName} />}
-              onClick={() => {
-                for (const [, n] of turing.instance.selectedNodes) {
-                  turing.instance.setNodeColor(n, colorValue)
-                }
-              }}
-            />
-          )),
-        ]}
+        {Array.from(PRESET_COLORS.entries()).map(([colorName, colorValue]) => (
+          <TuringMenuItem
+            key={colorName}
+            text={colorName}
+            icon={<Icon icon="symbol-square" color={colorName} />}
+            onClick={() => {
+              for (const [, n] of turing.instance.selectedNodes) {
+                turing.instance.setNodeColor(n, colorValue)
+              }
+            }}
+          />
+        ))}
       </TuringMenuItem>
 
       {/* <TuringMenuDivider title="Gradient" />

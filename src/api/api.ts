@@ -1,6 +1,7 @@
 import { ExploreEdgeDir } from './args'
 
 import type {
+  CypherQueryArgs,
   ExploreNodeEdgesArgs,
   GetGraphStatusArgs,
   GetNeighborsArgs,
@@ -16,6 +17,7 @@ import type {
 } from './args'
 
 import type {
+  CypherQueryResponse,
   ExploreNodeEdgesResponse,
   GetGraphStatusResponse,
   GetNeighborsResponse,
@@ -259,6 +261,21 @@ export async function getEdges(args: GetEdgesArgs): Promise<GetEdgesResponse> {
     body: JSON.stringify({
       edgeIDs: args.edgeIDs,
     }),
+  }).then((res) =>
+    res.text().then((text) => {
+      return JSON.parse(text).data
+    })
+  )
+}
+
+export async function executeCypherQuery(args: CypherQueryArgs): Promise<CypherQueryResponse> {
+  return await fetch(`/api/query?graph=${args.graph}`, {
+    method: 'POST',
+    signal: args.controller?.signal,
+    headers: {
+      'Content-Type': 'text/plain',
+    },
+    body: args.query,
   }).then((res) =>
     res.text().then((text) => {
       return JSON.parse(text).data

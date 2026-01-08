@@ -48,6 +48,7 @@ export type CanvasStore = {
     setNodeLabel: (...args: SetNodeLabelArgs) => void
     setEdgeLabel: (...args: SetEdgeLabelArgs) => void
     activateCenterForce: (...args: ActivateCenterForceArgs) => void
+    fitView: (padding?: number) => void
   }
 
   resetStates: (...args: TrackedState[]) => void
@@ -141,6 +142,10 @@ export const useCanvasStore = create<CanvasStore>((set, get) => {
       activateCenterForce: (...args: ActivateCenterForceArgs) => {
         instanceRef.current?.activateCenterForce(...args)
         get().resetStates('centerForce')
+      },
+
+      fitView: (padding?: number) => {
+        instanceRef.current?.fitView(padding)
       },
     },
 

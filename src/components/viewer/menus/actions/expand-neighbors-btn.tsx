@@ -2,16 +2,16 @@ import TuringButton from '@/components/base/turing-button'
 import TuringTooltip from '@/components/base/turing-tooltip'
 import { useVisStore } from '@/stores'
 import { useCallback } from 'react'
-import { useTuringContext } from '@turingcanvas'
+import { useTuringContext, type TuringNode } from '@turingcanvas'
 
 export const ExpandNeighborsButton = () => {
   const neighbourhood = useVisStore((state) => state.neighbourhood)
   const turing = useTuringContext()
 
   const expandNodes = useCallback(async () => {
-    const secondaryNodes = turing.instance.nodes.filter((n) => !n.isPrimary())
+    const secondaryNodes = turing.instance.nodes.filter((n: TuringNode) => !n.isPrimary())
 
-    neighbourhood.add(secondaryNodes.map((n) => n.id))
+    neighbourhood.add(secondaryNodes.map((n: TuringNode) => n.id))
   }, [turing.instance, neighbourhood])
 
   return (

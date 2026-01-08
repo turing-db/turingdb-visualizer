@@ -6,6 +6,7 @@ import type { TuringSelectItem } from '../base/turing-select-item'
 import useGraphInfo from '@/hooks/use-graph-info'
 import { useSelectedChips } from '../turing-bar/use-selected-chips'
 import { useAppStore, useCanvasStore, useVisStore } from '@/stores'
+import type { CanvasStore } from '@turingcanvas'
 
 export const TuringGraphSelector: FC = () => {
   const entityCache = useVisStore((state) => state.entityCache)
@@ -14,7 +15,7 @@ export const TuringGraphSelector: FC = () => {
 
   const graphName = useAppStore((state) => state.graphName)
   const setGraphName = useAppStore((state) => state.setGraphName)
-  const turingActions = useCanvasStore((state) => state.actions)
+  const turingActions = useCanvasStore((state: CanvasStore) => state.actions)
   const { refetch } = useGraphInfo(graphName)
 
   const [graphs, setGraphs] = useState<string[]>([])

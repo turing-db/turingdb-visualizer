@@ -150,6 +150,47 @@ export class TuringInstance {
     this.simulation.activateCenterForce(v)
   }
 
+  fitView(padding = 1.2) {
+    if (this.nodes.length === 0) return
+
+    // Calculate bounding box of all nodes
+    let minX = Infinity
+    let maxX = -Infinity
+    let minY = Infinity
+    let maxY = -Infinity
+
+    for (const node of this.nodes) {
+      minX = Math.min(minX, node.x)
+      maxX = Math.max(maxX, node.x)
+      minY = Math.min(minY, node.y)
+      maxY = Math.max(maxY, node.y)
+    }
+
+    const centerX = (minX + maxX) / 2
+    const centerY = (minY + maxY) / 2
+    const width = (maxX - minX) || 1
+    const height = (maxY - minY) || 1
+
+    // Calculate zoom to fit all nodes
+    const camera = this.renderer.camera
+    const viewWidth = camera.right - camera.left
+    const viewHeight = camera.bottom - camera.top
+
+    const zoomX = viewWidth / (width * padding)
+    const zoomY = viewHeight / (height * padding)
+    const zoom = Math.min(zoomX, zoomY, 1) // Cap at 1 to avoid over-zooming
+
+    // Update camera position and zoom
+    camera.position.x = centerX
+    camera.position.y = centerY
+    camera.zoom = zoom
+    camera.updateProjectionMatrix()
+
+    // Update controls target
+    this.events.controls.target.set(centerX, centerY, 0)
+    this.events.controls.update()
+  }
+
   update() {
     this.simulation.tick()
 

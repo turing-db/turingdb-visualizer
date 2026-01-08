@@ -3,22 +3,27 @@ import { TuringMenuItem } from '@/components/base/turing-menu-item'
 import { type FC, useMemo } from 'react'
 import { useTuringContext, useCanvasStore } from '@turingcanvas'
 
-export const SelectSameLabels: FC = () => {
+export interface SelectSameLabelsProps {
+  labels?: string[]
+}
+
+export const SelectSameLabels: FC<SelectSameLabelsProps> = (props) => {
   const turing = useTuringContext()
   const turingActions = useCanvasStore((state) => state.actions)
   const turingNodes = useCanvasStore((state) => state.nodes)
 
   const labels = useMemo(
-    () => [
-      ...new Set(
-        turingNodes().flatMap((n) => {
-          const data = n.data as NodeEntry
+    () =>
+      props.labels ?? [
+        ...new Set(
+          turingNodes().flatMap((n) => {
+            const data = n.data as NodeEntry
 
-          return data.labels
-        })
-      ),
-    ],
-    [turingNodes]
+            return data.labels
+          })
+        ),
+      ],
+    [turingNodes, props.labels]
   )
 
   const handleOnItemSelect = (label: string) => {

@@ -30,8 +30,10 @@ export type VisStore = {
   hiddenNodes: Set<number>
 
   inspectNodeInfo: InspectNodeInfo | undefined
+  isNodeInspectorExtended: boolean
   inspectNode: (nodeID: number) => void
   closeInspectNodePanel: () => void
+  setNodeInspectorExtended: (extended: boolean) => void
 }
 
 export const useVisStore = create<VisStore>((set) => {
@@ -78,8 +80,10 @@ export const useVisStore = create<VisStore>((set) => {
     hiddenNodes: createHiddenNodesRef(hiddenNodesRef),
 
     inspectNodeInfo: undefined,
+    isNodeInspectorExtended: false,
     inspectNode: (nodeID: number) => set(() => ({ inspectNodeInfo: { nodeID } })),
     closeInspectNodePanel: () => set(() => ({ inspectNodeInfo: undefined })),
+    setNodeInspectorExtended: (extended: boolean) => set(() => ({ isNodeInspectorExtended: extended })),
   }
 })
 

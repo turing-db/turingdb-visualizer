@@ -86,22 +86,29 @@ function RenderPropertyValues({ parent, property }: { parent: JSX.Element; prope
   )
 }
 
-export const SelectSameProperties: FC = () => {
+export interface SelectSamePropertiesProps {
+  properties?: string[]
+}
+
+export const SelectSameProperties: FC<SelectSamePropertiesProps> = (props) => {
   const turingNodes = useCanvasStore((state) => state.nodes)
 
   const properties = useMemo(() => {
-    return Array.from(
-      new Set([
-        ...turingNodes()
-          .map((n) => {
-            const data = n.data as NodeEntry
-            return Object.keys(data.properties)
-          })
-          .filter((v) => v !== undefined)
-          .flat(),
-      ])
-    ).flat()
-  }, [turingNodes])
+    return (
+      props.properties ??
+      Array.from(
+        new Set([
+          ...turingNodes()
+            .map((n) => {
+              const data = n.data as NodeEntry
+              return Object.keys(data.properties)
+            })
+            .filter((v) => v !== undefined)
+            .flat(),
+        ])
+      ).flat()
+    )
+  }, [turingNodes, props.properties])
 
   return (
     <TuringMenuItem text="By common property" icon="property">
