@@ -36,6 +36,10 @@ This is a React/TypeScript graph visualization application for TuringDB, using T
 
 ### Key Directories
 
+**`docs/`** - Implementation notes and documentation
+- Contains detailed design decisions and technical documentation
+- **Must be carefully read** before making changes to related areas
+
 **`src/turingcanvas/`** - Internal Three.js visualization library
 - GPU-instanced hexagon nodes (handles ~20k nodes)
 - D3 force-directed layout simulation
