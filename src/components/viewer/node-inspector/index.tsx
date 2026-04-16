@@ -2,11 +2,18 @@ import TuringButton from '@/components/base/turing-button'
 import { TuringTag } from '@/components/base/turing-tag'
 import { getNodeName } from '@/utils/nodes'
 import clsx from 'clsx'
-import { useMemo, useCallback } from 'react'
+import { useMemo, useCallback, useRef, useState } from 'react'
 import { TuringNodeInspectorCollapsed } from './turing-node-inspector.collapsed'
 import { TuringNodeInspectorExtended } from './turing-node-inspector.extended'
 
-import { useAppStore, useVisStore } from '@/stores'
+import {
+  NODE_INSPECTOR_COLLAPSED_MAX_WIDTH,
+  NODE_INSPECTOR_COLLAPSED_MIN_WIDTH,
+  NODE_INSPECTOR_EXTENDED_MAX_WIDTH,
+  NODE_INSPECTOR_EXTENDED_MIN_WIDTH,
+  useAppStore,
+  useVisStore,
+} from '@/stores'
 import { Icon } from '@blueprintjs/core'
 import nodeBlueSmall from '../../../assets/imgs/node-blue-small.svg'
 
@@ -14,12 +21,57 @@ export const TuringNodeInspector = () => {
   const entityCache = useVisStore((state) => state.entityCache)
   const isExtended = useVisStore((state) => state.isNodeInspectorExtended)
   const setNodeInspectorExtended = useVisStore((state) => state.setNodeInspectorExtended)
+  const extendedWidth = useVisStore((state) => state.nodeInspectorExtendedWidth)
+  const setExtendedWidth = useVisStore((state) => state.setNodeInspectorExtendedWidth)
+  const collapsedWidth = useVisStore((state) => state.nodeInspectorCollapsedWidth)
+  const setCollapsedWidth = useVisStore((state) => state.setNodeInspectorCollapsedWidth)
   const inspectNodeInfo = useVisStore((state) => state.inspectNodeInfo)
   const graphName = useAppStore((state) => state.graphName)
 
   const toggleExtended = useCallback(() => {
     setNodeInspectorExtended(!isExtended)
   }, [isExtended, setNodeInspectorExtended])
+
+  const currentWidth = isExtended ? extendedWidth : collapsedWidth
+
+  const [isResizing, setIsResizing] = useState(false)
+  const resizeStartXRef = useRef(0)
+  const resizeStartWidthRef = useRef(0)
+
+  const onResizeHandlePointerDown = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      e.preventDefault()
+      e.stopPropagation()
+      resizeStartXRef.current = e.clientX
+      resizeStartWidthRef.current = currentWidth
+      setIsResizing(true)
+
+      const setWidth = isExtended ? setExtendedWidth : setCollapsedWidth
+      const minWidth = isExtended
+        ? NODE_INSPECTOR_EXTENDED_MIN_WIDTH
+        : NODE_INSPECTOR_COLLAPSED_MIN_WIDTH
+      const maxWidth = isExtended
+        ? NODE_INSPECTOR_EXTENDED_MAX_WIDTH
+        : NODE_INSPECTOR_COLLAPSED_MAX_WIDTH
+
+      const onMove = (ev: PointerEvent) => {
+        const delta = ev.clientX - resizeStartXRef.current
+        const next = Math.max(
+          minWidth,
+          Math.min(maxWidth, resizeStartWidthRef.current + delta)
+        )
+        setWidth(next)
+      }
+      const onUp = () => {
+        setIsResizing(false)
+        window.removeEventListener('pointermove', onMove)
+        window.removeEventListener('pointerup', onUp)
+      }
+      window.addEventListener('pointermove', onMove)
+      window.addEventListener('pointerup', onUp)
+    },
+    [currentWidth, isExtended, setExtendedWidth, setCollapsedWidth]
+  )
 
   const node = useMemo(() => {
     if (!inspectNodeInfo) return undefined
@@ -42,10 +94,11 @@ export const TuringNodeInspector = () => {
       onKeyUp={(e) => {
         e.stopPropagation()
       }}
+      style={{ width: `${currentWidth}px` }}
       className={clsx(
-        'bg-grey-800 shadow-dark pointer-events-auto absolute top-0 left-0 flex h-[100%] flex-col overflow-hidden transition-all duration-300',
-        [inspectNodeInfo ? 'translate-x-[0]' : 'translate-x-[calc(-100%-2px)]'],
-        [isExtended ? 'w-[28.125rem]' : 'w-[15.625rem]']
+        'bg-grey-800 shadow-dark pointer-events-auto absolute top-0 left-0 flex h-[100%] flex-col overflow-hidden',
+        isResizing ? '' : 'transition-[transform,width] duration-300',
+        [inspectNodeInfo ? 'translate-x-[0]' : 'translate-x-[calc(-100%-2px)]']
       )}
     >
       <div
@@ -111,6 +164,14 @@ export const TuringNodeInspector = () => {
         ) : (
           <TuringNodeInspectorCollapsed node={node} graph={graphName} />
         )}
+      </div>
+      <div
+        aria-label="Resize inspector"
+        role="separator"
+        onPointerDown={onResizeHandlePointerDown}
+        className="group absolute top-0 right-0 flex h-full w-[6px] translate-x-[3px] cursor-col-resize items-stretch justify-center"
+      >
+        <div className="bg-grey-600 group-hover:bg-primary-default h-full w-[1px] transition-colors" />
       </div>
     </div>
   )

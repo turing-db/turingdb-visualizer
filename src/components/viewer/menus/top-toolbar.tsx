@@ -24,6 +24,14 @@ export const TuringTopToolBar = () => {
   const neighbourhood = useVisStore((state) => state.neighbourhood)
   const inspectNodeInfo = useVisStore((state) => state.inspectNodeInfo)
   const isNodeInspectorExtended = useVisStore((state) => state.isNodeInspectorExtended)
+  const nodeInspectorExtendedWidth = useVisStore((state) => state.nodeInspectorExtendedWidth)
+  const nodeInspectorCollapsedWidth = useVisStore((state) => state.nodeInspectorCollapsedWidth)
+
+  const inspectorOffset = inspectNodeInfo
+    ? isNodeInspectorExtended
+      ? nodeInspectorExtendedWidth
+      : nodeInspectorCollapsedWidth
+    : 0
 
   const executeQuery = useCallback(() => {
     if (!query.trim() || isPending) return
@@ -46,14 +54,8 @@ export const TuringTopToolBar = () => {
 
   return (
     <div
-      className={clsx(
-        'absolute top-0 m-4 transition-[left] duration-300',
-        inspectNodeInfo
-          ? isNodeInspectorExtended
-            ? 'left-[28.125rem]'
-            : 'left-[15.625rem]'
-          : 'left-0'
-      )}
+      className="absolute top-0 m-4 transition-[left] duration-300"
+      style={{ left: `${inspectorOffset}px` }}
     >
       <div className="flex items-center gap-2">
         <InputGroup

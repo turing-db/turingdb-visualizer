@@ -31,10 +31,21 @@ export type VisStore = {
 
   inspectNodeInfo: InspectNodeInfo | undefined
   isNodeInspectorExtended: boolean
+  nodeInspectorExtendedWidth: number
+  nodeInspectorCollapsedWidth: number
   inspectNode: (nodeID: number) => void
   closeInspectNodePanel: () => void
   setNodeInspectorExtended: (extended: boolean) => void
+  setNodeInspectorExtendedWidth: (width: number) => void
+  setNodeInspectorCollapsedWidth: (width: number) => void
 }
+
+export const NODE_INSPECTOR_COLLAPSED_DEFAULT_WIDTH = 250
+export const NODE_INSPECTOR_EXTENDED_DEFAULT_WIDTH = 450
+export const NODE_INSPECTOR_COLLAPSED_MIN_WIDTH = 200
+export const NODE_INSPECTOR_COLLAPSED_MAX_WIDTH = 450
+export const NODE_INSPECTOR_EXTENDED_MIN_WIDTH = 280
+export const NODE_INSPECTOR_EXTENDED_MAX_WIDTH = 800
 
 export const useVisStore = create<VisStore>((set) => {
   const entityCacheRef = createRef<EntityCache>() as MutableRefObject<EntityCache>
@@ -81,9 +92,25 @@ export const useVisStore = create<VisStore>((set) => {
 
     inspectNodeInfo: undefined,
     isNodeInspectorExtended: false,
+    nodeInspectorExtendedWidth: NODE_INSPECTOR_EXTENDED_DEFAULT_WIDTH,
+    nodeInspectorCollapsedWidth: NODE_INSPECTOR_COLLAPSED_DEFAULT_WIDTH,
     inspectNode: (nodeID: number) => set(() => ({ inspectNodeInfo: { nodeID } })),
     closeInspectNodePanel: () => set(() => ({ inspectNodeInfo: undefined })),
     setNodeInspectorExtended: (extended: boolean) => set(() => ({ isNodeInspectorExtended: extended })),
+    setNodeInspectorExtendedWidth: (width: number) =>
+      set(() => ({
+        nodeInspectorExtendedWidth: Math.max(
+          NODE_INSPECTOR_EXTENDED_MIN_WIDTH,
+          Math.min(NODE_INSPECTOR_EXTENDED_MAX_WIDTH, width)
+        ),
+      })),
+    setNodeInspectorCollapsedWidth: (width: number) =>
+      set(() => ({
+        nodeInspectorCollapsedWidth: Math.max(
+          NODE_INSPECTOR_COLLAPSED_MIN_WIDTH,
+          Math.min(NODE_INSPECTOR_COLLAPSED_MAX_WIDTH, width)
+        ),
+      })),
   }
 })
 
