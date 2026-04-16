@@ -4,7 +4,7 @@ import { useAppStore, useCanvasStore, useVisStore } from '@/stores'
 import { prepareQuery, ColumnMappingType, type ColumnMapping } from '@/utils/cypher-query-modifier'
 
 // Get the number of rows in a chunk (max length of any column)
-function getRowCount(chunk: unknown[][]): number {
+function getRowCount(chunk: unknown[]): number {
   return Math.max(0, ...chunk.map((col) => (Array.isArray(col) ? col.length : 0)))
 }
 

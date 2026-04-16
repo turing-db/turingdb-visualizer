@@ -1,5 +1,7 @@
 import React, { useContext, useEffect } from 'react'
+import { useStore } from 'zustand'
 import { TuringInstance } from './instance'
+import { type CanvasStore, type CanvasStoreApi, createCanvasStore } from './store'
 import type { PartialTuringUserEvents } from './types'
 
 export type TuringContextProviderProps = {
@@ -8,22 +10,35 @@ export type TuringContextProviderProps = {
 
 export type TuringContextType = {
   instance: TuringInstance
+  store: CanvasStoreApi
 }
 
-export const TuringContext = React.createContext<TuringContextType>({
-  instance: new TuringInstance(),
-})
+export const TuringContext = React.createContext<TuringContextType | null>(null)
 
 export const TuringContextProvider: React.FC<TuringContextProviderProps> = (props) => {
-  const [turing] = React.useState<TuringContextType>({
-    instance: new TuringInstance(),
+  const [turing] = React.useState<TuringContextType>(() => {
+    const instance = new TuringInstance()
+    const store = createCanvasStore(instance)
+    return { instance, store }
   })
 
   return <TuringContext.Provider value={turing}>{props.children}</TuringContext.Provider>
 }
 
 export const useTuringContext = () => {
-  return React.useContext(TuringContext)
+  const ctx = React.useContext(TuringContext)
+  if (!ctx) {
+    throw new Error('useTuringContext must be used within a TuringContextProvider')
+  }
+  return ctx
+}
+
+export function useCanvasStore<T>(selector: (state: CanvasStore) => T): T {
+  const ctx = React.useContext(TuringContext)
+  if (!ctx) {
+    throw new Error('useCanvasStore must be used within a TuringContextProvider')
+  }
+  return useStore(ctx.store, selector)
 }
 
 export interface TuringCanvasProps {
@@ -38,6 +53,8 @@ export const TuringCanvas: React.FC<TuringCanvasProps> = (props) => {
   const turing = useContext(TuringContext)
 
   useEffect(() => {
+    if (!turing) return
+
     const canvas = document.getElementById(props.id)
 
     if (!(canvas instanceof HTMLCanvasElement)) {
