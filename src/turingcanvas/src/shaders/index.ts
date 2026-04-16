@@ -11,7 +11,11 @@ export const getNodeMaterial = () => {
     side: THREE.DoubleSide,
     vertexShader: nodeVert,
     fragmentShader: nodeFrag,
-    uniforms: { uHasOutline: { value: 0.0 }, uOpacity: { value: 1.0 } },
+    uniforms: {
+      uHasOutline: { value: 0.0 },
+      uOpacity: { value: 1.0 },
+      uShape: { value: 0.0 },
+    },
     blending: THREE.CustomBlending,
     blendSrc: THREE.SrcAlphaFactor,
     depthTest: false,

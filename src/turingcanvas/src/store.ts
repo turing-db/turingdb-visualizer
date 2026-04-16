@@ -7,10 +7,12 @@ import type {
   EdgeMap,
   MakePrimaryArgs,
   NodeMap,
+  NodeShape,
   SelectNodeArgs,
   SetEdgeLabelArgs,
   SetNodeColorArgs,
   SetNodeLabelArgs,
+  SetNodeShapeArgs,
   ToggleSelectNodeArgs,
   TuringEdge,
   TuringInstance,
@@ -20,7 +22,14 @@ import type {
 
 import { create } from 'zustand'
 
-type TrackedState = 'nodes' | 'nodeMap' | 'edges' | 'edgeMap' | 'selectedNodes' | 'centerForce'
+type TrackedState =
+  | 'nodes'
+  | 'nodeMap'
+  | 'edges'
+  | 'edgeMap'
+  | 'selectedNodes'
+  | 'centerForce'
+  | 'nodeShape'
 type TuringInstanceRef = MutableRefObject<TuringInstance | undefined>
 
 export type CanvasStore = {
@@ -32,6 +41,7 @@ export type CanvasStore = {
   edges: () => TuringEdge[]
   edgeMap: () => EdgeMap
   centerForce: () => boolean
+  nodeShape: () => NodeShape
 
   actions: {
     addNodes: (...args: AddNodesArgs) => void
@@ -47,6 +57,7 @@ export type CanvasStore = {
     setNodeLabel: (...args: SetNodeLabelArgs) => void
     setEdgeLabel: (...args: SetEdgeLabelArgs) => void
     activateCenterForce: (...args: ActivateCenterForceArgs) => void
+    setNodeShape: (...args: SetNodeShapeArgs) => void
     fitView: (padding?: number) => void
     autoFit: (durationMs: number) => void
   }
@@ -68,6 +79,7 @@ export const createCanvasStore = (instance: TuringInstance) => {
     nodeMap: () => instanceRef.current?.nodeMap || new Map<number, TuringNode>(),
     edgeMap: () => instanceRef.current?.edgeMap || new Map<number, TuringEdge>(),
     centerForce: () => (instanceRef.current ? instanceRef.current.simulation.centerForce : true),
+    nodeShape: () => instanceRef.current?.nodeShape ?? 'octagon',
     actions: {
       addNodes: (...args: AddNodesArgs) => {
         const nodes = args[0]
@@ -142,6 +154,11 @@ export const createCanvasStore = (instance: TuringInstance) => {
         get().resetStates('centerForce')
       },
 
+      setNodeShape: (...args: SetNodeShapeArgs) => {
+        instanceRef.current?.setNodeShape(...args)
+        get().resetStates('nodeShape')
+      },
+
       fitView: (padding?: number) => {
         instanceRef.current?.fitView(padding)
       },
@@ -174,6 +191,9 @@ export const createCanvasStore = (instance: TuringInstance) => {
             case 'centerForce':
               acc.centerForce = () =>
                 instanceRef.current ? instanceRef.current.simulation.centerForce : true
+              break
+            case 'nodeShape':
+              acc.nodeShape = () => instanceRef.current?.nodeShape ?? 'octagon'
               break
             default:
               break

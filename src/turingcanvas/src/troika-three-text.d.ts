@@ -39,7 +39,11 @@ declare module 'troika-three-text' {
     sdfGlyphSize: number
     textIndent: number
     unicodeFontsUrl: string
-    sync: () => void
+    sync: (callback?: () => void) => void
+    textRenderInfo?: {
+      blockBounds: [number, number, number, number]
+      visibleBounds: [number, number, number, number]
+    }
     dispose(): void
   }
 }

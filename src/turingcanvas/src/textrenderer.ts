@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import { Text } from 'troika-three-text'
 import { BASE_EDGE_COLOR, BASE_NODE_COLOR, SELECTED_NODE_COLOR } from './colors'
 
-import type { EdgeMap, NodeMap } from './types'
+import type { EdgeMap, NodeMap, NodeShape, TuringNode } from './types'
 
 export class TextRenderer {
   scene: THREE.Scene
@@ -17,10 +17,75 @@ export class TextRenderer {
   nodeLabels = new Map<number, Text>()
   edgeLabels = new Map<number, Text>()
   nodeOffset = new THREE.Vector3(0.4, -0.1, 0.0)
+  nodeShape: NodeShape = 'octagon'
 
   constructor(scene: THREE.Scene, camera: THREE.OrthographicCamera) {
     this.scene = scene
     this.camera = camera
+  }
+
+  private applyLabelAnchor(t: Text) {
+    if (this.nodeShape === 'rounded-rect') {
+      t.anchorX = 'center'
+      t.anchorY = 'middle'
+      t.textAlign = 'center'
+      t.fontWeight = 'bold'
+    } else {
+      t.anchorX = 'left'
+      t.anchorY = 'baseline'
+      t.textAlign = 'left'
+      t.fontWeight = this.weight
+    }
+  }
+
+  setNodeShape(shape: NodeShape, nodes: NodeMap) {
+    this.nodeShape = shape
+    this.nodeLabels.forEach((t, id) => {
+      this.applyLabelAnchor(t)
+      const node = nodes.get(id)
+      if (node) this.applyEstimatedSize(t.text ?? '', node)
+      t.sync(() => {
+        if (node) this.measureLabel(t, node)
+      })
+    })
+  }
+
+  // Padding breakdown (world units):
+  //   text pad inside rect: ~0.22 horiz, 0.15 vert per side
+  //   rectBodyMargin gutter outside rect: 0.2 per side (for selection ring)
+  // Total added to the text block: +0.84 width, +0.7 height.
+  static readonly PAD_W = 0.95
+  static readonly PAD_H = 0.7
+  static readonly MIN_W = 1.0
+  static readonly MIN_H = 0.75
+
+  // Conservative synchronous estimate of a bold text block width before
+  // troika's async layout completes. Slightly over-estimates so the rect never
+  // clips the glyphs; measureLabel() shrinks it to the true size afterwards.
+  estimateSize(text: string): { width: number; height: number } {
+    // Over-estimate glyph width so wide chars (M, W) never get clipped
+    // during the brief window before troika's async layout finishes.
+    const avgCharW = this.fontSize * 0.72
+    return {
+      width: text.length * avgCharW,
+      height: this.fontSize * 1.2,
+    }
+  }
+
+  applyEstimatedSize(text: string, node: TuringNode) {
+    const { width, height } = this.estimateSize(text)
+    node.labelWidth = Math.max(width + TextRenderer.PAD_W, TextRenderer.MIN_W)
+    node.labelHeight = Math.max(height + TextRenderer.PAD_H, TextRenderer.MIN_H)
+  }
+
+  measureLabel(t: Text, node: TuringNode) {
+    const info = t.textRenderInfo
+    if (!info) return
+    const [minX, minY, maxX, maxY] = info.blockBounds
+    const width = maxX - minX
+    const height = maxY - minY
+    node.labelWidth = Math.max(width + TextRenderer.PAD_W, TextRenderer.MIN_W)
+    node.labelHeight = Math.max(height + TextRenderer.PAD_H, TextRenderer.MIN_H)
   }
 
   addNodeLabel(id: number) {
@@ -30,6 +95,8 @@ export class TextRenderer {
     t.fontSize = this.fontSize
     t.fontWeight = this.weight
     t.color = c.getHex()
+    t.renderOrder = 3
+    this.applyLabelAnchor(t)
     this.nodeLabels.set(id, t)
     this.scene.add(t)
   }
@@ -97,12 +164,19 @@ export class TextRenderer {
 
   update(nodes: NodeMap, edges: EdgeMap) {
     const visible = this.camera.zoom > 0.07
+    const centerInShape = this.nodeShape === 'rounded-rect'
+
     this.nodeLabels.forEach((l, id) => {
       const n = nodes.get(id)
       if (!n) return
 
-      l.position.x = n.x + this.nodeOffset.x
-      l.position.y = n.y + this.nodeOffset.y
+      if (centerInShape) {
+        l.position.x = n.x
+        l.position.y = n.y
+      } else {
+        l.position.x = n.x + this.nodeOffset.x
+        l.position.y = n.y + this.nodeOffset.y
+      }
 
       const c = new THREE.Color(n.color)
 
@@ -116,7 +190,17 @@ export class TextRenderer {
         c.lerp(this.selectedColor, 0.5)
       }
 
-      l.color = c.getHex()
+      if (centerInShape) {
+        // Label sits inside a translucent body: use the node color (matching the border),
+        // brightened so it reads on dark backgrounds.
+        const tc = c.clone()
+        tc.r = Math.min(1, tc.r * 1.3 + 0.2)
+        tc.g = Math.min(1, tc.g * 1.3 + 0.2)
+        tc.b = Math.min(1, tc.b * 1.3 + 0.2)
+        l.color = tc.getHex()
+      } else {
+        l.color = c.getHex()
+      }
       l.fillOpacity = n.opacity
       l.visible = visible
     })

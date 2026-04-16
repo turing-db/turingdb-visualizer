@@ -14,6 +14,7 @@ import { EdgeLabelSelector } from './actions/edge-label-selector'
 import { ExpandNeighborsButton } from './actions/expand-neighbors-btn'
 import { ColorNodesButton } from './actions/color-nodes-btn'
 import { CenterForceSwitch } from './actions/center-force-switch'
+import { NodeShapeSwitch } from './actions/node-shape-switch'
 import { useCypherQuery } from '@/hooks/use-cypher-query'
 import { useVisStore } from '@/stores'
 import { CypherQueryError } from '@/api/responses'
@@ -89,6 +90,7 @@ export const TuringTopToolBar = () => {
         <div className="mx-1 border-l border-gray-600 h-6" />
 
         <CenterForceSwitch />
+        <NodeShapeSwitch />
         <TuringButtonGroup>
           {/* <TuringTooltip content="Clean up canvas" interactionKind="hover-target" placement="bottom">
             <TuringButton icon="eraser"></TuringButton>

@@ -19,7 +19,7 @@ import {
 
 import { getBoxSelectionMaterial, getEdgeMaterial, getNodeMaterial } from './shaders'
 import { TextRenderer } from './textrenderer'
-import type { TuringEdge, TuringNode } from './types'
+import type { NodeShape, TuringEdge, TuringNode } from './types'
 
 /** Turing renderer class, contains the GraphicsRenderer and the scene */
 export class TuringRenderer {
@@ -141,6 +141,11 @@ export class TuringRenderer {
 
   createScene() {}
 
+  setNodeShape(shape: NodeShape) {
+    const uShape = this.nodeMaterial.uniforms.uShape
+    if (uShape) uShape.value = shape === 'rounded-rect' ? 1.0 : 0.0
+  }
+
   updateNodeUniforms(n: TuringNode) {
     const bufi = getNodeBufferIndex(n.index)
     const i = getNodeIndexInBuffer(n.index)
@@ -208,14 +213,27 @@ export class TuringRenderer {
     primaryMat.scale(baseScale)
     secondaryMat.scale(new THREE.Vector3(0.8, 0.8, 0.8))
 
+    const isRect = this.instance.nodeShape === 'rounded-rect'
+    const rectMat = new THREE.Matrix4()
+
     // Nodes
     nodes.forEach((n, i) => {
       const bufIndex = getNodeBufferIndex(i)
       const nodeIndex = getNodeIndexInBuffer(i)
-      const mat = n.isPrimary() ? primaryMat : secondaryMat
 
-      mat.setPosition(n.x, n.y, 0)
-      this.nodeMeshes[bufIndex].setMatrixAt(nodeIndex, mat)
+      if (isRect) {
+        // Always scale to the measured label dimensions — troika text is not
+        // scaled by the instance matrix, so shrinking the rect would clip
+        // the text. Secondary-state styling is conveyed by color dimming
+        // (see updateNodeUniforms) rather than by size.
+        rectMat.makeScale(n.labelWidth, n.labelHeight, 1)
+        rectMat.setPosition(n.x, n.y, 0)
+        this.nodeMeshes[bufIndex].setMatrixAt(nodeIndex, rectMat)
+      } else {
+        const mat = n.isPrimary() ? primaryMat : secondaryMat
+        mat.setPosition(n.x, n.y, 0)
+        this.nodeMeshes[bufIndex].setMatrixAt(nodeIndex, mat)
+      }
     })
 
     // Edges

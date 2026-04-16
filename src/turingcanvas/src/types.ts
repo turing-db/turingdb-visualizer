@@ -2,6 +2,8 @@ import * as THREE from 'three'
 import { BASE_NODE_COLOR } from './colors'
 import type { TuringInstance } from './instance'
 
+export type NodeShape = 'octagon' | 'rounded-rect'
+
 export enum EntityState {
   None = 0,
   Secondary = 1 << 0,
@@ -21,6 +23,8 @@ export class TuringNode {
   opacity: number
   color: THREE.Color
   data?: NodeData
+  labelWidth: number
+  labelHeight: number
 
   constructor(args: {
     id: number
@@ -39,6 +43,8 @@ export class TuringNode {
     this.color = args.color || new THREE.Color(BASE_NODE_COLOR)
     this.opacity = 1
     this.data = args.data
+    this.labelWidth = 1.4
+    this.labelHeight = 1.1
   }
 
   isSelected() {
@@ -221,3 +227,4 @@ export type SetNodeLabelArgs = Parameters<TuringInstance['setNodeLabel']>
 export type SetEdgeLabelArgs = Parameters<TuringInstance['setEdgeLabel']>
 export type SetNodeColorArgs = Parameters<TuringInstance['setNodeColor']>
 export type ActiveCenterForceArgs = Parameters<TuringInstance['activateCenterForce']>
+export type SetNodeShapeArgs = Parameters<TuringInstance['setNodeShape']>

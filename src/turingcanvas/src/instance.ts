@@ -12,6 +12,7 @@ import {
   type EdgeMap,
   type Edges,
   type NodeMap,
+  type NodeShape,
   type Nodes,
   type TuringEdge,
   TuringNode,
@@ -28,6 +29,7 @@ export class TuringInstance {
   edgeMap: EdgeMap = new Map<number, TuringEdge>()
   autoFitUntil = 0
   autoFitControlsBound = false
+  nodeShape: NodeShape = 'octagon'
   renderer: TuringRenderer
   events: TuringEvents
 
@@ -115,6 +117,12 @@ export class TuringInstance {
     if (obj === undefined) return
 
     obj.text = label
+    // Size the rect up-front from a synchronous char-count estimate so the
+    // text is never clipped during the window before troika finishes layout.
+    this.renderer.textRenderer.applyEstimatedSize(label, n)
+    obj.sync(() => {
+      this.renderer.textRenderer.measureLabel(obj, n)
+    })
   }
 
   setEdgeLabel(e: TuringEdge, label: string) {
@@ -150,6 +158,12 @@ export class TuringInstance {
 
   activateCenterForce(v: boolean) {
     this.simulation.activateCenterForce(v)
+  }
+
+  setNodeShape(shape: NodeShape) {
+    this.nodeShape = shape
+    this.renderer.setNodeShape(shape)
+    this.renderer.textRenderer.setNodeShape(shape, this.nodeMap)
   }
 
   fitView(padding = 1.2) {
