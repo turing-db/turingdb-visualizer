@@ -85,15 +85,12 @@ const GraphCanvas: FC<GraphCanvasProps> = (props) => {
   const { setContextMenuInfo } = props
   const inspectNode = useVisStore((state) => state.inspectNode)
 
-  const turing = useTuringContext()
-  const init = useCanvasStore((state) => state.init)
   const closeInspectNodePanel = useVisStore((state) => state.closeInspectNodePanel)
   const { newNeighbours, add: addNeighbour } = useVisStore((state) => state.neighbourhood)
 
   useEffect(() => {
-    init(turing.instance)
     closeInspectNodePanel()
-  }, [init, turing.instance, closeInspectNodePanel])
+  }, [closeInspectNodePanel])
 
   const events = useRef<Partial<TuringUserEvents>>({
     canvassingleclick: (e) => {

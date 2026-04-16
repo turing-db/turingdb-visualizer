@@ -16,13 +16,13 @@ export function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TuringLayout>
-        <TuringContextProvider>
+      <TuringContextProvider>
+        <TuringLayout>
           <BlueprintProvider portalClassName={theme === 'dark' ? 'bp5-dark' : 'bp5-light'}>
             <TuringFrame />
           </BlueprintProvider>
-        </TuringContextProvider>
-      </TuringLayout>
+        </TuringLayout>
+      </TuringContextProvider>
     </QueryClientProvider>
   )
 }

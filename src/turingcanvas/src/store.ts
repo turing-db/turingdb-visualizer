@@ -1,4 +1,4 @@
-import { type MutableRefObject, createRef } from 'react'
+import type { MutableRefObject } from 'react'
 import type {
   ActiveCenterForceArgs as ActivateCenterForceArgs,
   AddEdgesArgs,
@@ -26,7 +26,6 @@ type TuringInstanceRef = MutableRefObject<TuringInstance | undefined>
 export type CanvasStore = {
   instance: TuringInstanceRef
 
-  init: (instance: TuringInstance) => void
   nodes: () => TuringNode[]
   selectedNodes: () => Map<number, TuringNode>
   nodeMap: () => NodeMap
@@ -54,15 +53,13 @@ export type CanvasStore = {
   resetStates: (...args: TrackedState[]) => void
 }
 
-export const useCanvasStore = create<CanvasStore>((set, get) => {
-  const instanceRef = createRef<TuringInstance | undefined>() as TuringInstanceRef
+export type CanvasStoreApi = ReturnType<typeof createCanvasStore>
 
-  return {
+export const createCanvasStore = (instance: TuringInstance) => {
+  const instanceRef: TuringInstanceRef = { current: instance }
+
+  return create<CanvasStore>((set, get) => ({
     instance: instanceRef,
-
-    init: (instance: TuringInstance) => {
-      instanceRef.current = instance
-    },
 
     nodes: () => instanceRef.current?.nodes || [],
     selectedNodes: () => instanceRef.current?.selectedNodes || new Map(),
@@ -150,30 +147,28 @@ export const useCanvasStore = create<CanvasStore>((set, get) => {
     },
 
     resetStates: (...states: TrackedState[]) => {
-      const instance = get().instance
-
       // Prepare a partial state update object
       const updatedState = states.reduce(
         (acc, stateKey) => {
           switch (stateKey) {
             case 'nodes':
-              acc.nodes = () => instance.current?.nodes || []
+              acc.nodes = () => instanceRef.current?.nodes || []
               break
             case 'nodeMap':
-              acc.nodeMap = () => instance.current?.nodeMap || new Map<number, TuringNode>()
+              acc.nodeMap = () => instanceRef.current?.nodeMap || new Map<number, TuringNode>()
               break
             case 'edges':
-              acc.edges = () => instance.current?.edges || []
+              acc.edges = () => instanceRef.current?.edges || []
               break
             case 'edgeMap':
-              acc.edgeMap = () => instance.current?.edgeMap || new Map<number, TuringEdge>()
+              acc.edgeMap = () => instanceRef.current?.edgeMap || new Map<number, TuringEdge>()
               break
             case 'selectedNodes':
-              acc.selectedNodes = () => instance.current?.selectedNodes || new Map()
+              acc.selectedNodes = () => instanceRef.current?.selectedNodes || new Map()
               break
             case 'centerForce':
               acc.centerForce = () =>
-                instance.current ? instance.current.simulation.centerForce : true
+                instanceRef.current ? instanceRef.current.simulation.centerForce : true
               break
             default:
               break
@@ -186,5 +181,5 @@ export const useCanvasStore = create<CanvasStore>((set, get) => {
       // Update the store only with the changed states
       set(updatedState)
     },
-  }
-})
+  }))
+}

@@ -77,7 +77,7 @@ function splitReturnClause(clause: string): string[] {
 }
 
 // Modify the query to add missing variables before their property projections
-function modifyQuery(query: string, parsed: ParsedQuery, missing: Set<string>): string {
+function modifyQuery(query: string, missing: Set<string>): string {
   if (missing.size === 0) {
     return query
   }
@@ -172,7 +172,7 @@ function buildColumnMapping(parsed: ParsedQuery, missing: Set<string>): ColumnMa
 export function prepareQuery(query: string): ModifiedQuery {
   const parsed = parseCypherQuery(query)
   const missing = findMissingVariables(parsed)
-  const modifiedQuery = modifyQuery(query, parsed, missing)
+  const modifiedQuery = modifyQuery(query, missing)
   const columnMapping = buildColumnMapping(parsed, missing)
 
   return { query: modifiedQuery, columnMapping }
