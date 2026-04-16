@@ -396,10 +396,10 @@ export class TuringEvents {
 
     if (!this.hoveredNode) return
 
-    this.draggedNodes = Array.from(this.instance.selectedNodes.values())
-
-    if (!this.hoveredNode.isSelected()) {
-      this.draggedNodes.push(this.hoveredNode)
+    if (this.hoveredNode.isSelected()) {
+      this.draggedNodes = Array.from(this.instance.selectedNodes.values())
+    } else {
+      this.draggedNodes = [this.hoveredNode]
     }
 
     this.nodeDragOrigins = this.draggedNodes.map((n) => new THREE.Vector2(n.x, n.y))

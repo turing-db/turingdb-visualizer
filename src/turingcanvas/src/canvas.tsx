@@ -22,6 +22,10 @@ export const TuringContextProvider: React.FC<TuringContextProviderProps> = (prop
     return { instance, store }
   })
 
+  if (import.meta.env.DEV) {
+    ;(window as unknown as { __turing?: TuringContextType }).__turing = turing
+  }
+
   return <TuringContext.Provider value={turing}>{props.children}</TuringContext.Provider>
 }
 
