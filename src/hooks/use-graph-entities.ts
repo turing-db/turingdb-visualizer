@@ -24,8 +24,11 @@ export const useGraphEntities = () => {
 
   const { nodeIDs, edgeIDs } = useGraphEntityIDs()
 
+  // Stable key: use counts to avoid re-fetches when array references change
+  const entityKey = `${nodeIDs.length}:${edgeIDs.length}`
+
   return useQuery({
-    queryKey: ['graph-entities', graph.info, graph.info?.name, nodeIDs, edgeIDs],
+    queryKey: ['graph-entities', graph.info?.name, entityKey],
     queryFn: async () => {
       if (!graph.info) return
 
@@ -42,7 +45,7 @@ export const useGraphEntities = () => {
       const missingEdgesFromCache = cacheEdges.filter((edge) => edge.entry === undefined)
 
       const newCacheNodes =
-        missingEdgesFromCache.length > 0
+        missingNodesFromCache.length > 0
           ? await getNodes({
               graph: graph.info.name,
               nodeIDs: [...missingNodesFromCache.map((node) => node.id)],
