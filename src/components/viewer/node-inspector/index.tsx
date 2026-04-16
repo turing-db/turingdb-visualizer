@@ -43,7 +43,7 @@ export const TuringNodeInspector = () => {
         e.stopPropagation()
       }}
       className={clsx(
-        'bg-grey-800 shadow-dark pointer-events-auto absolute top-[0.0625rem] left-[0.0625rem] flex h-[100%] flex-col overflow-hidden transition-all duration-300',
+        'bg-grey-800 shadow-dark pointer-events-auto absolute top-0 left-0 flex h-[100%] flex-col overflow-hidden transition-all duration-300',
         [inspectNodeInfo ? 'translate-x-[0]' : 'translate-x-[calc(-100%-2px)]'],
         [isExtended ? 'w-[28.125rem]' : 'w-[15.625rem]']
       )}
