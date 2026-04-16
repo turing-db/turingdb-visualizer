@@ -26,6 +26,8 @@ export class TuringInstance {
   edges: Edges = []
   nodeMap: NodeMap = new Map<number, TuringNode>()
   edgeMap: EdgeMap = new Map<number, TuringEdge>()
+  autoFitUntil = 0
+  autoFitControlsBound = false
   renderer: TuringRenderer
   events: TuringEvents
 
@@ -191,6 +193,17 @@ export class TuringInstance {
     this.events.controls.update()
   }
 
+  autoFit(durationMs: number) {
+    this.autoFitUntil = performance.now() + durationMs
+
+    if (!this.autoFitControlsBound) {
+      this.events.controls.addEventListener('start', () => {
+        this.autoFitUntil = 0
+      })
+      this.autoFitControlsBound = true
+    }
+  }
+
   update() {
     this.simulation.tick()
 
@@ -208,6 +221,10 @@ export class TuringInstance {
     }
 
     this.updatePositions()
+
+    if (performance.now() < this.autoFitUntil) {
+      this.fitView()
+    }
 
     this.events.update()
     this.renderer.update()

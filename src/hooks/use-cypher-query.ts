@@ -121,8 +121,12 @@ export const useCypherQuery = () => {
           }
         }
 
-        // Delay fitView to let the simulation position the nodes
-        setTimeout(() => canvasActions.fitView(), 500)
+        // Continuously fit the view while the force simulation spreads the
+        // nodes out. Larger graphs need more time to settle, so scale the
+        // tracking window with node count.
+        const count = nodeIDs.length
+        const duration = Math.min(800 + count * 5, 4000)
+        canvasActions.autoFit(duration)
       }
     },
   })

@@ -48,6 +48,7 @@ export type CanvasStore = {
     setEdgeLabel: (...args: SetEdgeLabelArgs) => void
     activateCenterForce: (...args: ActivateCenterForceArgs) => void
     fitView: (padding?: number) => void
+    autoFit: (durationMs: number) => void
   }
 
   resetStates: (...args: TrackedState[]) => void
@@ -143,6 +144,10 @@ export const createCanvasStore = (instance: TuringInstance) => {
 
       fitView: (padding?: number) => {
         instanceRef.current?.fitView(padding)
+      },
+
+      autoFit: (durationMs: number) => {
+        instanceRef.current?.autoFit(durationMs)
       },
     },
 
