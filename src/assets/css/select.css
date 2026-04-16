@@ -1,32 +1,44 @@
 /* @tailwind components; */
 
 @layer components {
-  .bp5-dark .app-select-popover {
+  .bp5-dark.app-select-popover {
     @apply z-[200];
   }
 
-  .bp5-dark .app-select-popover .bp5-menu {
+  .bp5-dark.app-select-popover .bp5-menu {
     @apply bg-grey-800;
   }
 
-  .bp5-dark .app-select-popover .bp5-menu::-webkit-scrollbar-thumb {
+  .bp5-dark.app-select-popover .bp5-menu::-webkit-scrollbar-thumb {
     @apply bg-grey-600 rounded-[1.5625rem];
   }
 
-  .bp5-dark .app-select-popover .bp5-menu::-webkit-scrollbar {
+  .bp5-dark.app-select-popover .bp5-menu::-webkit-scrollbar {
     @apply h-1 w-1;
   }
 
-  .bp5-dark .app-select-popover .bp5-menu::-webkit-scrollbar-track {
+  .bp5-dark.app-select-popover .bp5-menu::-webkit-scrollbar-track {
     @apply bg-transparent;
   }
 
-  .bp5-dark .app-select-popover .bp5-menu-item.bp5-active {
+  .bp5-dark.app-select-popover .bp5-menu-item.bp5-active {
     @apply bg-primary-default/10 text-content-primary;
   }
 
-  .bp5-dark .app-select-popover .bp5-menu-item {
+  .bp5-dark.app-select-popover .bp5-menu-item {
     padding-left: 7px;
     @apply text-content-secondary;
   }
+}
+
+/* Outside the component layer so it overrides the generic .bp5-dark .bp5-menu
+   shadow from popover-menu.css (un-layered rules win against layered ones). */
+.bp5-dark.app-select-popover .bp5-menu {
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.45) !important;
+}
+
+/* Default Blueprint popover-content has a lighter grey background that shows
+   as a strip around the dark menu. Match the menu background. */
+.bp5-dark.app-select-popover .bp5-popover-content {
+  @apply bg-grey-800;
 }

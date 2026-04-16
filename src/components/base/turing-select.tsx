@@ -20,6 +20,10 @@ export const TuringSelect: FC<AppSelectProps> = (props) => {
       itemRenderer={renderer}
       itemPredicate={filter}
       onItemSelect={props.onItemSelect}
+      popoverProps={{
+        popoverClassName: 'app-select-popover',
+        minimal: true,
+      }}
     >
       <TuringButton
         icon={props.leftIcon}
