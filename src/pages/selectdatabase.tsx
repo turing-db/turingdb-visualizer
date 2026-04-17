@@ -1,9 +1,10 @@
 import React from 'react'
 
-import { Icon, Spinner } from '@blueprintjs/core'
-import { useAppStore } from '@/stores/app.store'
 import { TuringButton } from '@/components/base/turing-button'
 import useGraphInfo from '@/hooks/use-graph-info'
+import { useAppStore } from '@/stores/app.store'
+import { getActiveApiBase } from '@/stores/clients.store'
+import { Icon, Spinner } from '@blueprintjs/core'
 import { useQuery } from '@tanstack/react-query'
 
 const reqOpts = {
@@ -11,7 +12,7 @@ const reqOpts = {
 }
 
 const fetchLoadGraph = async (graph: string) => {
-  return fetch(`/api/load_graph?graph=${graph}`, reqOpts)
+  return fetch(`${getActiveApiBase()}/load_graph?graph=${graph}`, reqOpts)
 }
 
 export const TSelectDatabasePage: React.FC = () => {

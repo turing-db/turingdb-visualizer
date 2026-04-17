@@ -1,8 +1,8 @@
 import { useMemo } from 'react'
 import { TuringGraphSelector } from './turing-graph-selector'
 
-import { useAppStore } from '@/stores'
 import useGraphInfo from '@/hooks/use-graph-info'
+import { useAppStore } from '@/stores'
 
 export const TuringTopBar = () => {
   const page = useAppStore((state) => state.page)
@@ -17,6 +17,10 @@ export const TuringTopBar = () => {
     switch (page) {
       case 'viewer':
         return 'Viewing:'
+      case 'databases':
+        return 'Databases'
+      default:
+        return ''
     }
   }, [page])
 
