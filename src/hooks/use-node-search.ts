@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query'
 import { listNodes } from '@/api'
 import { useAppStore, useCanvasStore, useVisStore } from '@/stores'
 import useGraphInfo from '@/hooks/use-graph-info'
-import { NODE_DISPLAY_NAMES } from '@/utils/nodes'
+import { NODE_DISPLAY_NAMES, getNodeName } from '@/utils/nodes'
 
 const SEARCH_LIMIT = 100
 
@@ -14,6 +14,7 @@ export const useNodeSearch = () => {
   const graphName = useAppStore((state) => state.graphName)
   const graph = useGraphInfo(graphName)
   const neighbourhood = useVisStore((state) => state.neighbourhood)
+  const entityCache = useVisStore((state) => state.entityCache)
   const setGraphLoading = useVisStore((state) => state.setGraphLoading)
   const canvasActions = useCanvasStore((state) => state.actions)
 
@@ -39,6 +40,19 @@ export const useNodeSearch = () => {
         throw new Error('No searchable name-like property in this graph')
       }
 
+      // Fast path: if the term already matches a node currently in view,
+      // just focus on it — don't disturb the existing neighbourhood.
+      const needle = term.toLowerCase()
+      for (const id of neighbourhood.keys()) {
+        const node = entityCache.nodes.get(id)
+        if (!node) continue
+        const nameProp = getNodeName(node.properties)
+        if (!nameProp || nameProp.value === null) continue
+        if (String(nameProp.value).toLowerCase().includes(needle)) {
+          return { nodeIDs: [id], fromView: true }
+        }
+      }
+
       const properties = new Map<string, string>([[defaultPropertyType, term]])
       const res = await listNodes({
         graph: graph.info.name,
@@ -51,11 +65,17 @@ export const useNodeSearch = () => {
         .map((n) => n.id)
         .filter((id): id is number => typeof id === 'number')
 
-      return { nodeIDs }
+      return { nodeIDs, fromView: false }
     },
-    onSuccess: async ({ nodeIDs }) => {
+    onSuccess: async ({ nodeIDs, fromView }) => {
       if (!graphName) {
         setGraphLoading(false)
+        return
+      }
+
+      if (fromView) {
+        setGraphLoading(false)
+        canvasActions.focusNode(nodeIDs[0], 800)
         return
       }
 
