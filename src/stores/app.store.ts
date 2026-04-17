@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-export type PageType = 'viewer' | 'help'
+export type PageType = 'viewer' | 'help' | 'databases'
 export type ThemeType = 'dark' | 'light'
 
 export type AppStore = {

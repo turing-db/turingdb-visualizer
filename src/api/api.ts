@@ -1,14 +1,15 @@
+import { getActiveApiBase } from '@/stores/clients.store'
 import { ExploreEdgeDir } from './args'
 
 import type {
   CypherQueryArgs,
   ExploreNodeEdgesArgs,
+  GetEdgesArgs,
   GetGraphStatusArgs,
   GetNeighborsArgs,
   GetNodeEdgesArgs,
   GetNodePropertiesArgs,
   GetNodesArgs,
-  GetEdgesArgs,
   ListAvailableGraphsArgs,
   ListEdgeTypesArgs,
   ListLabelsArgs,
@@ -20,14 +21,14 @@ import {
   CypherQueryError,
   type CypherQueryResponse,
   type ExploreNodeEdgesResponse,
+  type GetEdgesResponse,
   type GetGraphStatusResponse,
   type GetNeighborsResponse,
-  type GetNodeEdgesResponse,
-  type GetNodeEdgeIDsResponse,
   type GetNodeEdgeIDsRawResponse,
+  type GetNodeEdgeIDsResponse,
+  type GetNodeEdgesResponse,
   type GetNodePropertiesResponse,
   type GetNodesResponse,
-  type GetEdgesResponse,
   type ListAvailableGraphsResponse,
   type ListEdgeTypesResponse,
   type ListLabelsResponse,
@@ -35,8 +36,10 @@ import {
   type ListPropertyTypesResponse,
 } from './responses'
 
+const apiUrl = (path: string) => `${getActiveApiBase()}${path}`
+
 export async function getGraphStatus(args: GetGraphStatusArgs): Promise<GetGraphStatusResponse> {
-  return await fetch(`/api/get_graph_status?graph=${args.graph}`, {
+  return await fetch(apiUrl(`/get_graph_status?graph=${args.graph}`), {
     method: 'POST',
     body: JSON.stringify({}),
     signal: args.controller?.signal,
@@ -46,7 +49,7 @@ export async function getGraphStatus(args: GetGraphStatusArgs): Promise<GetGraph
 export async function listAvailableGraphs(
   args: ListAvailableGraphsArgs
 ): Promise<ListAvailableGraphsResponse> {
-  const avail_graphs = await fetch('/api/list_avail_graphs', {
+  const avail_graphs = await fetch(apiUrl('/list_avail_graphs'), {
     method: 'POST',
     body: JSON.stringify({}),
     signal: args.controller?.signal,
@@ -56,7 +59,7 @@ export async function listAvailableGraphs(
     })
   )
 
-  const loaded_graphs = await fetch('/api/list_loaded_graphs', {
+  const loaded_graphs = await fetch(apiUrl('/list_loaded_graphs'), {
     method: 'POST',
     body: JSON.stringify({}),
     signal: args.controller?.signal,
@@ -70,7 +73,7 @@ export async function listAvailableGraphs(
 }
 
 export async function listLabels(args: ListLabelsArgs): Promise<ListLabelsResponse> {
-  return await fetch(`/api/list_labels?graph=${args.graph}`, {
+  return await fetch(apiUrl(`/list_labels?graph=${args.graph}`), {
     method: 'POST',
     signal: args.controller?.signal,
     body: JSON.stringify({
@@ -86,7 +89,7 @@ export async function listLabels(args: ListLabelsArgs): Promise<ListLabelsRespon
 export async function listPropertyTypes(
   args: ListPropertyTypesArgs
 ): Promise<ListPropertyTypesResponse> {
-  return await fetch(`/api/list_property_types?graph=${args.graph}`, {
+  return await fetch(apiUrl(`/list_property_types?graph=${args.graph}`), {
     method: 'POST',
     signal: args.controller?.signal,
     body: JSON.stringify({
@@ -100,7 +103,7 @@ export async function listPropertyTypes(
 }
 
 export async function listEdgeTypes(args: ListEdgeTypesArgs): Promise<ListEdgeTypesResponse> {
-  return await fetch(`/api/list_edge_types?graph=${args.graph}`, {
+  return await fetch(apiUrl(`/list_edge_types?graph=${args.graph}`), {
     method: 'POST',
     signal: args.controller?.signal,
     body: JSON.stringify({
@@ -114,7 +117,7 @@ export async function listEdgeTypes(args: ListEdgeTypesArgs): Promise<ListEdgeTy
 }
 
 export async function listNodes(args: ListNodesArgs): Promise<ListNodesResponse> {
-  return await fetch(`/api/list_nodes?graph=${args.graph}`, {
+  return await fetch(apiUrl(`/list_nodes?graph=${args.graph}`), {
     method: 'POST',
     signal: args.signal,
     body: JSON.stringify({
@@ -131,7 +134,7 @@ export async function listNodes(args: ListNodesArgs): Promise<ListNodesResponse>
 }
 
 export async function getNeighbors(args: GetNeighborsArgs): Promise<GetNeighborsResponse> {
-  return await fetch(`/api/get_neighbors?graph=${args.graph}`, {
+  return await fetch(apiUrl(`/get_neighbors?graph=${args.graph}`), {
     method: 'POST',
     signal: args.controller?.signal,
     body: JSON.stringify({
@@ -146,7 +149,7 @@ export async function getNeighbors(args: GetNeighborsArgs): Promise<GetNeighbors
 }
 
 export async function getNodes(args: GetNodesArgs): Promise<GetNodesResponse> {
-  return await fetch(`/api/get_nodes?graph=${args.graph}`, {
+  return await fetch(apiUrl(`/get_nodes?graph=${args.graph}`), {
     method: 'POST',
     signal: args.controller?.signal,
     body: JSON.stringify({
@@ -162,7 +165,7 @@ export async function getNodes(args: GetNodesArgs): Promise<GetNodesResponse> {
 export async function getNodeProperties(
   args: GetNodePropertiesArgs
 ): Promise<GetNodePropertiesResponse> {
-  return await fetch(`/api/get_node_properties?graph=${args.graph}`, {
+  return await fetch(apiUrl(`/get_node_properties?graph=${args.graph}`), {
     method: 'POST',
     signal: args.controller?.signal,
     body: JSON.stringify({
@@ -177,7 +180,7 @@ export async function getNodeProperties(
 }
 
 export async function getNodeEdges(args: GetNodeEdgesArgs): Promise<GetNodeEdgesResponse> {
-  return await fetch(`/api/get_node_edges?graph=${args.graph}`, {
+  return await fetch(apiUrl(`/get_node_edges?graph=${args.graph}`), {
     method: 'POST',
     signal: args.controller?.signal,
     body: JSON.stringify({
@@ -196,7 +199,7 @@ export async function getNodeEdges(args: GetNodeEdgesArgs): Promise<GetNodeEdges
 }
 
 export async function getNodeEdgeIDs(args: GetNodeEdgesArgs): Promise<GetNodeEdgeIDsResponse> {
-  return await fetch(`/api/get_node_edges?graph=${args.graph}`, {
+  return await fetch(apiUrl(`/get_node_edges?graph=${args.graph}`), {
     method: 'POST',
     signal: args.controller?.signal,
     body: JSON.stringify({
@@ -233,7 +236,7 @@ export async function getNodeEdgeIDs(args: GetNodeEdgesArgs): Promise<GetNodeEdg
 export async function exploreNodeEdges(
   args: ExploreNodeEdgesArgs
 ): Promise<ExploreNodeEdgesResponse> {
-  return await fetch(`/api/explore_node_edges?graph=${args.graph}`, {
+  return await fetch(apiUrl(`/explore_node_edges?graph=${args.graph}`), {
     method: 'POST',
     signal: args.controller?.signal,
     body: JSON.stringify({
@@ -256,7 +259,7 @@ export async function exploreNodeEdges(
 }
 
 export async function getEdges(args: GetEdgesArgs): Promise<GetEdgesResponse> {
-  return await fetch(`/api/get_edges?graph=${args.graph}`, {
+  return await fetch(apiUrl(`/get_edges?graph=${args.graph}`), {
     method: 'POST',
     signal: args.controller?.signal,
     body: JSON.stringify({
@@ -270,7 +273,7 @@ export async function getEdges(args: GetEdgesArgs): Promise<GetEdgesResponse> {
 }
 
 export async function executeCypherQuery(args: CypherQueryArgs): Promise<CypherQueryResponse> {
-  return await fetch(`/api/query?graph=${args.graph}`, {
+  return await fetch(apiUrl(`/query?graph=${args.graph}`), {
     method: 'POST',
     signal: args.controller?.signal,
     headers: {
