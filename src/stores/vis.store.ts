@@ -34,13 +34,21 @@ export type VisStore = {
   nodeInspectorExtendedWidth: number
   nodeInspectorCollapsedWidth: number
   graphLoading: boolean
+  isHierarchyBrowserOpen: boolean
+  hierarchyBrowserWidth: number
   inspectNode: (nodeID: number) => void
   closeInspectNodePanel: () => void
   setNodeInspectorExtended: (extended: boolean) => void
   setNodeInspectorExtendedWidth: (width: number) => void
   setNodeInspectorCollapsedWidth: (width: number) => void
   setGraphLoading: (v: boolean) => void
+  setHierarchyBrowserOpen: (v: boolean) => void
+  setHierarchyBrowserWidth: (v: number) => void
 }
+
+export const HIERARCHY_BROWSER_DEFAULT_WIDTH = 320
+export const HIERARCHY_BROWSER_MIN_WIDTH = 240
+export const HIERARCHY_BROWSER_MAX_WIDTH = 600
 
 export const NODE_INSPECTOR_COLLAPSED_DEFAULT_WIDTH = 250
 export const NODE_INSPECTOR_EXTENDED_DEFAULT_WIDTH = 450
@@ -99,6 +107,16 @@ export const useVisStore = create<VisStore>((set) => {
     nodeInspectorExtendedWidth: NODE_INSPECTOR_EXTENDED_DEFAULT_WIDTH,
     nodeInspectorCollapsedWidth: NODE_INSPECTOR_COLLAPSED_DEFAULT_WIDTH,
     graphLoading: false,
+    isHierarchyBrowserOpen: false,
+    hierarchyBrowserWidth: HIERARCHY_BROWSER_DEFAULT_WIDTH,
+    setHierarchyBrowserOpen: (v: boolean) => set(() => ({ isHierarchyBrowserOpen: v })),
+    setHierarchyBrowserWidth: (v: number) =>
+      set(() => ({
+        hierarchyBrowserWidth: Math.max(
+          HIERARCHY_BROWSER_MIN_WIDTH,
+          Math.min(HIERARCHY_BROWSER_MAX_WIDTH, v)
+        ),
+      })),
     setGraphLoading: (v: boolean) => {
       // Hysteresis: turn the spinner on immediately, but debounce turning it
       // off so multiple back-to-back effect runs (e.g. reset followed by add)

@@ -1,5 +1,6 @@
 import { TuringBottomToolbar } from '@/components/viewer/menus/bottom-toolbar'
 import { TuringTopToolBar } from '@/components/viewer/menus/top-toolbar'
+import { HierarchyBrowser } from '@/components/viewer/hierarchy-browser'
 import { TuringNodeInspector } from '@/components/viewer/node-inspector'
 import { useCanvasStore, useVisStore } from '@/stores'
 import { type FC, useCallback, useEffect, useRef, useState } from 'react'
@@ -198,6 +199,7 @@ export const TViewerPage = () => {
       <TuringTopToolBar />
       <TuringBottomToolbar />
       <TuringNodeInspector />
+      <HierarchyBrowser />
     </div>
   )
 }

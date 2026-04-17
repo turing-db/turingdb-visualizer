@@ -38,6 +38,8 @@ export const TuringTopToolBar = () => {
   const nodeInspectorExtendedWidth = useVisStore((state) => state.nodeInspectorExtendedWidth)
   const nodeInspectorCollapsedWidth = useVisStore((state) => state.nodeInspectorCollapsedWidth)
   const graphLoading = useVisStore((state) => state.graphLoading)
+  const isHierarchyBrowserOpen = useVisStore((state) => state.isHierarchyBrowserOpen)
+  const setHierarchyBrowserOpen = useVisStore((state) => state.setHierarchyBrowserOpen)
 
   const busy = isPending || graphLoading
 
@@ -107,6 +109,11 @@ export const TuringTopToolBar = () => {
           loading={busy}
         />
         <TuringButton icon="trash" onClick={clearCanvas} disabled={busy} />
+        <TuringButton
+          icon="diagram-tree"
+          highlight={isHierarchyBrowserOpen}
+          onClick={() => setHierarchyBrowserOpen(!isHierarchyBrowserOpen)}
+        />
 
         <div className="mx-1 border-l border-gray-600 h-6" />
 
