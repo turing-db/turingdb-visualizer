@@ -51,7 +51,6 @@ test('capture local rounded-rect screenshot', async ({ page }) => {
   // Give simulation time to settle
   await page.waitForTimeout(4000)
 
-  // Toggle to rounded-rect via the Shape switch
   await page.getByText('Shape', { exact: true }).click()
 
   // Let layout reflow + labels measure

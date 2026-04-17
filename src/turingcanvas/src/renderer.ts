@@ -236,7 +236,24 @@ export class TuringRenderer {
       }
     })
 
+    // Distance from a node's center to the point along `dir` where the edge
+    // should start/end, so the arrow sits just outside the node shape.
+    const nodeExitDistance = (n: TuringNode, dir: THREE.Vector2): number => {
+      if (isRect) {
+        const hw = n.labelWidth / 2
+        const hh = n.labelHeight / 2
+        const adx = Math.max(Math.abs(dir.x), 1e-4)
+        const ady = Math.max(Math.abs(dir.y), 1e-4)
+        return Math.min(hw / adx, hh / ady)
+      }
+      // Octagon: apothem of the drawn shape. Primary plane scale 1.0,
+      // secondary 0.8, octagon size 0.56 in uv-doubled space → ~0.56 * 0.5
+      // world units at scale 1.
+      return n.isPrimary() ? 0.28 : 0.22
+    }
+
     // Edges
+    const tmpVec = new THREE.Vector2()
     edges.forEach((e, i) => {
       const bufIndex = getEdgeBufferIndex(i)
       const edgeIndex = getEdgeIndexInBuffer(i)
@@ -246,7 +263,7 @@ export class TuringRenderer {
       const b = e.target as TuringNode
       const vec = new THREE.Vector2(a.x - b.x, a.y - b.y)
 
-      this.edgeMeshes[bufIndex].setUniformAt('uOpacity', edgeIndex, 0.6)
+      this.edgeMeshes[bufIndex].setUniformAt('uOpacity', edgeIndex, 0.75)
       const color =
         a.isSelected() && b.isSelected()
           ? new THREE.Color(this.selectedEdgeColor)
@@ -254,9 +271,9 @@ export class TuringRenderer {
 
       if (!a.isPrimary() || !b.isPrimary()) {
         color.lerp(new THREE.Color(0.2, 0.2, 0.25), 0.6)
-        baseScale.y = 0.12
+        baseScale.y = 0.09
       } else {
-        baseScale.y = 0.15
+        baseScale.y = 0.11
       }
 
       this.edgeMeshes[bufIndex].setColorAt(edgeIndex, color)
@@ -266,17 +283,31 @@ export class TuringRenderer {
       if (!mesh || !mesh.instanceColor) return
       mesh.instanceColor.needsUpdate = true
 
-      baseScale.y *= edgeScale
-      baseScale.x = vec.length()
+      const fullLen = vec.length()
+      if (fullLen < 1e-4) return
 
-      const direction = vec.normalize()
+      const direction = vec.clone().normalize()
       const angle = Math.atan2(direction.y, direction.x)
       this.textRenderer.setEdgeAngle(e.id, angle)
 
+      // `direction` points from target → source. Shorten both ends so the
+      // arrow head lands just past the target's boundary.
+      const exitFromSource = nodeExitDistance(a, tmpVec.set(-direction.x, -direction.y))
+      const exitFromTarget = nodeExitDistance(b, direction)
+      const effectiveLen = Math.max(fullLen - exitFromSource - exitFromTarget, 0.05)
+
+      // Midpoint of the shortened segment.
+      const startX = a.x - direction.x * exitFromSource
+      const startY = a.y - direction.y * exitFromSource
+      const endX = b.x + direction.x * exitFromTarget
+      const endY = b.y + direction.y * exitFromTarget
+
+      baseScale.y *= edgeScale
+      baseScale.x = effectiveLen
+
       mat.makeRotationZ(angle)
       mat.scale(baseScale)
-      mat.setPosition((a.x + b.x) / 2.0, (a.y + b.y) / 2.0, 0.0)
-      mat.setPosition((a.x + b.x) / 2.0, (a.y + b.y) / 2.0, 0.0)
+      mat.setPosition((startX + endX) / 2.0, (startY + endY) / 2.0, 0.0)
       this.edgeMeshes[bufIndex].setMatrixAt(edgeIndex, mat)
     })
 
