@@ -61,13 +61,9 @@ export const TuringTopToolBar = () => {
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
       if (e.key !== 'Enter') return
-      // Cypher still requires Ctrl/Cmd+Enter to avoid firing half-typed
-      // queries. Search fires on plain Enter too.
-      if (mode === 'search' || e.ctrlKey || e.metaKey) {
-        executeQuery()
-      }
+      executeQuery()
     },
-    [executeQuery, mode]
+    [executeQuery]
   )
 
   const clearCanvas = useCallback(() => {
@@ -91,7 +87,7 @@ export const TuringTopToolBar = () => {
           )}
           placeholder={
             mode === 'cypher'
-              ? 'Cypher query (Ctrl+Enter to execute)'
+              ? 'Cypher query (Enter to execute)'
               : 'Search nodes by name (Enter to search)'
           }
           value={query}

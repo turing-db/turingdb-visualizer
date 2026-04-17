@@ -68,7 +68,7 @@ export const useNodeSearch = () => {
       await neighbourhood.add([...new Set(nodeIDs)])
 
       const duration = Math.min(800 + nodeIDs.length * 5, 4000)
-      canvasActions.autoFit(duration)
+      canvasActions.focusNode(nodeIDs[0], duration)
     },
   })
 

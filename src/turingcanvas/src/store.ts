@@ -60,6 +60,7 @@ export type CanvasStore = {
     setNodeShape: (...args: SetNodeShapeArgs) => void
     fitView: (padding?: number) => void
     autoFit: (durationMs: number) => void
+    focusNode: (id: number, durationMs: number) => void
   }
 
   resetStates: (...args: TrackedState[]) => void
@@ -165,6 +166,10 @@ export const createCanvasStore = (instance: TuringInstance) => {
 
       autoFit: (durationMs: number) => {
         instanceRef.current?.autoFit(durationMs)
+      },
+
+      focusNode: (id: number, durationMs: number) => {
+        instanceRef.current?.focusNode(id, durationMs)
       },
     },
 

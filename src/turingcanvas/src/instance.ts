@@ -29,6 +29,9 @@ export class TuringInstance {
   edgeMap: EdgeMap = new Map<number, TuringEdge>()
   autoFitUntil = 0
   autoFitControlsBound = false
+  focusNodeId: number | null = null
+  focusUntil = 0
+  focusControlsBound = false
   nodeShape: NodeShape = 'octagon'
   renderer: TuringRenderer
   events: TuringEvents
@@ -218,6 +221,34 @@ export class TuringInstance {
     }
   }
 
+  focusView(id: number, zoom = 1) {
+    const n = this.nodeMap.get(id)
+    if (!n) return
+
+    const camera = this.renderer.camera
+    camera.position.x = n.x
+    camera.position.y = n.y
+    camera.zoom = zoom
+    camera.updateProjectionMatrix()
+
+    this.events.controls.target.set(n.x, n.y, 0)
+    this.events.controls.update()
+  }
+
+  focusNode(id: number, durationMs: number) {
+    this.focusNodeId = id
+    this.focusUntil = performance.now() + durationMs
+    // Cancel any in-flight autoFit so the two don't fight each frame.
+    this.autoFitUntil = 0
+
+    if (!this.focusControlsBound) {
+      this.events.controls.addEventListener('start', () => {
+        this.focusUntil = 0
+      })
+      this.focusControlsBound = true
+    }
+  }
+
   update() {
     this.simulation.tick()
 
@@ -238,6 +269,8 @@ export class TuringInstance {
 
     if (performance.now() < this.autoFitUntil) {
       this.fitView()
+    } else if (this.focusNodeId !== null && performance.now() < this.focusUntil) {
+      this.focusView(this.focusNodeId)
     }
 
     this.events.update()

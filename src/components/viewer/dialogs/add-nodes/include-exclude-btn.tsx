@@ -1,5 +1,5 @@
 import TuringButton from '@/components/base/turing-button'
-import { useVisStore } from '@/stores'
+import { useCanvasStore, useVisStore } from '@/stores'
 import type { FC } from 'react'
 
 export interface IncludeExcludeButtonProps {
@@ -8,6 +8,7 @@ export interface IncludeExcludeButtonProps {
 
 export const IncludeExcludeButton: FC<IncludeExcludeButtonProps> = (props) => {
   const neighbourhood = useVisStore((state) => state.neighbourhood)
+  const canvasActions = useCanvasStore((state) => state.actions)
 
   return neighbourhood.has(props.nodeID) ? (
     <TuringButton
@@ -25,8 +26,9 @@ export const IncludeExcludeButton: FC<IncludeExcludeButtonProps> = (props) => {
       icon="plus"
       textClassName="text-content-secondary"
       className="w-[100px]"
-      onClick={() => {
-        neighbourhood.add([props.nodeID])
+      onClick={async () => {
+        await neighbourhood.add([props.nodeID])
+        canvasActions.focusNode(props.nodeID, 2000)
       }}
     >
       Include
