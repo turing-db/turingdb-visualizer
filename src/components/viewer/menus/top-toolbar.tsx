@@ -1,4 +1,4 @@
-import { useState, useCallback, type KeyboardEvent } from 'react'
+import { useState, useCallback, useMemo, type KeyboardEvent } from 'react'
 import { InputGroup, Spinner, Card, Icon } from '@blueprintjs/core'
 import TuringButton from '@/components/base/turing-button'
 import { TuringButtonGroup } from '@/components/base/turing-button-group'
@@ -16,12 +16,22 @@ import { ColorNodesButton } from './actions/color-nodes-btn'
 import { CenterForceSwitch } from './actions/center-force-switch'
 import { NodeShapeSwitch } from './actions/node-shape-switch'
 import { useCypherQuery } from '@/hooks/use-cypher-query'
+import { useNodeSearch } from '@/hooks/use-node-search'
 import { useVisStore } from '@/stores'
 import { CypherQueryError } from '@/api/responses'
+import { isCypherQuery } from '@/utils/is-cypher'
 
 export const TuringTopToolBar = () => {
   const [query, setQuery] = useState('MATCH (n) RETURN n LIMIT 100')
-  const { mutate, isPending, error, reset } = useCypherQuery()
+  const cypherMut = useCypherQuery()
+  const searchMut = useNodeSearch()
+  const mode: 'cypher' | 'search' = useMemo(
+    () => (isCypherQuery(query) ? 'cypher' : 'search'),
+    [query]
+  )
+  const isPending = cypherMut.isPending || searchMut.isPending
+  const error = cypherMut.error
+  const reset = cypherMut.reset
   const neighbourhood = useVisStore((state) => state.neighbourhood)
   const inspectNodeInfo = useVisStore((state) => state.inspectNodeInfo)
   const isNodeInspectorExtended = useVisStore((state) => state.isNodeInspectorExtended)
@@ -38,18 +48,26 @@ export const TuringTopToolBar = () => {
     : 0
 
   const executeQuery = useCallback(() => {
-    if (!query.trim() || isPending) return
+    const trimmed = query.trim()
+    if (!trimmed || isPending) return
     reset()
-    mutate(query.trim())
-  }, [query, isPending, mutate, reset])
+    if (mode === 'cypher') {
+      cypherMut.mutate(trimmed)
+    } else if (searchMut.canSearch) {
+      searchMut.mutate(trimmed)
+    }
+  }, [query, isPending, mode, cypherMut, searchMut, reset])
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      if (e.key !== 'Enter') return
+      // Cypher still requires Ctrl/Cmd+Enter to avoid firing half-typed
+      // queries. Search fires on plain Enter too.
+      if (mode === 'search' || e.ctrlKey || e.metaKey) {
         executeQuery()
       }
     },
-    [executeQuery]
+    [executeQuery, mode]
   )
 
   const clearCanvas = useCallback(() => {
@@ -71,21 +89,25 @@ export const TuringTopToolBar = () => {
                 : 'w-[300px]'
               : 'w-[400px]'
           )}
-          placeholder="Cypher query (Ctrl+Enter to execute)"
+          placeholder={
+            mode === 'cypher'
+              ? 'Cypher query (Ctrl+Enter to execute)'
+              : 'Search nodes by name (Enter to search)'
+          }
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
           disabled={isPending}
-          style={{ fontFamily: 'monospace' }}
+          style={{ fontFamily: mode === 'cypher' ? 'monospace' : undefined }}
           rightElement={
             busy ? <Spinner size={16} className="m-2" /> : undefined
           }
         />
         <TuringButton
-          icon="play"
+          icon={mode === 'cypher' ? 'play' : 'search'}
           intent="primary"
           onClick={executeQuery}
-          disabled={!query.trim() || busy}
+          disabled={!query.trim() || busy || (mode === 'search' && !searchMut.canSearch)}
           loading={busy}
         />
         <TuringButton icon="trash" onClick={clearCanvas} disabled={busy} />
