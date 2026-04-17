@@ -27,6 +27,9 @@ export const TuringTopToolBar = () => {
   const isNodeInspectorExtended = useVisStore((state) => state.isNodeInspectorExtended)
   const nodeInspectorExtendedWidth = useVisStore((state) => state.nodeInspectorExtendedWidth)
   const nodeInspectorCollapsedWidth = useVisStore((state) => state.nodeInspectorCollapsedWidth)
+  const graphLoading = useVisStore((state) => state.graphLoading)
+
+  const busy = isPending || graphLoading
 
   const inspectorOffset = inspectNodeInfo
     ? isNodeInspectorExtended
@@ -75,17 +78,17 @@ export const TuringTopToolBar = () => {
           disabled={isPending}
           style={{ fontFamily: 'monospace' }}
           rightElement={
-            isPending ? <Spinner size={16} className="m-2" /> : undefined
+            busy ? <Spinner size={16} className="m-2" /> : undefined
           }
         />
         <TuringButton
           icon="play"
           intent="primary"
           onClick={executeQuery}
-          disabled={!query.trim() || isPending}
-          loading={isPending}
+          disabled={!query.trim() || busy}
+          loading={busy}
         />
-        <TuringButton icon="trash" onClick={clearCanvas} disabled={isPending} />
+        <TuringButton icon="trash" onClick={clearCanvas} disabled={busy} />
 
         <div className="mx-1 border-l border-gray-600 h-6" />
 

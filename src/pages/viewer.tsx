@@ -14,12 +14,20 @@ import {
 
 import useGraphEntities from '@/hooks/use-graph-entities'
 
+// Size of each batch submitted to the canvas per animation frame. Tuned so a
+// single batch fits comfortably in one frame on mid-range hardware.
+const BATCH_SIZE = 500
+
+const yieldToBrowser = () =>
+  new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
+
 const GraphCanvasData: FC = () => {
   const turing = useTuringContext()
 
   const { data } = useGraphEntities()
 
   const neighbourhood = useVisStore((state) => state.neighbourhood)
+  const setGraphLoading = useVisStore((state) => state.setGraphLoading)
   const turingResetStates = useCanvasStore((state) => state.resetStates)
 
   useEffect(() => {
@@ -45,34 +53,61 @@ const GraphCanvasData: FC = () => {
     const deletedNodes = turing.instance.nodes.filter((n) => !data.graphNodes.has(n.id))
     const deletedEdges = turing.instance.edges.filter((e) => !data.graphEdges.has(e.id))
 
-    turing.instance.addNodes(newCanvasNodes)
-    turing.instance.addEdges(newCanvasEdges)
-
-    for (const node of deletedNodes) {
-      turing.instance.delNode(node.id)
-    }
-
-    for (const edge of deletedEdges) {
-      turing.instance.delEdge(edge.id)
-    }
-
-    for (const node of turing.instance.nodes) {
-      if (neighbourhood.has(node.id)) {
-        turing.instance.makePrimary(node)
-      } else {
-        turing.instance.makeSecondary(node)
-      }
-    }
-
-    if (
+    const didChange =
       newCanvasNodes.length !== 0 ||
       newCanvasEdges.length !== 0 ||
       deletedNodes.length !== 0 ||
       deletedEdges.length !== 0
-    ) {
-      turingResetStates('nodeMap', 'nodes', 'selectedNodes', 'edges', 'edgeMap')
+
+    // No-op effect runs fire during mid-pipeline store updates (e.g. after
+    // neighbourhood.reset when both canvas and data are empty). They must
+    // not clear graphLoading — that stays owned by useCypherQuery.onMutate
+    // until the final render batch completes here.
+    if (!didChange) return
+
+    let cancelled = false
+
+    const run = async () => {
+      setGraphLoading(true)
+      try {
+        for (let i = 0; i < newCanvasNodes.length; i += BATCH_SIZE) {
+          if (cancelled) return
+          turing.instance.addNodes(newCanvasNodes.slice(i, i + BATCH_SIZE))
+          if (newCanvasNodes.length > BATCH_SIZE) await yieldToBrowser()
+        }
+
+        for (let i = 0; i < newCanvasEdges.length; i += BATCH_SIZE) {
+          if (cancelled) return
+          turing.instance.addEdges(newCanvasEdges.slice(i, i + BATCH_SIZE))
+          if (newCanvasEdges.length > BATCH_SIZE) await yieldToBrowser()
+        }
+
+        for (const node of deletedNodes) {
+          if (cancelled) return
+          turing.instance.delNode(node.id)
+        }
+        for (const edge of deletedEdges) {
+          if (cancelled) return
+          turing.instance.delEdge(edge.id)
+        }
+
+        for (const node of turing.instance.nodes) {
+          if (neighbourhood.has(node.id)) turing.instance.makePrimary(node)
+          else turing.instance.makeSecondary(node)
+        }
+
+        turingResetStates('nodeMap', 'nodes', 'selectedNodes', 'edges', 'edgeMap')
+      } finally {
+        if (!cancelled) setGraphLoading(false)
+      }
     }
-  }, [turingResetStates, turing, data, neighbourhood])
+
+    run()
+
+    return () => {
+      cancelled = true
+    }
+  }, [turingResetStates, turing, data, neighbourhood, setGraphLoading])
 
   return <></>
 }

@@ -33,11 +33,13 @@ export type VisStore = {
   isNodeInspectorExtended: boolean
   nodeInspectorExtendedWidth: number
   nodeInspectorCollapsedWidth: number
+  graphLoading: boolean
   inspectNode: (nodeID: number) => void
   closeInspectNodePanel: () => void
   setNodeInspectorExtended: (extended: boolean) => void
   setNodeInspectorExtendedWidth: (width: number) => void
   setNodeInspectorCollapsedWidth: (width: number) => void
+  setGraphLoading: (v: boolean) => void
 }
 
 export const NODE_INSPECTOR_COLLAPSED_DEFAULT_WIDTH = 250
@@ -48,6 +50,8 @@ export const NODE_INSPECTOR_EXTENDED_MIN_WIDTH = 280
 export const NODE_INSPECTOR_EXTENDED_MAX_WIDTH = 800
 
 export const useVisStore = create<VisStore>((set) => {
+  let graphLoadingOffTimer: ReturnType<typeof setTimeout> | null = null
+
   const entityCacheRef = createRef<EntityCache>() as MutableRefObject<EntityCache>
   entityCacheRef.current = new EntityCache()
 
@@ -94,6 +98,25 @@ export const useVisStore = create<VisStore>((set) => {
     isNodeInspectorExtended: false,
     nodeInspectorExtendedWidth: NODE_INSPECTOR_EXTENDED_DEFAULT_WIDTH,
     nodeInspectorCollapsedWidth: NODE_INSPECTOR_COLLAPSED_DEFAULT_WIDTH,
+    graphLoading: false,
+    setGraphLoading: (v: boolean) => {
+      // Hysteresis: turn the spinner on immediately, but debounce turning it
+      // off so multiple back-to-back effect runs (e.g. reset followed by add)
+      // don't cause the spinner to flicker off in between.
+      if (v) {
+        if (graphLoadingOffTimer) {
+          clearTimeout(graphLoadingOffTimer)
+          graphLoadingOffTimer = null
+        }
+        set(() => ({ graphLoading: true }))
+      } else {
+        if (graphLoadingOffTimer) clearTimeout(graphLoadingOffTimer)
+        graphLoadingOffTimer = setTimeout(() => {
+          graphLoadingOffTimer = null
+          set(() => ({ graphLoading: false }))
+        }, 250)
+      }
+    },
     inspectNode: (nodeID: number) => set(() => ({ inspectNodeInfo: { nodeID } })),
     closeInspectNodePanel: () => set(() => ({ inspectNodeInfo: undefined })),
     setNodeInspectorExtended: (extended: boolean) => set(() => ({ isNodeInspectorExtended: extended })),

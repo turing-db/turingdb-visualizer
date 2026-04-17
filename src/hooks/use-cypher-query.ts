@@ -69,10 +69,20 @@ function processResponse(
 export const useCypherQuery = () => {
   const graphName = useAppStore((state) => state.graphName)
   const neighbourhood = useVisStore((state) => state.neighbourhood)
+  const setGraphLoading = useVisStore((state) => state.setGraphLoading)
   const canvasActions = useCanvasStore((state) => state.actions)
   const nodeMap = useCanvasStore((state) => state.nodeMap)
 
   return useMutation({
+    onMutate: () => {
+      // Keep the spinner on for the full pipeline (query → fetch → render),
+      // not just the HTTP phase covered by isPending. GraphCanvasData clears
+      // this once the chunked add completes; onError clears it on failure.
+      setGraphLoading(true)
+    },
+    onError: () => {
+      setGraphLoading(false)
+    },
     mutationFn: async (query: string) => {
       if (!graphName) {
         throw new Error('No graph selected')
@@ -94,6 +104,8 @@ export const useCypherQuery = () => {
         if (graphName) {
           neighbourhood.reset(graphName)
         }
+        // Empty result: no downstream effect will fire, so clear here.
+        setGraphLoading(false)
         return
       }
 
@@ -119,6 +131,9 @@ export const useCypherQuery = () => {
               }
             }
           }
+        } else {
+          // Cypher returned rows but no node IDs — no canvas work will run.
+          setGraphLoading(false)
         }
 
         // Continuously fit the view while the force simulation spreads the
@@ -127,6 +142,8 @@ export const useCypherQuery = () => {
         const count = nodeIDs.length
         const duration = Math.min(800 + count * 5, 4000)
         canvasActions.autoFit(duration)
+      } else {
+        setGraphLoading(false)
       }
     },
   })
