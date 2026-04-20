@@ -2,23 +2,21 @@ import type { NodeEntry } from '@/api/models/nodeEntry.model'
 import TuringButton from '@/components/base/turing-button'
 import { TuringDialog } from '@/components/base/turing-dialog'
 import useGraphInfo from '@/hooks/use-graph-info'
-import { useAppStore } from '@/stores'
+import { useAppStore, useVisStore } from '@/stores'
 import { getNodeName } from '@/utils/nodes'
 import { DialogBody, DialogFooter } from '@blueprintjs/core'
 import { type FC, useEffect, useMemo, useRef } from 'react'
+import { AddNodesSearchBar } from './add-nodes-search-bar'
+import { NodeCard, type NodeName } from './node-card'
 import { useFilters } from './use-filters'
 import { useNodesQuery } from './use-nodes'
-import { NodeCard, type NodeName } from './node-card'
-import { AddNodesSearchBar } from './add-nodes-search-bar'
 
-export interface AddNodesDialogProps {
-  open: boolean
-  onClose: () => void
-}
-
-export const AddNodesDialog: FC<AddNodesDialogProps> = (props) => {
+export const AddNodesDialog: FC = () => {
   const graphName = useAppStore((state) => state.graphName)
   const graph = useGraphInfo(graphName)
+  const open = useVisStore((state) => state.addNodesDialogOpen)
+  const initialSearchTerm = useVisStore((state) => state.addNodesDialogInitialTerm)
+  const closeDialog = useVisStore((state) => state.closeAddNodesDialog)
   const [filters, setFilters] = useFilters()
 
   const { nodes, hasNextPage, isFetching, fetchNextPage, resetPage } = useNodesQuery(filters)
@@ -57,17 +55,14 @@ export const AddNodesDialog: FC<AddNodesDialogProps> = (props) => {
   if (!graph.info) return null
 
   return (
-    <TuringDialog
-      isOpen={props.open}
-      onClose={() => {
-        props.onClose()
-      }}
-      title="Add nodes"
-      icon="plus"
-    >
+    <TuringDialog isOpen={open} onClose={closeDialog} title="Add nodes" icon="plus">
       <DialogBody className="flex h-screen flex-1 flex-col">
         <div className="flex h-full flex-1 flex-col">
-          <AddNodesSearchBar setFilters={setFilters} />
+          <AddNodesSearchBar
+            setFilters={setFilters}
+            open={open}
+            initialSearchTerm={initialSearchTerm}
+          />
           <div
             ref={ref}
             className="app-node-card-list mt-4! h-full flex-1 overflow-y-scroll"
@@ -94,7 +89,7 @@ export const AddNodesDialog: FC<AddNodesDialogProps> = (props) => {
       </DialogBody>
 
       <DialogFooter
-        actions={<TuringButton intent="primary" text="Close" outlined onClick={props.onClose} />}
+        actions={<TuringButton intent="primary" text="Close" outlined onClick={closeDialog} />}
       />
     </TuringDialog>
   )

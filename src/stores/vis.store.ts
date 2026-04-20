@@ -1,9 +1,9 @@
 import type { NodeEntry } from '@/api/models/nodeEntry.model'
-import { createRef, type MutableRefObject } from 'react'
-import { create } from 'zustand'
 import { EntityCache } from '@/utils/entity-cache'
 import { NeighbourMap } from '@/utils/neighbour-map'
 import { ProxyRef } from '@/utils/proxy-ref'
+import { type MutableRefObject, createRef } from 'react'
+import { create } from 'zustand'
 
 export type TEdge = {
   id: number
@@ -36,6 +36,8 @@ export type VisStore = {
   graphLoading: boolean
   isHierarchyBrowserOpen: boolean
   hierarchyBrowserWidth: number
+  addNodesDialogOpen: boolean
+  addNodesDialogInitialTerm: string
   inspectNode: (nodeID: number) => void
   closeInspectNodePanel: () => void
   setNodeInspectorExtended: (extended: boolean) => void
@@ -44,6 +46,8 @@ export type VisStore = {
   setGraphLoading: (v: boolean) => void
   setHierarchyBrowserOpen: (v: boolean) => void
   setHierarchyBrowserWidth: (v: number) => void
+  openAddNodesDialog: (initialTerm?: string) => void
+  closeAddNodesDialog: () => void
 }
 
 export const HIERARCHY_BROWSER_DEFAULT_WIDTH = 320
@@ -109,6 +113,15 @@ export const useVisStore = create<VisStore>((set) => {
     graphLoading: false,
     isHierarchyBrowserOpen: false,
     hierarchyBrowserWidth: HIERARCHY_BROWSER_DEFAULT_WIDTH,
+    addNodesDialogOpen: false,
+    addNodesDialogInitialTerm: '',
+    openAddNodesDialog: (initialTerm?: string) =>
+      set(() => ({
+        addNodesDialogOpen: true,
+        addNodesDialogInitialTerm: initialTerm ?? '',
+      })),
+    closeAddNodesDialog: () =>
+      set(() => ({ addNodesDialogOpen: false, addNodesDialogInitialTerm: '' })),
     setHierarchyBrowserOpen: (v: boolean) => set(() => ({ isHierarchyBrowserOpen: v })),
     setHierarchyBrowserWidth: (v: number) =>
       set(() => ({
@@ -137,7 +150,8 @@ export const useVisStore = create<VisStore>((set) => {
     },
     inspectNode: (nodeID: number) => set(() => ({ inspectNodeInfo: { nodeID } })),
     closeInspectNodePanel: () => set(() => ({ inspectNodeInfo: undefined })),
-    setNodeInspectorExtended: (extended: boolean) => set(() => ({ isNodeInspectorExtended: extended })),
+    setNodeInspectorExtended: (extended: boolean) =>
+      set(() => ({ isNodeInspectorExtended: extended })),
     setNodeInspectorExtendedWidth: (width: number) =>
       set(() => ({
         nodeInspectorExtendedWidth: Math.max(

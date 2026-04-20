@@ -1,13 +1,16 @@
 import { TuringSearchBar } from '@/components/turing-bar/turing-search-bar'
-import { type FC, useCallback, useMemo, useRef } from 'react'
+import { type FC, useCallback, useEffect, useMemo, useRef } from 'react'
 import { useNodeChips } from './use-searched-node-names'
 
 import type { ChipData } from '@/components/turing-bar/chip'
-import { NODE_DISPLAY_NAMES } from '@/utils/nodes'
-import type { SelectChipFunction } from '@/components/turing-bar/use-selected-chips'
-import type { FilterType } from './use-filters'
-import { useAppStore } from '@/stores'
+import {
+  type SelectChipFunction,
+  useSelectedChips,
+} from '@/components/turing-bar/use-selected-chips'
 import useGraphInfo from '@/hooks/use-graph-info'
+import { useAppStore } from '@/stores'
+import { NODE_DISPLAY_NAMES } from '@/utils/nodes'
+import type { FilterType } from './use-filters'
 
 interface ChipInfo {
   text: string
@@ -16,6 +19,8 @@ interface ChipInfo {
 
 interface AddNodesSearchBarProps {
   setFilters: (filters: FilterType) => void
+  open?: boolean
+  initialSearchTerm?: string
 }
 
 export const AddNodesSearchBar: FC<AddNodesSearchBarProps> = (props) => {
@@ -80,6 +85,22 @@ export const AddNodesSearchBar: FC<AddNodesSearchBarProps> = (props) => {
   }, [graph.info?.propTypes])
 
   const selectChipRef = useRef<SelectChipFunction>(() => {})
+
+  // Seed the default name-property chip with the initial term when the dialog
+  // opens with one (e.g. via the toolbar's "More results" action). We reset
+  // prior chips first so the dialog starts in a predictable state.
+  useEffect(() => {
+    if (!props.open) return
+    if (!props.initialSearchTerm || !defaultPropertyType) return
+    const { unselectAllChips, selectChip } = useSelectedChips.getState()
+    unselectAllChips()
+    selectChip(defaultPropertyType, {
+      text: defaultPropertyType,
+      value: props.initialSearchTerm,
+      icon: 'property',
+      takesInput: true,
+    })
+  }, [props.open, props.initialSearchTerm, defaultPropertyType])
 
   return (
     <TuringSearchBar
