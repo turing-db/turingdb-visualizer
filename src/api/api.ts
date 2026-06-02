@@ -35,6 +35,20 @@ import {
   type ListPropertyTypesResponse,
 } from './responses'
 
+import type { PropertyValueType } from './models/propertyValueType.model'
+
+// Build an `OR` chain in place of the `IN` operator (which the Cypher dialect
+// does not yet support).
+function inClause(field: string, values: number[]): string {
+  return values.map((v) => `${field} = ${v}`).join(' OR ')
+}
+
+// Escape a property/identifier for use inside backticks. Cypher allows
+// arbitrary characters inside `…` if backticks themselves are doubled.
+function backtickEscape(name: string): string {
+  return '`' + name.replace(/`/g, '``') + '`'
+}
+
 export async function getGraphStatus(args: GetGraphStatusArgs): Promise<GetGraphStatusResponse> {
   return await fetch(`/api/get_graph_status?graph=${args.graph}`, {
     method: 'POST',
@@ -86,31 +100,52 @@ export async function listLabels(args: ListLabelsArgs): Promise<ListLabelsRespon
 export async function listPropertyTypes(
   args: ListPropertyTypesArgs
 ): Promise<ListPropertyTypesResponse> {
-  return await fetch(`/api/list_property_types?graph=${args.graph}`, {
-    method: 'POST',
-    signal: args.controller?.signal,
-    body: JSON.stringify({
-      nodeIDs: args.nodeIDs,
-    }),
-  }).then((res) =>
-    res.json().then((json) => {
-      return json.data
-    })
-  )
+  // The `nodeIDs` filter on the original endpoint is not supported here:
+  // Cypher's `keys(n)` is not yet implemented, so we cannot ask for the
+  // distinct property types of a node set. No call site currently passes it.
+  const data = await executeCypherQuery({
+    graph: args.graph,
+    query: 'CALL db.propertyTypes() YIELD propertyType RETURN propertyType',
+    controller: args.controller,
+  })
+
+  const result: string[] = []
+  for (const chunk of data) {
+    if (!Array.isArray(chunk) || chunk.length === 0) continue
+    const col = chunk[0]
+    if (!Array.isArray(col)) continue
+    for (const v of col) {
+      if (typeof v === 'string') result.push(v)
+    }
+  }
+  return result as ListPropertyTypesResponse
 }
 
 export async function listEdgeTypes(args: ListEdgeTypesArgs): Promise<ListEdgeTypesResponse> {
-  return await fetch(`/api/list_edge_types?graph=${args.graph}`, {
-    method: 'POST',
-    signal: args.controller?.signal,
-    body: JSON.stringify({
-      edgeIDs: args.edgeIDs,
-    }),
-  }).then((res) =>
-    res.json().then((json) => {
-      return json.data
-    })
-  )
+  // Without an edgeIDs filter, just ask the procedure.
+  // With one, MATCH the edges and collect their types — DISTINCT isn't
+  // supported in the Cypher dialect, so we dedupe client-side.
+  const query =
+    args.edgeIDs && args.edgeIDs.length > 0
+      ? `MATCH ()-[r]->() WHERE ${inClause('r', args.edgeIDs)} RETURN type(r)`
+      : 'CALL db.edgeTypes() YIELD edgeType RETURN edgeType'
+
+  const data = await executeCypherQuery({
+    graph: args.graph,
+    query,
+    controller: args.controller,
+  })
+
+  const seen = new Set<string>()
+  for (const chunk of data) {
+    if (!Array.isArray(chunk) || chunk.length === 0) continue
+    const col = chunk[0]
+    if (!Array.isArray(col)) continue
+    for (const v of col) {
+      if (typeof v === 'string') seen.add(v)
+    }
+  }
+  return [...seen] as ListEdgeTypesResponse
 }
 
 export async function listNodes(args: ListNodesArgs): Promise<ListNodesResponse> {
@@ -162,18 +197,44 @@ export async function getNodes(args: GetNodesArgs): Promise<GetNodesResponse> {
 export async function getNodeProperties(
   args: GetNodePropertiesArgs
 ): Promise<GetNodePropertiesResponse> {
-  return await fetch(`/api/get_node_properties?graph=${args.graph}`, {
-    method: 'POST',
-    signal: args.controller?.signal,
-    body: JSON.stringify({
-      nodeIDs: args.nodeIDs,
-      properties: args.properties,
-    }),
-  }).then((res) =>
-    res.text().then((text) => {
-      return JSON.parse(text).data
-    })
-  )
+  const result: GetNodePropertiesResponse = {}
+  for (const propName of args.properties) {
+    result[propName] = {}
+  }
+
+  if (args.nodeIDs.length === 0 || args.properties.length === 0) {
+    return result
+  }
+
+  const whereClause = inClause('n', args.nodeIDs)
+  const propProjections = args.properties.map((p) => `n.${backtickEscape(p)}`).join(', ')
+  const query = `MATCH (n) WHERE ${whereClause} RETURN n, ${propProjections}`
+
+  const data = await executeCypherQuery({
+    graph: args.graph,
+    query,
+    controller: args.controller,
+  })
+
+  for (const chunk of data) {
+    if (!Array.isArray(chunk) || chunk.length === 0) continue
+    const cols = chunk as unknown[][]
+    const nodeIDsCol = cols[0]
+    if (!Array.isArray(nodeIDsCol)) continue
+
+    for (let row = 0; row < nodeIDsCol.length; row++) {
+      const nodeID = String(nodeIDsCol[row])
+      for (let i = 0; i < args.properties.length; i++) {
+        const col = cols[i + 1]
+        if (!Array.isArray(col)) continue
+        const value = col[row]
+        if (value === null || value === undefined) continue
+        result[args.properties[i]][nodeID] = value as PropertyValueType
+      }
+    }
+  }
+
+  return result
 }
 
 export async function getNodeEdges(args: GetNodeEdgesArgs): Promise<GetNodeEdgesResponse> {
