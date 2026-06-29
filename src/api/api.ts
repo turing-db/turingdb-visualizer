@@ -1,12 +1,7 @@
-import { ExploreEdgeDir } from './args'
-
 import type {
   CypherQueryArgs,
-  ExploreNodeEdgesArgs,
   GetGraphStatusArgs,
-  GetNeighborsArgs,
   GetNodeEdgesArgs,
-  GetNodePropertiesArgs,
   GetNodesArgs,
   GetEdgesArgs,
   ListAvailableGraphsArgs,
@@ -19,13 +14,10 @@ import type {
 import {
   CypherQueryError,
   type CypherQueryResponse,
-  type ExploreNodeEdgesResponse,
   type GetGraphStatusResponse,
-  type GetNeighborsResponse,
   type GetNodeEdgesResponse,
   type GetNodeEdgeIDsResponse,
   type GetNodeEdgeIDsRawResponse,
-  type GetNodePropertiesResponse,
   type GetNodesResponse,
   type GetEdgesResponse,
   type ListAvailableGraphsResponse,
@@ -35,18 +27,10 @@ import {
   type ListPropertyTypesResponse,
 } from './responses'
 
-import type { PropertyValueType } from './models/propertyValueType.model'
-
 // Build an `OR` chain in place of the `IN` operator (which the Cypher dialect
 // does not yet support).
 function inClause(field: string, values: number[]): string {
   return values.map((v) => `${field} = ${v}`).join(' OR ')
-}
-
-// Escape a property/identifier for use inside backticks. Cypher allows
-// arbitrary characters inside `…` if backticks themselves are doubled.
-function backtickEscape(name: string): string {
-  return '`' + name.replace(/`/g, '``') + '`'
 }
 
 export async function getGraphStatus(args: GetGraphStatusArgs): Promise<GetGraphStatusResponse> {
@@ -165,21 +149,6 @@ export async function listNodes(args: ListNodesArgs): Promise<ListNodesResponse>
   )
 }
 
-export async function getNeighbors(args: GetNeighborsArgs): Promise<GetNeighborsResponse> {
-  return await fetch(`/api/get_neighbors?graph=${args.graph}`, {
-    method: 'POST',
-    signal: args.controller?.signal,
-    body: JSON.stringify({
-      nodeIDs: args.nodeIDs,
-      limitPerNode: args.limitPerNode === undefined ? 100 : args.limitPerNode,
-    }),
-  }).then((res) =>
-    res.text().then((text) => {
-      return JSON.parse(text).data
-    })
-  )
-}
-
 export async function getNodes(args: GetNodesArgs): Promise<GetNodesResponse> {
   return await fetch(`/api/get_nodes?graph=${args.graph}`, {
     method: 'POST',
@@ -192,49 +161,6 @@ export async function getNodes(args: GetNodesArgs): Promise<GetNodesResponse> {
       return JSON.parse(text).data
     })
   )
-}
-
-export async function getNodeProperties(
-  args: GetNodePropertiesArgs
-): Promise<GetNodePropertiesResponse> {
-  const result: GetNodePropertiesResponse = {}
-  for (const propName of args.properties) {
-    result[propName] = {}
-  }
-
-  if (args.nodeIDs.length === 0 || args.properties.length === 0) {
-    return result
-  }
-
-  const whereClause = inClause('n', args.nodeIDs)
-  const propProjections = args.properties.map((p) => `n.${backtickEscape(p)}`).join(', ')
-  const query = `MATCH (n) WHERE ${whereClause} RETURN n, ${propProjections}`
-
-  const data = await executeCypherQuery({
-    graph: args.graph,
-    query,
-    controller: args.controller,
-  })
-
-  for (const chunk of data) {
-    if (!Array.isArray(chunk) || chunk.length === 0) continue
-    const cols = chunk as unknown[][]
-    const nodeIDsCol = cols[0]
-    if (!Array.isArray(nodeIDsCol)) continue
-
-    for (let row = 0; row < nodeIDsCol.length; row++) {
-      const nodeID = String(nodeIDsCol[row])
-      for (let i = 0; i < args.properties.length; i++) {
-        const col = cols[i + 1]
-        if (!Array.isArray(col)) continue
-        const value = col[row]
-        if (value === null || value === undefined) continue
-        result[args.properties[i]][nodeID] = value as PropertyValueType
-      }
-    }
-  }
-
-  return result
 }
 
 export async function getNodeEdges(args: GetNodeEdgesArgs): Promise<GetNodeEdgesResponse> {
@@ -287,31 +213,6 @@ export async function getNodeEdgeIDs(args: GetNodeEdgesArgs): Promise<GetNodeEdg
         ])
       )
       return data
-    })
-  )
-}
-
-export async function exploreNodeEdges(
-  args: ExploreNodeEdgesArgs
-): Promise<ExploreNodeEdgesResponse> {
-  return await fetch(`/api/explore_node_edges?graph=${args.graph}`, {
-    method: 'POST',
-    signal: args.controller?.signal,
-    body: JSON.stringify({
-      nodeID: args.nodeID,
-      ...(args.limit !== undefined && { limit: args.limit }),
-      ...(args.skip !== undefined && { skip: args.skip }),
-      ...(args.nodeProperties !== undefined && {
-        nodeProperties: args.nodeProperties,
-      }),
-      ...(args.nodeLabels !== undefined && { nodeProperties: args.nodeLabels }),
-      ...(args.edgeTypes !== undefined && { nodeProperties: args.edgeTypes }),
-      ...(args.edgeDir === ExploreEdgeDir.Incoming && { excludeOutgoing: true }),
-      ...(args.edgeDir === ExploreEdgeDir.Outgoing && { excludeIncoming: true }),
-    }),
-  }).then((res) =>
-    res.text().then((text) => {
-      return JSON.parse(text).data
     })
   )
 }
