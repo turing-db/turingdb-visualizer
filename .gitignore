@@ -30,6 +30,9 @@ vite.config.ts.timestamp*
 
 turingdb.out
 
+# Local test base (uv project + TuringDB data dir)
+testbed
+
 # Playwright
 test-results
 playwright-report

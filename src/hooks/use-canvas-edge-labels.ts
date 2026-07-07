@@ -24,18 +24,13 @@ export const useCanvasEdgeLabels = () => {
 
     if (!info) return defaultLabels
 
+    // Edge properties are keyed by name, so their keys are the property-type
+    // names directly.
     const edgePropertyTypes = new Set(
-      edges
-        .map((e) => {
-          const edgeData = e.data as EdgeEntry
-          const props = edgeData[4]
-
-          if (props === undefined) return undefined
-          return Object.keys(props)
-        })
-        .filter((p) => p !== undefined)
-        .flat()
-        .map((id) => info.propTypes[Number.parseInt(id)])
+      edges.flatMap((e) => {
+        const props = (e.data as EdgeEntry)[4]
+        return props ? Object.keys(props) : []
+      })
     )
 
     return [...defaultLabels, ...edgePropertyTypes]
@@ -64,21 +59,14 @@ export const useCanvasEdgeLabels = () => {
   }, [edges, turingActions, graph.info])
 
   const applyPropertyType = useCallback(() => {
-    if (!graph.info) return
-
-    const propType = graph.info.propTypes
-      .map((ptName, i) => ({ ptName, i }))
-      .find((pt) => pt.ptName === showingEdgeLabel)
-
-    if (!propType) return
-
+    // showingEdgeLabel is the property-type name, and edge properties are keyed
+    // by name, so index directly.
     for (const e of edges) {
-      const data = e.data as EdgeEntry
-      const properties = data[4]
-      const propValue = properties[propType.i]
+      const properties = (e.data as EdgeEntry)[4]
+      const propValue = properties?.[showingEdgeLabel]
       turingActions.setEdgeLabel(e, propValue !== undefined ? propValue.toString() : '')
     }
-  }, [graph.info, edges, showingEdgeLabel, turingActions])
+  }, [edges, showingEdgeLabel, turingActions])
 
   useEffect(() => {
     switch (showingEdgeLabel) {

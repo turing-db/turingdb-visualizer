@@ -54,7 +54,7 @@ async function waitForServer(timeoutMs = 30_000): Promise<void> {
   const deadline = Date.now() + timeoutMs
   while (Date.now() < deadline) {
     try {
-      await fetch(`${API_BASE}/list_loaded_graphs`, { method: 'POST', body: '{}' })
+      await fetch(`${API_BASE}/query?graph=`, { method: 'POST', body: 'LIST GRAPH' })
       return
     } catch {
       await new Promise((r) => setTimeout(r, 300))

@@ -1,10 +1,11 @@
+import type { Properties } from '@/utils/nodes'
 import { NodePropertyValue } from '@/utils/properties'
 import { propertyKeyToString } from '@/utils/property-to-string'
 
 export default function TuringNodePropertiesListCollapsed({
   properties,
 }: {
-  properties: Record<string, string>
+  properties: Properties
 }) {
   const entries = Object.entries(properties)
   if (!entries.length) {

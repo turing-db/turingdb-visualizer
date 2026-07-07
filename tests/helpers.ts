@@ -1,120 +1,129 @@
-import type { Page } from '@playwright/test'
+import type { Page, Route } from '@playwright/test'
 
-/** Mock all TuringDB API endpoints so tests run without a real backend. */
+// The whole app now talks to a single backend endpoint, `/api/query`: catalog
+// and data access go through Cypher statements (`LIST AVAILABLE GRAPHS`,
+// `LOAD GRAPH <g>`) and `CALL db.*` procedures, and arbitrary user queries go
+// through the same endpoint. So the mock is one `/api/query` dispatcher that
+// serves the app's own statements as columnar fixture data and hands genuine
+// user queries to an optional `cypherHandler`.
+//
+// TuringDB's columnar response shape is `{ data: [chunk, ...] }` where each
+// chunk is `[column, ...]` and each column is a flat array of that column's
+// cell values — i.e. `{ data: [[col0, col1, ...]] }` for a single chunk. The
+// api.ts reshapers read the columns positionally, matching each `YIELD` clause.
+
+// Fixture: 3 nodes (Alice/Bob/Acme) and 2 edges (Alice-KNOWS->Bob,
+// Bob-WORKS_AT->Acme), mirroring tests/integration/fixture.jsonl in spirit.
+const NODE_IDS = [1, 2, 3]
+const NODE_LABELS = [['Person'], ['Person'], ['Company']]
+const NODE_PROPS = ['{"name":"Alice"}', '{"name":"Bob"}', '{"name":"Acme"}']
+const NODE_IN_COUNTS = [0, 1, 1]
+const NODE_OUT_COUNTS = [1, 1, 0]
+
+const EDGE_TYPES = ['KNOWS', 'WORKS_AT'] // indexed by edge-type id (0, 1)
+const LABELS = ['Person', 'Company']
+const LABEL_COUNTS = [2, 1]
+const PROPERTY_TYPES = ['name', 'age']
+
+// db.getNodeEdges rows, one per node. Full form yields [edgeID, src, tgt,
+// edgeTypeID] per edge; the ids-only form yields [edgeID, otherID].
+const OUT_EDGES_FULL = [[[100, 1, 2, 0]], [[101, 2, 3, 1]], []]
+const IN_EDGES_FULL = [[], [[100, 1, 2, 0]], [[101, 2, 3, 1]]]
+const OUT_EDGES_IDS = [[[100, 2]], [[101, 3]], []]
+const IN_EDGES_IDS = [[], [[100, 1]], [[101, 2]]]
+const OUT_EDGE_COUNTS = ['{"0":1}', '{"1":1}', '{}']
+const IN_EDGE_COUNTS = ['{}', '{"0":1}', '{"1":1}']
+
+/** One-chunk response from its column arrays. */
+function chunk(columns: unknown[][]) {
+  return { data: [columns] }
+}
+
+/**
+ * Map one of the app's own statements to its columnar response, or return null
+ * if `body` isn't a statement the app itself issues (i.e. it's a user query).
+ */
+function internalQueryResponse(body: string, graphs: string[], loaded: boolean) {
+  // Catalog statements. Check the more specific "AVAILABLE" form first.
+  if (body.includes('LIST AVAILABLE GRAPHS')) {
+    return chunk([graphs, graphs.map(() => loaded), graphs.map(() => false)])
+  }
+  if (body.includes('LIST GRAPH')) {
+    return chunk([loaded ? graphs : []])
+  }
+  if (body.includes('LOAD GRAPH')) {
+    // The caller swallows the result; echo the name so it looks like a success.
+    return chunk([graphs])
+  }
+
+  // CALL procedures. Order matters only where one name is a prefix of another;
+  // getNodeEdges/getNodes are disjoint substrings, but keep the longer first.
+  if (body.includes('db.hierarchicalLabelCounts')) {
+    return chunk([LABELS, LABEL_COUNTS])
+  }
+  if (body.includes('db.propertyTypes')) {
+    return chunk([PROPERTY_TYPES])
+  }
+  if (body.includes('db.edgeTypes')) {
+    return chunk([EDGE_TYPES.map((_, i) => i), EDGE_TYPES])
+  }
+  if (body.includes('db.listNodes')) {
+    return chunk([NODE_IDS, NODE_LABELS, NODE_PROPS])
+  }
+  if (body.includes('db.getNodeEdges')) {
+    // The 7th arg (returnOnlyIDs) selects the edge tuple shape.
+    const idsOnly = /,\s*true\)\s*YIELD/.test(body)
+    return chunk([
+      NODE_IDS,
+      idsOnly ? OUT_EDGES_IDS : OUT_EDGES_FULL,
+      idsOnly ? IN_EDGES_IDS : IN_EDGES_FULL,
+      OUT_EDGE_COUNTS,
+      IN_EDGE_COUNTS,
+    ])
+  }
+  if (body.includes('db.getNodes')) {
+    return chunk([NODE_IDS, NODE_LABELS, NODE_IN_COUNTS, NODE_OUT_COUNTS, NODE_PROPS])
+  }
+  if (body.includes('db.getEdges')) {
+    return chunk([
+      [100, 101],
+      [1, 2],
+      [2, 3],
+      [0, 1],
+      ['{}', '{}'],
+    ])
+  }
+
+  return null
+}
+
+/** Mock the single `/api/query` backend so tests run without a real DB. */
 export async function mockApi(page: Page, opts: MockApiOpts = {}) {
   const graphs = opts.graphs ?? ['test-graph']
   const loaded = opts.loaded ?? false
 
-  // list_avail_graphs
-  await page.route('**/api/list_avail_graphs', (route) =>
-    route.fulfill({ json: { data: [graphs] } }),
-  )
+  await page.route('**/api/query*', async (route) => {
+    const body = route.request().postData() ?? ''
 
-  // list_loaded_graphs
-  await page.route('**/api/list_loaded_graphs', (route) =>
-    route.fulfill({ json: { data: loaded ? [graphs] : [[]] } }),
-  )
-
-  // get_graph_status
-  await page.route('**/api/get_graph_status*', (route) =>
-    route.fulfill({
-      json: {
-        data: {
-          isLoaded: loaded,
-          isLoading: false,
-          nodeCount: loaded ? 3 : 0,
-          edgeCount: loaded ? 2 : 0,
-        },
-      },
-    }),
-  )
-
-  // load_graph
-  await page.route('**/api/load_graph*', (route) =>
-    route.fulfill({ json: { data: {} } }),
-  )
-
-  // list_labels
-  await page.route('**/api/list_labels*', (route) =>
-    route.fulfill({ json: { data: { labels: ['Person', 'Company'], nodeCounts: [2, 1] } } }),
-  )
-
-  // list_property_types
-  await page.route('**/api/list_property_types*', (route) =>
-    route.fulfill({ json: { data: ['name', 'age'] } }),
-  )
-
-  // list_edge_types
-  await page.route('**/api/list_edge_types*', (route) =>
-    route.fulfill({ json: { data: ['KNOWS', 'WORKS_AT'] } }),
-  )
-
-  // list_nodes
-  await page.route('**/api/list_nodes*', (route) =>
-    route.fulfill({
-      json: { data: {}, nodeCount: 0, reachedEnd: true },
-    }),
-  )
-
-  // get_nodes
-  await page.route('**/api/get_nodes*', (route) =>
-    route.fulfill({
-      json: {
-        data: {
-          1: { id: 1, labels: ['Person'], properties: { name: 'Alice' }, in_edge_count: 0, out_edge_count: 1 },
-          2: { id: 2, labels: ['Person'], properties: { name: 'Bob' }, in_edge_count: 1, out_edge_count: 1 },
-          3: { id: 3, labels: ['Company'], properties: { name: 'Acme' }, in_edge_count: 1, out_edge_count: 0 },
-        },
-      },
-    }),
-  )
-
-  // get_edges
-  await page.route('**/api/get_edges*', (route) =>
-    route.fulfill({
-      json: {
-        data: {
-          100: [100, 1, 2, 0, {}],
-          101: [101, 2, 3, 1, {}],
-        },
-      },
-    }),
-  )
-
-  // get_node_edges (full + IDs-only)
-  await page.route('**/api/get_node_edges*', (route) =>
-    route.fulfill({
-      json: {
-        data: {
-          1: { ins: [], outs: [[100, 2]], inEdgeCounts: {}, outEdgeCounts: { 0: 1 } },
-          2: { ins: [[100, 1]], outs: [[101, 3]], inEdgeCounts: { 0: 1 }, outEdgeCounts: { 1: 1 } },
-          3: { ins: [[101, 2]], outs: [], inEdgeCounts: { 1: 1 }, outEdgeCounts: {} },
-        },
-      },
-    }),
-  )
-
-  // query (cypher)
-  await page.route('**/api/query*', (route) => {
-    if (opts.cypherHandler) {
-      opts.cypherHandler(route)
+    const internal = internalQueryResponse(body, graphs, loaded)
+    if (internal !== null) {
+      await route.fulfill({ json: internal })
       return
     }
-    route.fulfill({
-      json: { data: [[[1, 2, 3]]] },
-    })
-  })
 
-  // explore_node_edges
-  await page.route('**/api/explore_node_edges*', (route) =>
-    route.fulfill({ json: { data: [] } }),
-  )
+    // Not one of the app's own statements → a user-issued Cypher query.
+    if (opts.cypherHandler) {
+      await opts.cypherHandler(route)
+      return
+    }
+    await route.fulfill({ json: { data: [] } })
+  })
 }
 
 export type MockApiOpts = {
   graphs?: string[]
   loaded?: boolean
-  cypherHandler?: (route: import('@playwright/test').Route) => void
+  cypherHandler?: (route: Route) => void | Promise<void>
 }
 
 /**

@@ -6,7 +6,7 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 
 const NODES_PER_PAGE = 30
 
-const defaultPage: ListNodesResponse = { data: {}, nodeCount: 0, reachedEnd: true }
+const defaultPage: ListNodesResponse = { data: {}, reachedEnd: true }
 
 export const useHierarchyNodesQuery = (labels: string[], enabled: boolean) => {
   const graphName = useAppStore((state) => state.graphName)

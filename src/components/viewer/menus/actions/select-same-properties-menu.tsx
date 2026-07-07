@@ -24,11 +24,9 @@ function RenderPropertyValues({ parent, property }: { parent: JSX.Element; prope
       Array.from(
         new Set([
           ...turingNodes()
-            .map((n) => {
-              return (n.data as NodeEntry).properties[property]
-            })
+            .map((n) => (n.data as NodeEntry).properties[property])
             .filter((v) => v !== undefined)
-            .flat(),
+            .map((v) => String(v)),
         ])
       ).flat(),
     [turingNodes, property]
@@ -40,7 +38,7 @@ function RenderPropertyValues({ parent, property }: { parent: JSX.Element; prope
 
       for (const n of turing.instance.nodes) {
         const nodeData = n.data as NodeEntry
-        if (nodeData.properties[property] === propertyValue) {
+        if (String(nodeData.properties[property]) === propertyValue) {
           turingActions.selectNode(n)
         }
       }

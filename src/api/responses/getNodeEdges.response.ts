@@ -1,18 +1,11 @@
-import type { EdgeEntry } from '../models/edgeEntry.model'
+// get_node_edges never carries edge properties (no consumer reads them), so its
+// edges are a leaner tuple than EdgeEntry — no properties slot.
+export type NodeEdge = [id: number, src: number, tgt: number, edgeTypeID: number]
 
 export type GetNodeEdgesResponse = {
   [nodeID: number]: {
-    outs: EdgeEntry[]
-    ins: EdgeEntry[]
-    outEdgeCounts: { [edgeTypeID: number]: number }
-    inEdgeCounts: { [edgeTypeID: number]: number }
-  }
-}
-
-export type GetNodeEdgeIDsRawResponse = {
-  [nodeID: number]: {
-    outs: [number, number][]
-    ins: [number, number][]
+    outs: NodeEdge[]
+    ins: NodeEdge[]
     outEdgeCounts: { [edgeTypeID: number]: number }
     inEdgeCounts: { [edgeTypeID: number]: number }
   }

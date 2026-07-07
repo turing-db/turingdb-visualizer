@@ -12,7 +12,7 @@ test.describe('Cypher query execution', () => {
       },
     })
 
-    const input = page.getByPlaceholder('Cypher query (Ctrl+Enter to execute)')
+    const input = page.getByPlaceholder('Cypher query (Enter to execute)')
     await input.fill('MATCH (n:Person) RETURN n')
     await input.press('Control+Enter')
 
@@ -29,7 +29,7 @@ test.describe('Cypher query execution', () => {
       },
     })
 
-    const input = page.getByPlaceholder('Cypher query (Ctrl+Enter to execute)')
+    const input = page.getByPlaceholder('Cypher query (Enter to execute)')
     await input.fill('MATCH (n) RETURN n LIMIT 5')
 
     await page.locator('[data-icon="play"]').click()
@@ -49,8 +49,10 @@ test.describe('Cypher query execution', () => {
       },
     })
 
-    const input = page.getByPlaceholder('Cypher query (Ctrl+Enter to execute)')
-    await input.fill('BAD QUERY')
+    const input = page.getByPlaceholder('Cypher query (Enter to execute)')
+    // Must start with a Cypher keyword, else the toolbar treats it as a node
+    // search instead of executing it (see isCypherQuery); the mock rejects it.
+    await input.fill('MATCH bad syntax')
     await input.press('Control+Enter')
 
     // Error card should appear
@@ -71,7 +73,7 @@ test.describe('Cypher query execution', () => {
       },
     })
 
-    const input = page.getByPlaceholder('Cypher query (Ctrl+Enter to execute)')
+    const input = page.getByPlaceholder('Cypher query (Enter to execute)')
     await input.fill('MATCH (n) RETURN n')
     await input.press('Control+Enter')
 

@@ -24,7 +24,7 @@ test.describe('Graph viewer', () => {
   test('toolbar shows cypher query input with default query', async ({ page }) => {
     await setupLoadedGraph(page)
 
-    const input = page.getByPlaceholder('Cypher query (Ctrl+Enter to execute)')
+    const input = page.getByPlaceholder('Cypher query (Enter to execute)')
     await expect(input).toBeVisible()
     await expect(input).toHaveValue('MATCH (n) RETURN n LIMIT 100')
   })
