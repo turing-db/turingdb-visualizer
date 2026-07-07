@@ -9,7 +9,7 @@ import queryClient from '@/query-client'
 
 const NODES_PER_REQ = 30
 
-const defaultNodes: ListNodesResponse = { data: [], nodeCount: 0, reachedEnd: true }
+const defaultNodes: ListNodesResponse = { data: [], reachedEnd: true }
 
 export const useNodesQuery = (filter: FilterType) => {
   const graphName = useAppStore((state) => state.graphName)

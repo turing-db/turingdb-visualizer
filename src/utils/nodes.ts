@@ -1,11 +1,13 @@
+import type { PropertyValueType } from '@/api/models/propertyValueType.model'
+
 export type Property = {
   type: string
-  value: string | number | boolean | null
+  value: PropertyValueType | null
   skeleton?: string
   searched?: boolean
 } | null
 
-export type Properties = { [propType: string]: string }
+export type Properties = { [propType: string]: PropertyValueType }
 
 export const NODE_DISPLAY_NAMES = [
   'displayName (String)',

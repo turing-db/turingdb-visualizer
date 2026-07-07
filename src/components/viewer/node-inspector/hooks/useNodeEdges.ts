@@ -2,7 +2,7 @@ import { LimitByEdgeTypeMap } from '@/api/args'
 import type { NodeEntry } from '@/api/models/nodeEntry.model'
 import { useEdgePagination } from './useEdgePagination'
 import { getNodeEdges, getNodes } from '@/api'
-import type { EdgeEntry } from '@/api/models/edgeEntry.model'
+import type { NodeEdge } from '@/api/responses'
 import { groupBy } from 'lodash'
 import { EdgeDirection } from '../constants'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
@@ -14,7 +14,7 @@ export interface UseNodeEdgesProps {
 }
 
 export type NodeEdges = {
-  edges: EdgeEntry[]
+  edges: NodeEdge[]
   edgeCounts: { [edgeTypeID: number]: number }
 }
 

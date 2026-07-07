@@ -6,6 +6,7 @@ export type EdgeEntry = [
   tgt: number,
   edgeTypeID: number,
   properties: {
-    [propTypeID: number]: PropertyValueType
+    // Keyed by property NAME, matching NodeEntry — see db.getEdges / ProcUtils.
+    [propType: string]: PropertyValueType
   },
 ]

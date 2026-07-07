@@ -1,10 +1,12 @@
 import TuringCollapseTrigger from '@/components/base/turing-collapse-trigger'
 import { TuringExpandable } from '@/components/base/turing-expandable'
+import type { Properties } from '@/utils/nodes'
 import { NodePropertyValue } from '@/utils/properties'
 import { propertyKeyToString } from '@/utils/property-to-string'
+import type { PropertyValueType } from '@/api/models/propertyValueType.model'
 import TuringNodeCard from './turing-node-card.extended'
 
-function NodePropertiesListItem({ type, value }: { type: string; value: string }) {
+function NodePropertiesListItem({ type, value }: { type: string; value: PropertyValueType }) {
   return (
     <div className="flex flex-col">
       <span className="text-content-tertiary mb-1 text-xs leading-[1.16] font-medium">
@@ -29,7 +31,7 @@ function NodePropertiesListItem({ type, value }: { type: string; value: string }
 export default function TuringNodePropertiesListExtended({
   properties,
 }: {
-  properties: Record<string, string>
+  properties: Properties
 }) {
   const isExpandable = Object.keys(properties).length > 6
   const propertiesEntries = Object.entries(properties)
