@@ -36,3 +36,8 @@ testbed
 # Playwright
 test-results
 playwright-report
+
+# Written by `codegraph snapshot` and copied in for the time-travel tab.
+# It carries build-time commit hashes that change on every rebuild, so a
+# committed copy would be stale immediately. The panel handles its absence.
+public/refs.json

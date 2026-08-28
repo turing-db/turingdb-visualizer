@@ -35,6 +35,7 @@ export type VisStore = {
   nodeInspectorCollapsedWidth: number
   graphLoading: boolean
   isHierarchyBrowserOpen: boolean
+  isCodeGraphOpen: boolean
   hierarchyBrowserWidth: number
   addNodesDialogOpen: boolean
   addNodesDialogInitialTerm: string
@@ -45,6 +46,10 @@ export type VisStore = {
   setNodeInspectorCollapsedWidth: (width: number) => void
   setGraphLoading: (v: boolean) => void
   setHierarchyBrowserOpen: (v: boolean) => void
+  /** Opening the code graph resets neighbourhood/hiddenNodes/entityCache:
+   *  those are keyed by INTERNAL node id, which is per-build and collides
+   *  across graphs, so carrying them over paints the wrong nodes. */
+  setCodeGraphOpen: (v: boolean) => void
   setHierarchyBrowserWidth: (v: number) => void
   openAddNodesDialog: (initialTerm?: string) => void
   closeAddNodesDialog: () => void
@@ -112,6 +117,7 @@ export const useVisStore = create<VisStore>((set) => {
     nodeInspectorCollapsedWidth: NODE_INSPECTOR_COLLAPSED_DEFAULT_WIDTH,
     graphLoading: false,
     isHierarchyBrowserOpen: false,
+    isCodeGraphOpen: false,
     hierarchyBrowserWidth: HIERARCHY_BROWSER_DEFAULT_WIDTH,
     addNodesDialogOpen: false,
     addNodesDialogInitialTerm: '',
@@ -123,6 +129,17 @@ export const useVisStore = create<VisStore>((set) => {
     closeAddNodesDialog: () =>
       set(() => ({ addNodesDialogOpen: false, addNodesDialogInitialTerm: '' })),
     setHierarchyBrowserOpen: (v: boolean) => set(() => ({ isHierarchyBrowserOpen: v })),
+    setCodeGraphOpen: (v: boolean) => {
+      if (v) {
+        // Replace, do not mutate: these are keyed by INTERNAL node id, which is
+        // a per-build value that collides across graphs. Carrying them into a
+        // different graph paints the wrong nodes with no error anywhere.
+        neighbourhoodRef.current = new NeighbourMap()
+        hiddenNodesRef.current = new Set()
+        entityCacheRef.current = new EntityCache()
+      }
+      set(() => ({ isCodeGraphOpen: v }))
+    },
     setHierarchyBrowserWidth: (v: number) =>
       set(() => ({
         hierarchyBrowserWidth: Math.max(

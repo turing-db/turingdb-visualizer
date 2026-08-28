@@ -177,7 +177,11 @@ export async function listEdgeTypes(args: ListEdgeTypesArgs): Promise<ListEdgeTy
   if (args.edgeIDs && args.edgeIDs.length > 0) {
     const data = await executeCypherQuery({
       graph: args.graph,
-      query: `MATCH ()-[r]->() WHERE ${inClause('r', args.edgeIDs)} RETURN type(r)`,
+      // `type(r)` is a PARSE_ERROR from TuringDB 1.36 onward -- `type` became a
+      // reserved token. The replacement is `edgeType(r)`. This is not cosmetic:
+      // the failure surfaces as an empty edge list, so the canvas renders nodes
+      // with no links and reports no error at all.
+      query: `MATCH ()-[r]->() WHERE ${inClause('r', args.edgeIDs)} RETURN edgeType(r)`,
       controller: args.controller,
     })
 
@@ -441,7 +445,13 @@ export async function getEdges(args: GetEdgesArgs): Promise<GetEdgesResponse> {
 }
 
 export async function executeCypherQuery(args: CypherQueryArgs): Promise<CypherQueryResponse> {
-  return await fetch(`/api/query?graph=${args.graph}`, {
+  // `commit` pins a past commit for time travel, `change` an open change.
+  // Without these a caller has to bypass this function with a raw fetch, which
+  // is how error handling gets dropped.
+  const params = new URLSearchParams({ graph: args.graph })
+  if (args.commit) params.set('commit', args.commit)
+  if (args.change) params.set('change', args.change)
+  return await fetch(`/api/query?${params.toString()}`, {
     method: 'POST',
     signal: args.signal ?? args.controller?.signal,
     headers: {

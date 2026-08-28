@@ -19,6 +19,10 @@ export const TuringGraphSelector: FC = () => {
   const { refetch } = useGraphInfo(graphName)
 
   const [graphs, setGraphs] = useState<string[]>([])
+  // A failed graph list must not render as 'no graphs'. Upstream logged the
+  // error to the console and showed the empty state, so a server that is
+  // down looks identical to a server with nothing in it.
+  const [loadError, setLoadError] = useState<string | null>(null)
 
   const availGraphs = useMemo(
     () =>
@@ -56,9 +60,32 @@ export const TuringGraphSelector: FC = () => {
     listAvailableGraphs({})
       .then((data) => {
         setGraphs(data)
+        // Honour `?graph=` on first load. Upstream has no URL handling at all,
+        // so a deep link into a specific graph -- which is the whole point of
+        // `codegraph viz` -- lands on "No graph selected" and silently does
+        // nothing. Only auto-select a graph the server actually reports.
+        const wanted = new URLSearchParams(window.location.search).get('graph')
+        if (wanted && !graphName && data.includes(wanted)) {
+          onItemSelect({ name: wanted } as TuringSelectItem)
+        }
       })
-      .catch((err) => console.log(err))
-  }, [])
+      .catch((err: unknown) => {
+        const e = err as { message?: string }
+        setLoadError(e?.message ?? String(err))
+      })
+  }, [graphName, onItemSelect])
+
+  if (loadError) {
+    return (
+      <span
+        role="alert"
+        title={loadError}
+        className="rounded border border-red-500 px-2 py-1 text-xs text-red-400"
+      >
+        server unreachable
+      </span>
+    )
+  }
 
   return (
     <TuringSelect items={availGraphs} onItemSelect={onItemSelect}>

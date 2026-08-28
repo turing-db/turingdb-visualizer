@@ -1,0 +1,70 @@
+/* Panel chrome for the codegraph domain module.
+   Docked right, mirroring the node inspector, so it never overlaps the canvas
+   controls. Tailwind is available but the panel is self-contained so it can be
+   lifted into another app without dragging the design system with it. */
+.cg-panel {
+  position: absolute;
+  top: 56px;
+  right: 0;
+  bottom: 0;
+  width: 380px;
+  overflow-y: auto;
+  padding: 12px 14px;
+  background: #1c2127;
+  border-left: 1px solid #2f343c;
+  color: #d3d8de;
+  font-size: 12px;
+  line-height: 1.45;
+  z-index: 20;
+}
+.cg-header { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.cg-title { font-weight: 600; letter-spacing: 0.02em; text-transform: uppercase; font-size: 11px; color: #8f99a8; }
+.cg-totals { font-size: 11px; color: #8f99a8; width: 100%; }
+.cg-tabs { display: flex; gap: 6px; margin: 10px 0; }
+.cg-tabs button {
+  background: #252a31; border: 1px solid #2f343c; color: #abb3bf;
+  padding: 3px 10px; border-radius: 3px; cursor: pointer; font-size: 11px;
+}
+.cg-tabs button[aria-pressed='true'] { background: #2d72d2; border-color: #2d72d2; color: #fff; }
+.cg-candidates { list-style: none; margin: 8px 0; padding: 0; max-height: 220px; overflow-y: auto; }
+.cg-candidates li button {
+  display: block; width: 100%; text-align: left; background: none; border: 0;
+  color: #d3d8de; padding: 3px 4px; cursor: pointer; border-radius: 3px;
+}
+.cg-candidates li button:hover { background: #252a31; }
+.cg-candidates small { display: block; color: #7b8494; font-size: 10px; }
+.cg-card { background: #252a31; border: 1px solid #2f343c; border-radius: 4px; padding: 8px 10px; margin: 8px 0; }
+.cg-card h4 { margin: 0 0 4px; font-size: 12px; word-break: break-all; }
+.cg-card label { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 11px; }
+.cg-chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 8px; }
+.cg-chip { background: #252a31; border: 1px solid #2f343c; border-radius: 10px; padding: 1px 8px; font-size: 10px; color: #8f99a8; }
+/* Anything that changes what is on screen gets a visible chip. A silently
+   truncated picture is a wrong picture. */
+.cg-chip.cg-warn { border-color: #c87619; color: #fbb360; }
+.cg-chips button {
+  background: none; border: 1px solid #2f343c; color: #8f99a8;
+  border-radius: 3px; padding: 1px 7px; font-size: 10px; cursor: pointer;
+}
+.cg-chips button[aria-pressed='true'] { border-color: #2d72d2; color: #8abbff; }
+.cg-dupes ul { list-style: none; padding: 0; margin: 0; }
+.cg-dupes li { padding: 5px 0; border-bottom: 1px solid #252a31; word-break: break-all; }
+.cg-dupes small { display: block; color: #7b8494; font-size: 10px; }
+.cg-cluster { color: #8abbff; }
+/* Failure is a red card with the real error, never an empty canvas: on this
+   dialect a failed query and an empty result look identical. */
+.cg-error { border-left: 3px solid #cd4246; }
+.cg-error-type { font-weight: 600; color: #ff7373; margin: 6px 0 4px; }
+.cg-error-details { white-space: pre-wrap; font-size: 10px; color: #abb3bf; background: #252a31; padding: 6px; border-radius: 3px; max-height: 200px; overflow: auto; }
+.cg-error-hint { margin-top: 8px; color: #8f99a8; font-size: 11px; }
+.cg-error-hint code { background: #252a31; padding: 0 4px; border-radius: 2px; }
+
+.cg-scrubber label { display: flex; align-items: center; gap: 8px; font-size: 11px; margin: 8px 0; }
+.cg-scrubber input[type='range'] { flex: 1; }
+.cg-scrub-stats { margin-top: 10px; font-size: 11px; }
+.cg-born { color: #fbb360; }
+.cg-dim { color: #7b8494; font-size: 10px; margin-top: 2px; }
+.cg-verify { margin-top: 12px; padding-top: 8px; border-top: 1px solid #2f343c; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.cg-hash { font-size: 10px; color: #8abbff; background: #252a31; padding: 1px 5px; border-radius: 2px; }
+/* A self-healed error is REPORTED, never hidden: a silent retry teaches nobody
+   why the first attempt failed. */
+.cg-healed { width: 100%; color: #fbb360; font-size: 10px; margin-top: 4px; }

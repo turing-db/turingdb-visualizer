@@ -1,5 +1,7 @@
 import { TuringBottomToolbar } from '@/components/viewer/menus/bottom-toolbar'
 import { TuringTopToolBar } from '@/components/viewer/menus/top-toolbar'
+import { CodeGraphPanel } from '@/components/viewer/codegraph'
+import { useAppStore } from '@/stores/app.store'
 import { HierarchyBrowser } from '@/components/viewer/hierarchy-browser'
 import { TuringNodeInspector } from '@/components/viewer/node-inspector'
 import { useCanvasStore, useVisStore } from '@/stores'
@@ -187,8 +189,24 @@ const GraphCanvas: FC<GraphCanvasProps> = (props) => {
   )
 }
 
+/** Graphs owned by the codegraph domain module. The generic toolbars are hidden
+ *  for these: a code graph has its own vocabulary and the generic controls
+ *  offer operations that do not mean anything here. */
+const CODEGRAPH_GRAPHS = ['cg_head', 'cg_arc']
+
 export const TViewerPage = () => {
   const [contextMenuInfo, setContextMenuInfo] = useState<TuringContextMenuInfo | undefined>()
+  const graphName = useAppStore((s) => s.graphName)
+  const isCodeGraph = !!graphName && CODEGRAPH_GRAPHS.includes(graphName)
+  const setCodeGraphOpen = useVisStore((s) => s.setCodeGraphOpen)
+
+  // Upstream's side bar is a PAGE ROUTER, not a panel toggle, so there is no
+  // nav item to hang this on: the module mounts on the graph name instead.
+  // Entering a code graph must still reset the id-keyed caches -- internal node
+  // ids are per-build and collide across graphs.
+  useEffect(() => {
+    setCodeGraphOpen(isCodeGraph)
+  }, [isCodeGraph, setCodeGraphOpen])
   const closeContextMenu = useCallback(() => setContextMenuInfo(undefined), [])
 
   return (
@@ -196,10 +214,12 @@ export const TViewerPage = () => {
       <TuringContextMenu close={closeContextMenu} info={contextMenuInfo} />
       <GraphCanvas setContextMenuInfo={setContextMenuInfo} />
       <div id="cm" />
-      <TuringTopToolBar />
-      <TuringBottomToolbar />
+      {!isCodeGraph && <TuringTopToolBar />}
+      {!isCodeGraph && <TuringBottomToolbar />}
       <TuringNodeInspector />
       <HierarchyBrowser />
+      {/* Codegraph is a domain module: it only mounts for its own graphs. */}
+      {isCodeGraph && <CodeGraphPanel graph={graphName} />}
     </div>
   )
 }
