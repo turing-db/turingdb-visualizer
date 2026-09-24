@@ -1,12 +1,13 @@
+import { BakuPanel } from '@/components/viewer/baku'
+import { CodeGraphPanel } from '@/components/viewer/codegraph'
+import { HierarchyBrowser } from '@/components/viewer/hierarchy-browser'
 import { TuringBottomToolbar } from '@/components/viewer/menus/bottom-toolbar'
 import { TuringTopToolBar } from '@/components/viewer/menus/top-toolbar'
-import { CodeGraphPanel } from '@/components/viewer/codegraph'
-import { useAppStore } from '@/stores/app.store'
-import { HierarchyBrowser } from '@/components/viewer/hierarchy-browser'
 import { TuringNodeInspector } from '@/components/viewer/node-inspector'
 import { useCanvasStore, useVisStore } from '@/stores'
-import { type FC, useCallback, useEffect, useRef, useState } from 'react'
+import { useAppStore } from '@/stores/app.store'
 import { type NodeData, TuringCanvas, type TuringUserEvents, useTuringContext } from '@turingcanvas'
+import { type FC, useCallback, useEffect, useRef, useState } from 'react'
 
 import { TuringContextMenuType } from '@/components/viewer/menus/turing-context-menu-type'
 
@@ -21,8 +22,7 @@ import useGraphEntities from '@/hooks/use-graph-entities'
 // single batch fits comfortably in one frame on mid-range hardware.
 const BATCH_SIZE = 500
 
-const yieldToBrowser = () =>
-  new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
+const yieldToBrowser = () => new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
 
 const GraphCanvasData: FC = () => {
   const turing = useTuringContext()
@@ -194,28 +194,36 @@ const GraphCanvas: FC<GraphCanvasProps> = (props) => {
  *  offer operations that do not mean anything here. */
 const CODEGRAPH_GRAPHS = ['cg_head', 'cg_arc']
 
+/** Graphs owned by the baku module (a building section as a geometric graph):
+ *  the 3D view docks left, the stock canvas stays on the right. */
+const BAKU_GRAPHS = ['baku']
+
 export const TViewerPage = () => {
   const [contextMenuInfo, setContextMenuInfo] = useState<TuringContextMenuInfo | undefined>()
   const graphName = useAppStore((s) => s.graphName)
   const isCodeGraph = !!graphName && CODEGRAPH_GRAPHS.includes(graphName)
+  const isBaku = !!graphName && BAKU_GRAPHS.includes(graphName)
+  const isDomain = isCodeGraph || isBaku
   const setCodeGraphOpen = useVisStore((s) => s.setCodeGraphOpen)
 
   // Upstream's side bar is a PAGE ROUTER, not a panel toggle, so there is no
   // nav item to hang this on: the module mounts on the graph name instead.
   // Entering a code graph must still reset the id-keyed caches -- internal node
   // ids are per-build and collide across graphs.
+  // (setCodeGraphOpen(true) is what resets those caches; baku needs the same.)
   useEffect(() => {
-    setCodeGraphOpen(isCodeGraph)
-  }, [isCodeGraph, setCodeGraphOpen])
+    setCodeGraphOpen(isDomain)
+  }, [isDomain, setCodeGraphOpen])
   const closeContextMenu = useCallback(() => setContextMenuInfo(undefined), [])
 
   return (
     <div className="relative flex flex-1 flex-row overflow-hidden">
       <TuringContextMenu close={closeContextMenu} info={contextMenuInfo} />
+      {isBaku && <BakuPanel key={graphName} graph={graphName} />}
       <GraphCanvas setContextMenuInfo={setContextMenuInfo} />
       <div id="cm" />
-      {!isCodeGraph && <TuringTopToolBar />}
-      {!isCodeGraph && <TuringBottomToolbar />}
+      {!isDomain && <TuringTopToolBar />}
+      {!isDomain && <TuringBottomToolbar />}
       <TuringNodeInspector />
       <HierarchyBrowser />
       {/* Codegraph is a domain module: it only mounts for its own graphs. */}

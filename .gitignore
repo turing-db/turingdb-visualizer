@@ -41,3 +41,6 @@ playwright-report
 # It carries build-time commit hashes that change on every rebuild, so a
 # committed copy would be stale immediately. The panel handles its absence.
 public/refs.json
+
+# baku module: building shell, copied from baku-graph `make web` (data/out/web)
+public/baku/

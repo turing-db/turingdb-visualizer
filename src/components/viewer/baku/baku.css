@@ -1,0 +1,308 @@
+/* Panel chrome for the baku domain module. Docked LEFT at ~58% so the stock 2D
+   canvas stays visible on the right: a result lights up in both at once.
+   Same palette as codegraph.css; self-contained on purpose. */
+.bk-panel {
+  flex: 0 0 58%;
+  max-width: 58%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: #1c2127;
+  border-right: 1px solid #2f343c;
+  color: #d3d8de;
+  font-size: 12px;
+  line-height: 1.45;
+  z-index: 20;
+}
+.bk-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 6px 12px;
+  flex-wrap: wrap;
+}
+.bk-title {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-size: 11px;
+  color: #8f99a8;
+}
+.bk-totals,
+.bk-boot,
+.bk-dim {
+  font-size: 11px;
+  color: #8f99a8;
+}
+.bk-boot {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+.bk-viewport {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 240px;
+}
+.bk-gl {
+  position: absolute;
+  inset: 0;
+}
+.bk-gl canvas {
+  display: block;
+}
+.bk-layers {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(28, 33, 39, 0.88);
+  border: 1px solid #2f343c;
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.bk-layers label {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  cursor: pointer;
+}
+.bk-colour {
+  margin-top: 6px;
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  flex-wrap: wrap;
+  color: #8f99a8;
+}
+.bk-colour button,
+.bk-timeline button {
+  background: #252a31;
+  border: 1px solid #2f343c;
+  color: #abb3bf;
+  padding: 1px 6px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 10px;
+}
+.bk-colour button[aria-pressed="true"],
+.bk-timeline button[aria-pressed="true"] {
+  background: #2d72d2;
+  border-color: #2d72d2;
+  color: #fff;
+}
+.bk-legend {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+  color: #abb3bf;
+}
+.bk-legend i {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  margin-right: 3px;
+}
+.bk-card {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 250px;
+  background: rgba(28, 33, 39, 0.94);
+  border: 1px solid #2f343c;
+  border-radius: 4px;
+  padding: 8px 10px;
+  font-size: 11px;
+}
+.bk-card h4 {
+  margin: 0 0 4px;
+  font-size: 12px;
+}
+.bk-card th {
+  text-align: left;
+  color: #8f99a8;
+  font-weight: 400;
+  padding-right: 8px;
+}
+.bk-x {
+  position: absolute;
+  top: 2px;
+  right: 6px;
+  background: none;
+  border: 0;
+  color: #8f99a8;
+  cursor: pointer;
+  font-size: 14px;
+}
+.bk-credit {
+  position: absolute;
+  bottom: 4px;
+  left: 8px;
+  right: 8px;
+  font-size: 9px;
+  color: #6b7482;
+}
+.bk-timeline {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 5px 12px;
+  border-top: 1px solid #2f343c;
+  flex-wrap: wrap;
+}
+.bk-healed {
+  color: #fbb360;
+  font-size: 11px;
+}
+.bk-console {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  height: 300px;
+  border-top: 1px solid #2f343c;
+  min-height: 0;
+}
+.bk-presets {
+  overflow-y: auto;
+  padding: 6px 8px;
+  border-right: 1px solid #2f343c;
+}
+.bk-presets h5 {
+  margin: 6px 0 2px;
+  font-size: 10px;
+  text-transform: uppercase;
+  color: #8f99a8;
+  letter-spacing: 0.04em;
+}
+.bk-presets button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 0;
+  color: #d3d8de;
+  padding: 3px 4px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 11px;
+}
+.bk-presets button:hover {
+  background: #252a31;
+}
+.bk-presets button[aria-pressed="true"] {
+  background: #1e3a5f;
+}
+.bk-presets small {
+  display: block;
+  color: #7b8494;
+  font-size: 10px;
+}
+.bk-editor {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  padding: 6px 8px;
+  gap: 6px;
+}
+.bk-editor textarea {
+  height: 64px;
+  resize: vertical;
+  background: #111418;
+  color: #e6e9ed;
+  border: 1px solid #2f343c;
+  border-radius: 3px;
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 11px;
+  padding: 6px;
+}
+.bk-run {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.bk-btn {
+  background: #252a31;
+  border: 1px solid #2f343c;
+  color: #d3d8de;
+  padding: 3px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 11px;
+}
+.bk-primary {
+  background: #2d72d2;
+  border-color: #2d72d2;
+  color: #fff;
+}
+.bk-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.bk-chip {
+  background: #252a31;
+  border: 1px solid #2f343c;
+  border-radius: 10px;
+  padding: 1px 8px;
+  font-size: 10px;
+  color: #8f99a8;
+}
+.bk-warn {
+  color: #fbb360;
+}
+.bk-summary {
+  color: #f0a5c8;
+  font-size: 11px;
+}
+.bk-table {
+  overflow: auto;
+  min-height: 0;
+  flex: 1;
+}
+.bk-table table {
+  border-collapse: collapse;
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 10.5px;
+}
+.bk-table th,
+.bk-table td {
+  border-bottom: 1px solid #2a2f36;
+  padding: 2px 8px;
+  text-align: left;
+  white-space: nowrap;
+}
+.bk-table th {
+  color: #8f99a8;
+  position: sticky;
+  top: 0;
+  background: #1c2127;
+}
+.bk-error {
+  background: #2a1717;
+  border: 1px solid #7a2e2e;
+  border-radius: 4px;
+  padding: 6px 8px;
+}
+.bk-error-type {
+  color: #ff7373;
+  font-weight: 600;
+}
+.bk-error-details {
+  white-space: pre-wrap;
+  margin: 4px 0 0;
+  font-size: 10.5px;
+  color: #f3c4c4;
+}
+.bk-hint {
+  color: #abb3bf;
+  font-size: 11px;
+  margin-top: 4px;
+}
+.bk-fatal {
+  padding: 64px 16px 16px;
+  gap: 8px;
+}

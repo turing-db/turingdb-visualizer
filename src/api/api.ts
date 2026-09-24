@@ -468,3 +468,43 @@ export async function executeCypherQuery(args: CypherQueryArgs): Promise<CypherQ
     })
   )
 }
+
+/** A query result as a table: column names and types from the header, rows
+ *  flattened from the column-oriented chunks. Same request and the same
+ *  error contract as `executeCypherQuery` (throws on a non-null `error`,
+ *  which arrives with HTTP 200), so a caller never has to bypass it. */
+export interface CypherTable {
+  columns: string[]
+  types: string[]
+  rows: unknown[][]
+  /** Server-side execution time in ms, as reported by the engine. */
+  timeMs?: number
+}
+
+export async function executeCypherQueryTable(args: CypherQueryArgs): Promise<CypherTable> {
+  const params = new URLSearchParams({ graph: args.graph })
+  if (args.commit) params.set('commit', args.commit)
+  if (args.change) params.set('change', args.change)
+  const res = await fetch(`/api/query?${params.toString()}`, {
+    method: 'POST',
+    signal: args.signal ?? args.controller?.signal,
+    headers: { 'Content-Type': 'text/plain' },
+    body: args.query,
+  })
+  const json = JSON.parse(await res.text())
+  if (json.error) {
+    throw new CypherQueryError(json.error, json.error_details || '')
+  }
+  const rows: unknown[][] = []
+  for (const chunk of (json.data ?? []) as unknown[][][]) {
+    if (!Array.isArray(chunk) || chunk.length === 0) continue
+    const n = Math.max(0, ...chunk.map((c) => (Array.isArray(c) ? c.length : 0)))
+    for (let i = 0; i < n; i++) rows.push(chunk.map((c) => (c as unknown[])[i]))
+  }
+  return {
+    columns: json.header?.column_names ?? [],
+    types: json.header?.column_types ?? [],
+    rows,
+    timeMs: typeof json.time === 'number' ? json.time : undefined,
+  }
+}

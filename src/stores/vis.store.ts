@@ -89,6 +89,7 @@ export const useVisStore = create<VisStore>((set) => {
     proxy.hook('delNeighbour', trigger)
     proxy.hook('reset', trigger)
     proxy.hook('add', trigger)
+    proxy.hook('setSubgraph', trigger)
 
     return proxy
   }

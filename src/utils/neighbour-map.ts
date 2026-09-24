@@ -17,6 +17,25 @@ export class NeighbourMap extends Map<number, NeighbourEntry> {
     this.clear()
   }
 
+  /**
+   * Replace the whole map with exactly this subgraph: these nodes, and only the
+   * given edges between them. `add` would instead pull in up to `countPerPage`
+   * neighbours of every node, which for a 171-vertex geodesic is ~1,000 nodes of
+   * context burying the path. Edge counts are left empty, so double-clicking a
+   * node still expands its real neighbourhood through `newNeighbours`.
+   */
+  setSubgraph(graph: string, nodeIDs: number[], edges: Array<[edgeID: number, src: number, tgt: number]>) {
+    this.graph = graph
+    this.clear()
+    const entry = (): NeighbourEntry => ({ ins: [], outs: [], outEdgeCounts: {}, inEdgeCounts: {} })
+    for (const id of nodeIDs) this.set(id, entry())
+    for (const [edgeID, src, tgt] of edges) {
+      if (!this.has(src) || !this.has(tgt)) continue
+      this.get(src)!.outs.push({ edgeID, tgtID: tgt })
+      this.get(tgt)!.ins.push({ edgeID, srcID: src })
+    }
+  }
+
   async add(nodeIDs: number[]) {
     const data = (await getNodeEdgeIDs({
       graph: this.graph,

@@ -28,6 +28,9 @@ export class TuringInstance {
   nodeMap: NodeMap = new Map<number, TuringNode>()
   edgeMap: EdgeMap = new Map<number, TuringEdge>()
   autoFitUntil = 0
+  /** Zoom ceiling while auto-fitting. 1 keeps big graphs from over-zooming; a
+   *  domain module showing a 7-node subgraph passes more so it is legible. */
+  autoFitMaxZoom = 1
   autoFitControlsBound = false
   focusNodeId: number | null = null
   focusUntil = 0
@@ -169,7 +172,7 @@ export class TuringInstance {
     this.renderer.textRenderer.setNodeShape(shape, this.nodeMap)
   }
 
-  fitView(padding = 1.2) {
+  fitView(padding = 1.2, maxZoom = 1) {
     if (this.nodes.length === 0) return
 
     // Calculate bounding box of all nodes
@@ -197,7 +200,7 @@ export class TuringInstance {
 
     const zoomX = viewWidth / (width * padding)
     const zoomY = viewHeight / (height * padding)
-    const zoom = Math.min(zoomX, zoomY, 1) // Cap at 1 to avoid over-zooming
+    const zoom = Math.min(zoomX, zoomY, maxZoom) // capped (default 1) to avoid over-zooming
 
     // Update camera position and zoom
     camera.position.x = centerX
@@ -210,8 +213,9 @@ export class TuringInstance {
     this.events.controls.update()
   }
 
-  autoFit(durationMs: number) {
+  autoFit(durationMs: number, maxZoom = 1) {
     this.autoFitUntil = performance.now() + durationMs
+    this.autoFitMaxZoom = maxZoom
 
     if (!this.autoFitControlsBound) {
       this.events.controls.addEventListener('start', () => {
@@ -268,7 +272,7 @@ export class TuringInstance {
     this.updatePositions()
 
     if (performance.now() < this.autoFitUntil) {
-      this.fitView()
+      this.fitView(1.2, this.autoFitMaxZoom)
     } else if (this.focusNodeId !== null && performance.now() < this.focusUntil) {
       this.focusView(this.focusNodeId)
     }

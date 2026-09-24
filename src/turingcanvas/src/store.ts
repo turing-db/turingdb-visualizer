@@ -59,7 +59,7 @@ export type CanvasStore = {
     activateCenterForce: (...args: ActivateCenterForceArgs) => void
     setNodeShape: (...args: SetNodeShapeArgs) => void
     fitView: (padding?: number) => void
-    autoFit: (durationMs: number) => void
+    autoFit: (durationMs: number, maxZoom?: number) => void
     focusNode: (id: number, durationMs: number) => void
   }
 
@@ -164,8 +164,8 @@ export const createCanvasStore = (instance: TuringInstance) => {
         instanceRef.current?.fitView(padding)
       },
 
-      autoFit: (durationMs: number) => {
-        instanceRef.current?.autoFit(durationMs)
+      autoFit: (durationMs: number, maxZoom?: number) => {
+        instanceRef.current?.autoFit(durationMs, maxZoom)
       },
 
       focusNode: (id: number, durationMs: number) => {
