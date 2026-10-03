@@ -226,14 +226,19 @@ export async function listNodes(args: ListNodesArgs): Promise<ListNodesResponse>
   // properties (a JSON-encoded {name: value} map).
   const DEFAULT_LIMIT = 1000
   const labels = (args.labels ?? []).map(cypherStringLiteral).join(', ')
+  // Property filters are a {name: substring} map literal. Map keys must be
+  // identifiers, so each name is backtick-quoted; the parser has no escape for
+  // a backtick inside a quoted name, so such (vanishingly rare) keys are skipped.
   const propEntries = args.properties ? [...args.properties.entries()] : []
-  const keys = propEntries.map(([k]) => cypherStringLiteral(k)).join(', ')
-  const values = propEntries.map(([, v]) => cypherStringLiteral(v)).join(', ')
+  const properties = propEntries
+    .filter(([k]) => !k.includes('`'))
+    .map(([k, v]) => `\`${k}\`: ${cypherStringLiteral(v)}`)
+    .join(', ')
   const skip = args.skip ?? 0
   const limit = args.limit ?? DEFAULT_LIMIT
 
   const query =
-    `CALL db.listNodes([${labels}], [${keys}], [${values}], ${skip}, ${limit}) ` +
+    `CALL db.listNodes([${labels}], {${properties}}, ${skip}, ${limit}) ` +
     'YIELD id, labels, properties RETURN id, labels, properties'
 
   const chunks = await executeCypherQuery({
