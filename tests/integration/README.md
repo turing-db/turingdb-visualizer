@@ -37,14 +37,16 @@ change is blocked on a turingdb release.
 
 ## How it works
 
-- `global-setup.ts` — boots `turingdb` (via `uvx turingdb@latest`, daemonized)
-  on a throwaway temp dir on port `6699`, waits for readiness, then imports the
+- `global-setup.ts` — boots `turingdb` (via `uvx turingdb@latest`, daemonized,
+  with `USE_TURING_PROTO=1` for the binary protocol that the app's `turingdb`
+  npm client speaks) on a throwaway temp dir on port `6699`, waits for
+  readiness, then imports the
   fixture via `LOAD JSONL 'fixture.jsonl' AS vis_test`. Returns a teardown that
   stops the server and removes the temp dir.
 - `fixture.jsonl` — the deterministic fixture graph (`vis_test`: 4 nodes,
   3 edges) in Neo4j APOC JSONL format. Edit this file to change the seed data.
-- `setup-fetch.ts` — shims `fetch` so the relative `/api/*` URLs in `api.ts`
-  resolve to the test server, reproducing the Vite/Express dev proxy's
+- `setup-fetch.ts` — shims `fetch` so the relative `/api/query` URL of the
+  client in `api.ts` resolves to the test server, reproducing the Vite/Express dev proxy's
   `/api`-strip.
 - `config.ts` — shared port / base URL / graph name.
 

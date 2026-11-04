@@ -28,9 +28,15 @@ import {
   type ListPropertyTypesResponse,
 } from './responses'
 
+import { TuringClient, TuringQueryError } from 'turingdb'
+
 import type { NodeEntries } from './models/nodeEntries.model'
 import type { NodeEntry } from './models/nodeEntry.model'
 import type { EdgeEntry } from './models/edgeEntry.model'
+
+// One client for the whole app: it holds no per-query state, since every call
+// passes its own graph. The first query compiles the wasm decoder.
+const client = new TuringClient({ url: '/api/query' })
 
 // Build an `OR` chain in place of the `IN` operator (which the Cypher dialect
 // does not yet support).
@@ -446,20 +452,15 @@ export async function getEdges(args: GetEdgesArgs): Promise<GetEdgesResponse> {
 }
 
 export async function executeCypherQuery(args: CypherQueryArgs): Promise<CypherQueryResponse> {
-  return await fetch(`/api/query?graph=${args.graph}`, {
-    method: 'POST',
-    signal: args.signal ?? args.controller?.signal,
-    headers: {
-      'Content-Type': 'text/plain',
-    },
-    body: args.query,
-  }).then((res) =>
-    res.text().then((text) => {
-      const json = JSON.parse(text)
-      if (json.error) {
-        throw new CypherQueryError(json.error, json.error_details || '')
-      }
-      return json.data
+  try {
+    return await client.queryData(args.query, {
+      graph: args.graph,
+      signal: args.signal ?? args.controller?.signal,
     })
-  )
+  } catch (error) {
+    if (error instanceof TuringQueryError) {
+      throw new CypherQueryError(error.status, error.message)
+    }
+    throw error
+  }
 }

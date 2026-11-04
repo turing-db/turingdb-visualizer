@@ -18,6 +18,11 @@ export default defineConfig({
       '@components': path.resolve(__dirname, './src/components'),
     },
   },
+  // The turingdb client finds its decoder with new URL('turing_wasm_decoder.wasm',
+  // import.meta.url). Pre-bundling would move the module away from the .wasm file.
+  optimizeDeps: {
+    exclude: ['turingdb'],
+  },
   server: {
     allowedHosts: true,
     port: frontendPort,
