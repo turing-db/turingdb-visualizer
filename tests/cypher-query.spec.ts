@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { setupLoadedGraph } from './helpers'
+import { fulfillError, fulfillRows, queryOf, setupLoadedGraph } from './helpers'
 
 test.describe('Cypher query execution', () => {
   test('Ctrl+Enter executes the query', async ({ page }) => {
@@ -7,8 +7,8 @@ test.describe('Cypher query execution', () => {
 
     await setupLoadedGraph(page, {
       cypherHandler: async (route) => {
-        querySent = await route.request().postData() ?? ''
-        await route.fulfill({ json: { data: [[[1, 2]]] } })
+        querySent = queryOf(route)
+        await fulfillRows(route, [[1, 2]])
       },
     })
 
@@ -25,7 +25,7 @@ test.describe('Cypher query execution', () => {
     await setupLoadedGraph(page, {
       cypherHandler: async (route) => {
         queryCalled = true
-        await route.fulfill({ json: { data: [[[1]]] } })
+        await fulfillRows(route, [[1]])
       },
     })
 
@@ -40,12 +40,7 @@ test.describe('Cypher query execution', () => {
   test('query error is displayed and dismissible', async ({ page }) => {
     await setupLoadedGraph(page, {
       cypherHandler: async (route) => {
-        await route.fulfill({
-          json: {
-            error: 'SyntaxError',
-            error_details: 'Unexpected token at position 5',
-          },
-        })
+        await fulfillError(route, 'PARSE_ERROR', 'Unexpected token at position 5')
       },
     })
 
@@ -56,7 +51,7 @@ test.describe('Cypher query execution', () => {
     await input.press('Control+Enter')
 
     // Error card should appear
-    await expect(page.getByText('SyntaxError')).toBeVisible()
+    await expect(page.getByText('PARSE_ERROR')).toBeVisible()
     await expect(page.getByText('Unexpected token at position 5')).toBeVisible()
 
     // Dismiss the error
@@ -69,7 +64,7 @@ test.describe('Cypher query execution', () => {
       cypherHandler: async (route) => {
         // Delay response to keep pending state visible
         await new Promise((r) => setTimeout(r, 3000))
-        await route.fulfill({ json: { data: [[[1]]] } })
+        await fulfillRows(route, [[1]])
       },
     })
 

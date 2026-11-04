@@ -1,4 +1,5 @@
 import type { Page, Route } from '@playwright/test'
+import { type Cell, type QueryStatus, decodeRequestQuery, protoError, protoRows } from './proto'
 
 // The whole app now talks to a single backend endpoint, `/api/query`: catalog
 // and data access go through Cypher statements (`LIST AVAILABLE GRAPHS`,
@@ -7,10 +8,10 @@ import type { Page, Route } from '@playwright/test'
 // serves the app's own statements as columnar fixture data and hands genuine
 // user queries to an optional `cypherHandler`.
 //
-// TuringDB's columnar response shape is `{ data: [chunk, ...] }` where each
-// chunk is `[column, ...]` and each column is a flat array of that column's
-// cell values — i.e. `{ data: [[col0, col1, ...]] }` for a single chunk. The
-// api.ts reshapers read the columns positionally, matching each `YIELD` clause.
+// The app's `turingdb` client speaks TuringDB's binary protocol, so the mock
+// answers with protocol packets (see proto.ts). A response is one chunk of
+// columns, each a flat array of that column's cell values. The api.ts
+// reshapers read the columns positionally, matching each `YIELD` clause.
 
 // Fixture: 3 nodes (Alice/Bob/Acme) and 2 edges (Alice-KNOWS->Bob,
 // Bob-WORKS_AT->Acme), mirroring tests/integration/fixture.jsonl in spirit.
@@ -34,16 +35,14 @@ const IN_EDGES_IDS = [[], [[100, 1]], [[101, 2]]]
 const OUT_EDGE_COUNTS = ['{"0":1}', '{"1":1}', '{}']
 const IN_EDGE_COUNTS = ['{}', '{"0":1}', '{"1":1}']
 
-/** One-chunk response from its column arrays. */
-function chunk(columns: unknown[][]) {
-  return { data: [columns] }
-}
+/** The columns of the one chunk that a mocked response carries. */
+const chunk = (columns: Cell[][]) => columns
 
 /**
  * Map one of the app's own statements to its columnar response, or return null
  * if `body` isn't a statement the app itself issues (i.e. it's a user query).
  */
-function internalQueryResponse(body: string, graphs: string[], loaded: boolean) {
+function internalQueryResponse(body: string, graphs: string[], loaded: boolean): Cell[][] | null {
   // Catalog statements. Check the more specific "AVAILABLE" form first.
   if (body.includes('LIST AVAILABLE GRAPHS')) {
     return chunk([graphs, graphs.map(() => loaded), graphs.map(() => false)])
@@ -103,11 +102,11 @@ export async function mockApi(page: Page, opts: MockApiOpts = {}) {
   const loaded = opts.loaded ?? false
 
   await page.route('**/api/query*', async (route) => {
-    const body = route.request().postData() ?? ''
+    const body = queryOf(route)
 
     const internal = internalQueryResponse(body, graphs, loaded)
     if (internal !== null) {
-      await route.fulfill({ json: internal })
+      await fulfillRows(route, internal)
       return
     }
 
@@ -116,7 +115,25 @@ export async function mockApi(page: Page, opts: MockApiOpts = {}) {
       await opts.cypherHandler(route)
       return
     }
-    await route.fulfill({ json: { data: [] } })
+    await fulfillRows(route, [[]])
+  })
+}
+
+/** The Cypher text the app sent in this request. */
+export function queryOf(route: Route): string {
+  return decodeRequestQuery(route.request().postDataBuffer())
+}
+
+/** Answer with one chunk of columns, as a server does for a successful query. */
+export async function fulfillRows(route: Route, columns: Cell[][]) {
+  await route.fulfill({ contentType: 'application/turing-proto', body: protoRows(columns) })
+}
+
+/** Answer with a failed query: the app sees this status and message. */
+export async function fulfillError(route: Route, status: QueryStatus, message: string) {
+  await route.fulfill({
+    contentType: 'application/turing-proto',
+    body: protoError(status, message),
   })
 }
 
