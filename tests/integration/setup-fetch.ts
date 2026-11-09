@@ -1,5 +1,5 @@
-// Per-worker setup: the api.ts functions call relative URLs like
-// `/api/get_graph_status`, relying on the Vite/Express dev proxy to strip the
+// Per-worker setup: the `turingdb` client in api.ts posts every query to the
+// relative URL `/api/query`, relying on the Vite/Express dev proxy to strip the
 // `/api` prefix and forward to the TuringDB server. There is no such proxy in
 // Node, so we shim global fetch to reproduce it: `/api/X` -> `${API_BASE}/X`.
 //

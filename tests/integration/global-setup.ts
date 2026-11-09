@@ -10,9 +10,6 @@
 //      TURINGDB_SPEC defaults to `turingdb@latest` (latest published, no lock).
 // Either way the only host requirement is uv (or the local binary).
 //
-// The server runs with USE_TURING_PROTO=1, the binary protocol the app's
-// `turingdb` npm client speaks.
-//
 // We run the server with `-demon` (daemonized): in the foreground it shuts
 // down as soon as its stdin hits EOF, which happens immediately under a
 // non-interactive spawn. The daemon is stopped on teardown with
@@ -22,7 +19,7 @@ import { copyFileSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { TuringClient } from 'turingdb'
+import { TuringClient, TuringQueryError } from 'turingdb'
 import { API_BASE, TEST_GRAPH, TEST_PORT } from './config'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
@@ -35,11 +32,7 @@ const TURINGDB_SPEC = process.env.TURINGDB_SPEC ?? 'turingdb@latest'
 /** Run a child process to completion, rejecting on a non-zero exit. */
 function run(cmd: string, args: string[]): Promise<void> {
   return new Promise((resolve, reject) => {
-    const child = spawn(cmd, args, {
-      cwd: here,
-      env: { ...process.env, USE_TURING_PROTO: '1' },
-      stdio: ['ignore', 'pipe', 'pipe'],
-    })
+    const child = spawn(cmd, args, { cwd: here, stdio: ['ignore', 'pipe', 'pipe'] })
     let out = ''
     child.stdout?.on('data', (d) => (out += d))
     child.stderr?.on('data', (d) => (out += d))
@@ -57,14 +50,20 @@ function turingdb(args: string[]): Promise<void> {
   return TURINGDB_BIN ? run(TURINGDB_BIN, args) : run('uvx', [TURINGDB_SPEC, ...args])
 }
 
-/** Resolve once the server answers an HTTP request (any response = up). */
+// Global setup runs outside the workers, so setup-fetch.ts's `/api` rewrite
+// does not apply here: give the client the server's own URL.
+const client = new TuringClient({ url: `${API_BASE}/query` })
+
+/** Resolve once the server answers a query; retry only while it can't be reached. */
 async function waitForServer(timeoutMs = 30_000): Promise<void> {
   const deadline = Date.now() + timeoutMs
   while (Date.now() < deadline) {
     try {
-      await fetch(`${API_BASE}/query?graph=`, { method: 'POST' })
+      await client.queryData('LIST GRAPH', { graph: '' })
       return
-    } catch {
+    } catch (err) {
+      // The server answered, so it is up but failing: report that, not a timeout.
+      if (err instanceof TuringQueryError) throw err
       await new Promise((r) => setTimeout(r, 300))
     }
   }
@@ -77,9 +76,6 @@ async function waitForServer(timeoutMs = 30_000): Promise<void> {
  * shot — no change/commit workflow needed.
  */
 async function loadFixture(): Promise<void> {
-  // Global setup runs outside the workers, so setup-fetch.ts's `/api` rewrite
-  // does not apply here: give the client the server's own URL.
-  const client = new TuringClient({ url: `${API_BASE}/query` })
   await client.queryData(`LOAD JSONL '${FIXTURE}' AS ${TEST_GRAPH}`, { graph: '' })
 }
 
