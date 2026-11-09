@@ -37,10 +37,8 @@ change is blocked on a turingdb release.
 
 ## How it works
 
-- `global-setup.ts` — boots `turingdb` (via `uvx turingdb@latest`, daemonized,
-  with `USE_TURING_PROTO=1` for the binary protocol that the app's `turingdb`
-  npm client speaks) on a throwaway temp dir on port `6699`, waits for
-  readiness, then imports the
+- `global-setup.ts` — boots `turingdb` (via `uvx turingdb@latest`, daemonized)
+  on a throwaway temp dir on port `6699`, waits for readiness, then imports the
   fixture via `LOAD JSONL 'fixture.jsonl' AS vis_test`. Returns a teardown that
   stops the server and removes the temp dir.
 - `fixture.jsonl` — the deterministic fixture graph (`vis_test`: 4 nodes,

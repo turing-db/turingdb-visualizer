@@ -684,6 +684,11 @@ export class CypherQueryError extends Error {
 
 ### `src/api/api.ts` (Modified)
 
+> **Superseded.** The `fetch` + JSON transport below is what this branch shipped. The app no
+> longer calls the server directly: `executeCypherQuery()` now goes through the `turingdb` npm
+> client (`TuringClient.queryData`), which speaks TuringDB's binary protocol, and maps its
+> `TuringQueryError` to `CypherQueryError`. `CypherQueryErrorResponse` was removed with it.
+
 Added the `executeCypherQuery()` function:
 
 ```typescript
